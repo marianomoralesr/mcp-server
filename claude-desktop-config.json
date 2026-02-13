@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "trefa": {
+      "command": "node",
+      "args": ["dist/index.js"],
+      "cwd": "/Users/marianomorales/Proyectos/trefa-app/mcp-server",
+      "env": {
+        "SUPABASE_URL": "https://mhlztgilrmgebkyqowxz.supabase.co",
+        "SUPABASE_SERVICE_ROLE_KEY": "<tu_service_role_key>"
+      }
+    }
+  }
+}
