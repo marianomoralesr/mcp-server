@@ -1,0 +1,2444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TREFA - Mariana AI Chat</title>
+<style>
+:root {
+  --primary: #1a237e;
+  --primary-light: #283593;
+  --accent: #ff6d00;
+  --accent-light: #ff9100;
+  --bg: #f5f5f5;
+  --card: #ffffff;
+  --text: #212121;
+  --text-light: #757575;
+  --border: #e0e0e0;
+  --success: #2e7d32;
+  --error: #c62828;
+  --warning: #f57f17;
+  --user-bubble: #e3f2fd;
+  --assistant-bubble: #ffffff;
+  --radius: 12px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Header */
+.header {
+  background: var(--primary);
+  color: white;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 10;
+}
+
+.header .logo {
+  font-size: 20px;
+  font-weight: 700;
+  margin-right: 8px;
+}
+
+.header .subtitle {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-right: auto;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.tab {
+  background: transparent;
+  color: rgba(255,255,255,0.7);
+  border: none;
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  transition: all 0.2s;
+}
+
+.tab:hover { color: white; background: rgba(255,255,255,0.1); }
+.tab.active { color: white; background: rgba(255,255,255,0.2); }
+
+/* Main layout */
+.main { flex: 1; display: flex; overflow: hidden; }
+.view { display: none; flex: 1; overflow: hidden; }
+.view.active { display: flex; }
+
+/* ===== CHAT VIEW ===== */
+.chat-view {
+  flex-direction: column;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.session-badge {
+  font-size: 12px;
+  color: var(--text-light);
+  background: var(--bg);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-family: monospace;
+}
+
+.chat-header .spacer { flex: 1; }
+
+.btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: white;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-weight: 500;
+}
+
+.btn:hover { background: var(--bg); }
+.btn-primary { background: var(--accent); color: white; border-color: var(--accent); }
+.btn-primary:hover { background: var(--accent-light); }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+
+.chat-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.messages-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  max-width: 75%;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.message.user { align-self: flex-end; }
+.message.assistant { align-self: flex-start; }
+
+.bubble {
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.message.user .bubble {
+  background: var(--primary);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.message.assistant .bubble {
+  background: var(--assistant-bubble);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 4px;
+}
+
+.message .meta {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-top: 4px;
+  padding: 0 4px;
+}
+
+.message.user .meta { text-align: right; }
+
+.tool-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.tool-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #e8eaf6;
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.tool-badge:hover { background: #c5cae9; }
+.tool-badge.error { background: #ffebee; color: var(--error); }
+
+/* Tool detail panel */
+.tool-panel {
+  width: 0;
+  overflow: hidden;
+  transition: width 0.3s ease;
+  border-left: 1px solid var(--border);
+  background: var(--card);
+  flex-shrink: 0;
+}
+
+.tool-panel.open { width: 340px; }
+
+.tool-panel-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.tool-panel-header .close-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--text-light);
+}
+
+.tool-panel-content {
+  padding: 16px;
+  overflow-y: auto;
+  height: calc(100% - 48px);
+}
+
+.tool-detail { margin-bottom: 16px; }
+.tool-detail h4 { font-size: 13px; color: var(--primary); margin-bottom: 4px; }
+.tool-detail pre {
+  background: #f5f5f5;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 12px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Typing indicator */
+.typing {
+  display: none;
+  align-self: flex-start;
+  padding: 10px 16px;
+  background: var(--assistant-bubble);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.typing.show { display: block; }
+
+.typing-dots span {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-light);
+  margin: 0 2px;
+  animation: bounce 1.2s infinite;
+}
+
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+/* Input area */
+.input-area {
+  padding: 12px 20px;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.input-area textarea {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 14px;
+  resize: none;
+  font-family: inherit;
+  outline: none;
+  max-height: 120px;
+  min-height: 42px;
+  line-height: 1.4;
+}
+
+.input-area textarea:focus { border-color: var(--primary); }
+
+.send-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-end;
+}
+
+.send-btn:hover { background: var(--accent-light); transform: scale(1.05); }
+.send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* Rating */
+.rating-bar {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #fff8e1;
+  border-top: 1px solid #ffe082;
+  flex-shrink: 0;
+}
+
+.rating-bar.show { display: flex; }
+
+.rating-bar span { font-size: 13px; color: var(--text); }
+
+.stars { display: flex; gap: 2px; }
+
+.star {
+  font-size: 22px;
+  cursor: pointer;
+  color: #e0e0e0;
+  transition: color 0.1s;
+}
+
+.star:hover, .star.active { color: var(--accent); }
+
+/* ===== DASHBOARD VIEW ===== */
+.dashboard-view {
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 24px;
+  gap: 20px;
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 14px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-body { padding: 18px; }
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 13px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.status-dot.healthy { background: var(--success); }
+.status-dot.unhealthy { background: var(--error); }
+.status-dot.unknown { background: var(--warning); }
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.stat-item { text-align: center; }
+
+.tool-list { list-style: none; }
+
+.tool-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+}
+
+.tool-item:last-child { border-bottom: none; }
+
+.tool-name { font-weight: 500; color: var(--primary); }
+
+.tool-count {
+  background: var(--bg);
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bar-label {
+  width: 160px;
+  font-size: 12px;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bar-track {
+  flex: 1;
+  height: 18px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+  min-width: 2px;
+}
+
+.bar-value {
+  width: 40px;
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.refresh-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--text-light);
+  padding: 4px;
+}
+
+.refresh-btn:hover { color: var(--text); }
+
+/* Tools schema expand */
+.schema-toggle {
+  font-size: 12px;
+  color: var(--primary);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.schema-content {
+  display: none;
+  margin-top: 6px;
+}
+
+.schema-content.open { display: block; }
+
+/* ===== GENERATION TOOLBAR ===== */
+.gen-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #e8eaf6;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+.gen-toolbar .btn-gen {
+  padding: 5px 12px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card);
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.gen-toolbar .btn-gen:hover { background: #c5cae9; border-color: var(--primary-light); }
+.gen-toolbar .btn-gen.active { background: var(--primary); color: white; }
+.gen-toolbar .spacer { flex: 1; }
+.gen-toolbar .jobs-badge {
+  display: inline-block;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  width: 18px; height: 18px;
+  font-size: 11px;
+  text-align: center;
+  line-height: 18px;
+  margin-left: 4px;
+}
+
+/* ===== MODALS ===== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 100;
+  justify-content: center;
+  align-items: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  max-width: 560px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 24px;
+}
+.modal h3 { margin-bottom: 16px; font-size: 18px; }
+.modal label { display: block; font-size: 13px; font-weight: 500; margin-top: 12px; margin-bottom: 4px; }
+.modal input[type="text"], .modal input[type="password"], .modal input[type="number"],
+.modal select, .modal textarea {
+  width: 100%; padding: 8px 10px; border: 1px solid var(--border);
+  border-radius: 6px; font-size: 13px;
+}
+.modal textarea { min-height: 80px; resize: vertical; }
+.modal .modal-actions { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
+.modal .btn-modal { padding: 8px 20px; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; }
+.modal .btn-cancel { background: var(--bg); color: var(--text); }
+.modal .btn-submit { background: var(--primary); color: white; }
+.modal .btn-submit:hover { background: var(--primary-light); }
+
+/* ===== JOBS PANEL ===== */
+.jobs-list { max-height: 400px; overflow-y: auto; }
+.job-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.job-item:last-child { border-bottom: none; }
+.job-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.job-type { font-weight: 600; text-transform: capitalize; }
+.job-status {
+  padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500;
+}
+.job-status.running { background: #fff3e0; color: #e65100; }
+.job-status.completed { background: #e8f5e9; color: #2e7d32; }
+.job-status.failed { background: #ffebee; color: #c62828; }
+.job-status.cancelled { background: #eceff1; color: #546e7a; }
+.job-status.pending { background: #e3f2fd; color: #1565c0; }
+.job-progress { width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.job-progress-bar { height: 100%; background: var(--primary); transition: width .3s; border-radius: 3px; }
+.job-detail { font-size: 11px; color: var(--text-light); margin-top: 4px; }
+.job-actions { margin-top: 6px; }
+.job-cancel-btn { font-size: 11px; padding: 2px 10px; border: 1px solid var(--error); color: var(--error); background: none; border-radius: 4px; cursor: pointer; }
+.job-cancel-btn:hover { background: #ffebee; }
+
+/* ===== ANALYSIS RESULTS ===== */
+.analysis-bar { display: flex; align-items: center; gap: 2px; margin: 4px 0; }
+.analysis-bar-fill { height: 14px; background: var(--primary); border-radius: 3px; min-width: 2px; }
+.analysis-bar-label { font-size: 11px; min-width: 140px; }
+.analysis-bar-count { font-size: 11px; color: var(--text-light); min-width: 30px; text-align: right; }
+
+/* key indicator */
+.key-indicator { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-left: 6px; }
+.key-indicator.set { background: var(--success); }
+.key-indicator.unset { background: var(--error); }
+
+/* ===== DATASETS VIEW ===== */
+.datasets-view {
+  flex-direction: row;
+}
+
+.ds-file-panel {
+  width: 240px;
+  border-right: 1px solid var(--border);
+  background: var(--card);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.ds-file-panel-header {
+  padding: 12px 14px;
+  font-weight: 600;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.ds-file-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 0;
+}
+
+.ds-dir-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-light);
+  padding: 8px 14px 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ds-file-item {
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+}
+
+.ds-file-item:hover { background: var(--bg); }
+.ds-file-item.active { background: #e8eaf6; border-left-color: var(--primary); }
+
+.ds-file-name {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ds-file-meta {
+  font-size: 11px;
+  color: var(--text-light);
+  display: flex;
+  gap: 8px;
+}
+
+.ds-file-stats {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-light);
+  flex-shrink: 0;
+}
+
+.ds-conv-panel {
+  flex: 1;
+  min-width: 300px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ds-conv-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.ds-conv-header select {
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  background: white;
+}
+
+.ds-conv-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ds-conv-card {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--card);
+}
+
+.ds-conv-card:hover { border-color: var(--primary); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.ds-conv-card.active { border-color: var(--primary); background: #e8eaf6; }
+
+.ds-conv-card-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.ds-conv-line {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.ds-conv-badges {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.ds-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.ds-badge-tc { background: #e8eaf6; color: var(--primary); }
+.ds-badge-valid { background: #e8f5e9; color: var(--success); }
+.ds-badge-invalid { background: #ffebee; color: var(--error); }
+.ds-badge-tag { background: #fff3e0; color: #e65100; }
+
+.ds-conv-preview {
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.ds-conv-card-bottom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-light);
+}
+
+.ds-conv-stars {
+  display: inline-flex;
+  gap: 1px;
+  font-size: 12px;
+}
+
+.ds-conv-stars .filled { color: var(--accent); }
+.ds-conv-stars .empty { color: #e0e0e0; }
+
+.ds-pagination {
+  padding: 8px 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-light);
+  flex-shrink: 0;
+}
+
+.ds-pagination button {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.ds-pagination button:hover { background: var(--bg); }
+.ds-pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.ds-detail-panel {
+  width: 420px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--card);
+}
+
+.ds-detail-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.ds-detail-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ds-msg {
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  position: relative;
+}
+
+.ds-msg-role {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.ds-msg[data-role="system"] { background: #f3e5f5; }
+.ds-msg[data-role="system"] .ds-msg-role { color: #7b1fa2; }
+.ds-msg[data-role="user"] { background: var(--user-bubble); }
+.ds-msg[data-role="user"] .ds-msg-role { color: var(--primary); }
+.ds-msg[data-role="assistant"] { background: #f5f5f5; border: 1px solid var(--border); }
+.ds-msg[data-role="assistant"] .ds-msg-role { color: #333; }
+.ds-msg[data-role="tool"] { background: #e0f2f1; }
+.ds-msg[data-role="tool"] .ds-msg-role { color: #00695c; }
+
+.ds-msg-content {
+  white-space: pre-wrap;
+  word-break: break-word;
+  cursor: pointer;
+}
+
+.ds-msg-content:hover { outline: 1px dashed var(--border); outline-offset: 2px; }
+
+.ds-msg-edit {
+  width: 100%;
+  min-height: 60px;
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  padding: 6px;
+  font-size: 13px;
+  font-family: monospace;
+  resize: vertical;
+  line-height: 1.4;
+}
+
+.ds-msg-edit-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+  justify-content: flex-end;
+}
+
+.ds-tool-call-highlight {
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 4px;
+  padding: 4px 6px;
+  margin: 4px 0;
+  font-family: monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.ds-tool-response-highlight {
+  background: #e0f7fa;
+  border: 1px solid #80deea;
+  border-radius: 4px;
+  padding: 4px 6px;
+  margin: 4px 0;
+  font-family: monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.ds-detail-controls {
+  border-top: 1px solid var(--border);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.ds-control-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.ds-control-label {
+  font-weight: 600;
+  font-size: 12px;
+  min-width: 50px;
+}
+
+.ds-tags-area {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+}
+
+.ds-tag-chip {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #fff3e0;
+  color: #e65100;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.ds-tag-chip .remove { font-size: 13px; font-weight: bold; }
+.ds-tag-chip .remove:hover { color: var(--error); }
+
+.ds-tag-input {
+  padding: 2px 8px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  font-size: 11px;
+  width: 100px;
+  outline: none;
+}
+
+.ds-tag-suggestions {
+  position: absolute;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  max-height: 160px;
+  overflow-y: auto;
+  z-index: 20;
+  font-size: 12px;
+}
+
+.ds-tag-suggestions div {
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.ds-tag-suggestions div:hover { background: var(--bg); }
+
+.ds-rating-stars {
+  display: flex;
+  gap: 2px;
+}
+
+.ds-rating-stars span {
+  font-size: 20px;
+  cursor: pointer;
+  color: #e0e0e0;
+  transition: color 0.1s;
+}
+
+.ds-rating-stars span:hover, .ds-rating-stars span.active { color: var(--accent); }
+
+.ds-notes-input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+.ds-validation-result {
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  max-height: 80px;
+  overflow-y: auto;
+}
+
+.ds-validation-result.valid { background: #e8f5e9; color: var(--success); }
+.ds-validation-result.invalid { background: #ffebee; color: var(--error); }
+
+.ds-detail-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.ds-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-light);
+  font-size: 13px;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .message { max-width: 90%; }
+  .tool-panel.open { width: 100%; position: absolute; right: 0; top: 0; bottom: 0; z-index: 5; }
+  .dashboard-view { padding: 12px; }
+  .dash-grid { grid-template-columns: 1fr; }
+  .header .subtitle { display: none; }
+  .stat-grid { grid-template-columns: 1fr; }
+  .datasets-view { flex-direction: column; }
+  .ds-file-panel { width: 100%; max-height: 150px; border-right: none; border-bottom: 1px solid var(--border); }
+  .ds-detail-panel { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <span class="logo">TREFA</span>
+  <span class="subtitle">Mariana AI - Asesora de Autos Seminuevos</span>
+  <div class="tabs">
+    <button class="tab active" onclick="switchView('chat')">Chat</button>
+    <button class="tab" onclick="switchView('dashboard')">Dashboard</button>
+    <button class="tab" onclick="switchView('datasets')">Datasets</button>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Chat View -->
+  <div id="chat-view" class="view chat-view active">
+    <div class="chat-header">
+      <span style="font-weight:600; font-size:14px;">Mariana</span>
+      <span class="session-badge" id="session-badge">Sin sesion</span>
+      <div class="spacer"></div>
+      <button class="btn btn-sm" onclick="toggleToolPanel()" id="tool-panel-toggle">Tools (0)</button>
+      <button class="btn btn-sm btn-primary" onclick="newSession()">+ Nueva</button>
+    </div>
+
+    <div class="chat-body">
+      <div class="messages-area" id="messages">
+        <div class="message assistant">
+          <div class="bubble">Hola, soy Mariana del equipo TREFA. Con mucho gusto te apoyo a encontrar tu auto ideal. Que tipo de vehiculo buscas?</div>
+        </div>
+      </div>
+
+      <!-- Tool detail panel -->
+      <div class="tool-panel" id="tool-panel">
+        <div class="tool-panel-header">
+          Tool Calls
+          <button class="close-btn" onclick="toggleToolPanel()">&times;</button>
+        </div>
+        <div class="tool-panel-content" id="tool-panel-content">
+          <p style="color:var(--text-light); font-size:13px;">Los tool calls apareceran aqui cuando Mariana consulte herramientas.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rating bar -->
+    <div class="rating-bar" id="rating-bar">
+      <span>Califica esta conversacion:</span>
+      <div class="stars" id="stars">
+        <span class="star" data-v="1">&#9733;</span>
+        <span class="star" data-v="2">&#9733;</span>
+        <span class="star" data-v="3">&#9733;</span>
+        <span class="star" data-v="4">&#9733;</span>
+        <span class="star" data-v="5">&#9733;</span>
+      </div>
+      <span id="rating-status" style="font-size:12px; color:var(--success);"></span>
+    </div>
+
+    <!-- Input -->
+    <div class="input-area">
+      <textarea id="msg-input" placeholder="Escribe tu mensaje..." rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"
+        oninput="autoResize(this)"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendMessage()">&#9654;</button>
+    </div>
+  </div>
+
+  <!-- Dashboard View -->
+  <div id="dashboard-view" class="view dashboard-view">
+    <div class="dash-grid">
+
+      <!-- Health -->
+      <div class="card">
+        <div class="card-header">
+          Estado del sistema
+          <button class="refresh-btn" onclick="loadHealth()">&#8635;</button>
+        </div>
+        <div class="card-body" id="health-body">
+          <p style="color:var(--text-light); font-size:13px;">Cargando...</p>
+        </div>
+      </div>
+
+      <!-- Analytics stats -->
+      <div class="card">
+        <div class="card-header">
+          Metricas
+          <button class="refresh-btn" onclick="loadAnalytics()">&#8635;</button>
+        </div>
+        <div class="card-body" id="analytics-stats">
+          <p style="color:var(--text-light); font-size:13px;">Cargando...</p>
+        </div>
+      </div>
+
+      <!-- Top tools chart -->
+      <div class="card" style="grid-column: 1 / -1;">
+        <div class="card-header">
+          Herramientas mas usadas
+          <button class="refresh-btn" onclick="loadAnalytics()">&#8635;</button>
+        </div>
+        <div class="card-body" id="tools-chart">
+          <p style="color:var(--text-light); font-size:13px;">Cargando...</p>
+        </div>
+      </div>
+
+      <!-- Available tools -->
+      <div class="card" style="grid-column: 1 / -1;">
+        <div class="card-header">
+          Herramientas disponibles (MCP)
+          <button class="refresh-btn" onclick="loadTools()">&#8635;</button>
+        </div>
+        <div class="card-body" id="tools-list">
+          <p style="color:var(--text-light); font-size:13px;">Cargando...</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Datasets View -->
+  <div id="datasets-view" class="view datasets-view" style="flex-direction:column;">
+
+    <!-- Generation Toolbar -->
+    <div class="gen-toolbar">
+      <button class="btn-gen" onclick="genShowModal('analyze')">Analizar Tools</button>
+      <button class="btn-gen" onclick="genShowModal('template')">Generar Plantillas</button>
+      <button class="btn-gen" onclick="genShowModal('synthetic')">Generar Sintetico</button>
+      <button class="btn-gen" onclick="genShowModal('curate')">Curar Dataset</button>
+      <button class="btn-gen" onclick="genShowModal('pipeline')">Pipeline TC</button>
+      <button class="btn-gen" onclick="genShowModal('update-prompt')">Act. Prompt</button>
+      <div class="spacer"></div>
+      <button class="btn-gen" onclick="genShowModal('jobs')" id="gen-jobs-btn">Jobs <span class="jobs-badge" id="gen-jobs-badge" style="display:none;">0</span></button>
+      <button class="btn-gen" onclick="genShowModal('settings')" title="API Keys">&#9881;</button>
+    </div>
+
+    <!-- Datasets content wrapper -->
+    <div style="flex:1;display:flex;flex-direction:row;overflow:hidden;">
+
+    <!-- Panel izquierdo: Archivos -->
+    <div class="ds-file-panel">
+      <div class="ds-file-panel-header">
+        Archivos JSONL
+        <button class="refresh-btn" onclick="dsLoadFiles(true)" title="Re-escanear">&#8635;</button>
+      </div>
+      <div class="ds-file-list" id="ds-file-list">
+        <div class="ds-empty-state">Cargando archivos...</div>
+      </div>
+      <div class="ds-file-stats" id="ds-file-stats"></div>
+    </div>
+
+    <!-- Panel central: Lista de conversaciones -->
+    <div class="ds-conv-panel">
+      <div class="ds-conv-header" id="ds-conv-header">
+        <span style="font-weight:600;font-size:13px;" id="ds-conv-title">Selecciona un archivo</span>
+        <div class="spacer"></div>
+        <select id="ds-filter-tc" onchange="dsApplyFilters()">
+          <option value="">Tool Calling: Todos</option>
+          <option value="yes">Con TC</option>
+          <option value="no">Sin TC</option>
+        </select>
+        <select id="ds-filter-rating" onchange="dsApplyFilters()">
+          <option value="">Rating: Todos</option>
+          <option value="0">Sin rating</option>
+          <option value="1">1 estrella</option>
+          <option value="2">2 estrellas</option>
+          <option value="3">3 estrellas</option>
+          <option value="4">4 estrellas</option>
+          <option value="5">5 estrellas</option>
+        </select>
+      </div>
+      <div class="ds-conv-list" id="ds-conv-list">
+        <div class="ds-empty-state">Selecciona un archivo JSONL del panel izquierdo para ver sus conversaciones</div>
+      </div>
+      <div class="ds-pagination" id="ds-pagination" style="display:none;">
+        <button onclick="dsPrevPage()" id="ds-prev-btn" disabled>&#9664; Anterior</button>
+        <span id="ds-page-info">-</span>
+        <button onclick="dsNextPage()" id="ds-next-btn">Siguiente &#9654;</button>
+      </div>
+    </div>
+
+    <!-- Panel derecho: Detalle / Editor -->
+    <div class="ds-detail-panel">
+      <div class="ds-detail-header" id="ds-detail-header">Detalle</div>
+      <div class="ds-detail-messages" id="ds-detail-messages">
+        <div class="ds-empty-state">Selecciona una conversacion para ver sus mensajes</div>
+      </div>
+      <div class="ds-detail-controls" id="ds-detail-controls" style="display:none;">
+        <div class="ds-control-row">
+          <span class="ds-control-label">Tags</span>
+          <div class="ds-tags-area" id="ds-tags-area"></div>
+          <div style="position:relative;display:inline-block;">
+            <input class="ds-tag-input" id="ds-tag-input" placeholder="+ tag" onfocus="dsShowTagSuggestions()" oninput="dsFilterTagSuggestions()" onblur="setTimeout(()=>dsHideTagSuggestions(),200)">
+            <div class="ds-tag-suggestions" id="ds-tag-suggestions" style="display:none;"></div>
+          </div>
+        </div>
+        <div class="ds-control-row">
+          <span class="ds-control-label">Rating</span>
+          <div class="ds-rating-stars" id="ds-rating-stars">
+            <span data-v="1" onclick="dsSetRating(1)">&#9733;</span>
+            <span data-v="2" onclick="dsSetRating(2)">&#9733;</span>
+            <span data-v="3" onclick="dsSetRating(3)">&#9733;</span>
+            <span data-v="4" onclick="dsSetRating(4)">&#9733;</span>
+            <span data-v="5" onclick="dsSetRating(5)">&#9733;</span>
+          </div>
+        </div>
+        <div class="ds-control-row">
+          <span class="ds-control-label">Notas</span>
+          <input class="ds-notes-input" id="ds-notes-input" placeholder="Notas de revision...">
+        </div>
+        <div id="ds-validation-box"></div>
+        <div class="ds-detail-actions">
+          <button class="btn btn-sm" onclick="dsValidate()">Validar</button>
+          <button class="btn btn-sm btn-primary" onclick="dsSave()">Guardar en Supabase</button>
+          <span id="ds-save-status" style="font-size:11px;color:var(--success);"></span>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- end datasets content wrapper -->
+  </div>
+
+  <!-- === MODALS === -->
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="modal-settings">
+    <div class="modal">
+      <h3>Configuracion API Keys</h3>
+      <label>Anthropic API Key <span class="key-indicator" id="key-ind-anthropic"></span></label>
+      <input type="password" id="gen-anthropic-key" placeholder="sk-ant-...">
+      <label>Gemini API Key <span class="key-indicator" id="key-ind-gemini"></span></label>
+      <input type="password" id="gen-gemini-key" placeholder="AI...">
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('settings')">Cerrar</button>
+        <button class="btn-modal btn-submit" onclick="genSaveKeys()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Jobs Modal -->
+  <div class="modal-overlay" id="modal-jobs">
+    <div class="modal" style="max-width:640px;">
+      <h3>Jobs <button class="btn-modal btn-cancel" style="float:right;padding:4px 12px;" onclick="genCloseModal('jobs')">X</button></h3>
+      <div class="jobs-list" id="gen-jobs-list"><div class="ds-empty-state">Sin jobs recientes</div></div>
+    </div>
+  </div>
+
+  <!-- Template Gen Modal -->
+  <div class="modal-overlay" id="modal-template">
+    <div class="modal">
+      <h3>Generar por Plantillas</h3>
+      <label>Nombre archivo salida</label>
+      <input type="text" id="gen-tpl-filename" value="plantillas.jsonl">
+      <label>Cantidad total (vacio = default ~160)</label>
+      <input type="number" id="gen-tpl-count" placeholder="160" min="10" max="2000">
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('template')">Cancelar</button>
+        <button class="btn-modal btn-submit" onclick="genLaunchTemplate()">Generar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Synthetic Gen Modal -->
+  <div class="modal-overlay" id="modal-synthetic">
+    <div class="modal">
+      <h3>Generar Sintetico (Claude)</h3>
+      <label>Cantidad</label>
+      <input type="number" id="gen-syn-count" value="100" min="10" max="1000">
+      <label>Modelo</label>
+      <select id="gen-syn-model">
+        <option value="claude-haiku-4-5-20251001">Haiku 4.5 (rapido/barato)</option>
+        <option value="claude-sonnet-4-5-20250929">Sonnet 4.5 (mejor calidad)</option>
+      </select>
+      <label>Archivo salida</label>
+      <input type="text" id="gen-syn-filename" value="sinteticos.jsonl">
+      <label>Pausa entre llamadas (s)</label>
+      <input type="number" id="gen-syn-pause" value="0.3" min="0.1" max="10" step="0.1">
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('synthetic')">Cancelar</button>
+        <button class="btn-modal btn-submit" onclick="genLaunchSynthetic()">Generar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Curate Modal -->
+  <div class="modal-overlay" id="modal-curate">
+    <div class="modal">
+      <h3>Curar Dataset (Gemini)</h3>
+      <label>Archivo sintetico (JSONL)</label>
+      <input type="text" id="gen-cur-synthetic" placeholder="/ruta/sinteticos.jsonl">
+      <label>Archivo referencia (JSONL/CSV)</label>
+      <input type="text" id="gen-cur-reference" placeholder="/ruta/reales.jsonl">
+      <label>Umbral minimo (1-10)</label>
+      <input type="number" id="gen-cur-threshold" value="6" min="1" max="10">
+      <label>
+        <input type="checkbox" id="gen-cur-only-eval"> Solo evaluar (no mejorar)
+      </label>
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('curate')">Cancelar</button>
+        <button class="btn-modal btn-submit" onclick="genLaunchCurate()">Curar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pipeline Modal -->
+  <div class="modal-overlay" id="modal-pipeline">
+    <div class="modal">
+      <h3>Pipeline Tool Calling (Gemini)</h3>
+      <label>Etapas</label>
+      <select id="gen-pip-stages">
+        <option value="todas">Todas (1+2+3)</option>
+        <option value="1">Solo Etapa 1 (calidad)</option>
+        <option value="2">Solo Etapa 2 (masivo)</option>
+        <option value="3">Solo Etapa 3 (evaluar)</option>
+      </select>
+      <label>Cantidad E1</label>
+      <input type="number" id="gen-pip-e1" value="40" min="5" max="200">
+      <label>Cantidad E2</label>
+      <input type="number" id="gen-pip-e2" value="400" min="10" max="2000">
+      <label>Umbral E3</label>
+      <input type="number" id="gen-pip-threshold" value="7.0" min="1" max="10" step="0.5">
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('pipeline')">Cancelar</button>
+        <button class="btn-modal btn-submit" onclick="genLaunchPipeline()">Ejecutar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analyze Tools Modal -->
+  <div class="modal-overlay" id="modal-analyze">
+    <div class="modal">
+      <h3>Analizar Tool Patterns</h3>
+      <p style="font-size:13px;color:var(--text-light);margin-bottom:12px;">Selecciona archivos del panel izquierdo, o ingresa rutas:</p>
+      <label>Archivos JSONL (uno por linea)</label>
+      <textarea id="gen-analyze-files" placeholder="/ruta/archivo1.jsonl&#10;/ruta/archivo2.jsonl"></textarea>
+      <button class="btn-modal btn-cancel" style="margin-top:8px;font-size:12px;" onclick="genFillAnalyzeFromSelected()">Usar archivo seleccionado</button>
+      <div id="gen-analyze-result" style="margin-top:12px;"></div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('analyze')">Cerrar</button>
+        <button class="btn-modal btn-submit" onclick="genLaunchAnalyze()">Analizar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Update Prompt Modal -->
+  <div class="modal-overlay" id="modal-update-prompt">
+    <div class="modal">
+      <h3>Actualizar System Prompt</h3>
+      <label>Archivos target (uno por linea)</label>
+      <textarea id="gen-up-files" placeholder="/ruta/archivo.jsonl"></textarea>
+      <label>Nuevo system prompt</label>
+      <textarea id="gen-up-prompt" style="min-height:150px;"></textarea>
+      <button class="btn-modal btn-cancel" style="margin-top:4px;font-size:12px;" onclick="genLoadCurrentPrompt()">Cargar prompt actual</button>
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('update-prompt')">Cancelar</button>
+        <button class="btn-modal btn-submit" onclick="genLaunchUpdatePrompt()">Actualizar</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const API = window.location.origin;
+let sessionId = null;
+let toolCallsLog = [];
+let messageCount = 0;
+
+// ===== VIEW SWITCHING =====
+function switchView(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(view + '-view').classList.add('active');
+  event.target.classList.add('active');
+  if (view === 'dashboard') {
+    loadHealth();
+    loadAnalytics();
+    loadTools();
+  } else if (view === 'datasets') {
+    dsLoadFiles();
+  }
+}
+
+// ===== CHAT =====
+function addMessage(role, content, tools) {
+  const area = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = `message ${role}`;
+
+  let html = `<div class="bubble">${escapeHtml(content)}</div>`;
+
+  if (tools && tools.length > 0) {
+    html += '<div class="tool-badges">';
+    tools.forEach((tc, i) => {
+      const cls = tc.result && tc.result.error ? 'tool-badge error' : 'tool-badge';
+      html += `<span class="${cls}" onclick="showToolDetail(${toolCallsLog.length - tools.length + i})">${tc.name}</span>`;
+    });
+    html += '</div>';
+  }
+
+  div.innerHTML = html;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function showTyping(show) {
+  let el = document.getElementById('typing-indicator');
+  if (!el && show) {
+    el = document.createElement('div');
+    el.id = 'typing-indicator';
+    el.className = 'typing show';
+    el.innerHTML = '<span class="typing-dots"><span></span><span></span><span></span></span> Mariana esta escribiendo...';
+    document.getElementById('messages').appendChild(el);
+    el.parentElement.scrollTop = el.parentElement.scrollHeight;
+  } else if (el && !show) {
+    el.remove();
+  }
+}
+
+async function sendMessage() {
+  const input = document.getElementById('msg-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  autoResize(input);
+  document.getElementById('send-btn').disabled = true;
+
+  addMessage('user', text);
+  showTyping(true);
+  messageCount++;
+
+  try {
+    const body = { message: text };
+    if (sessionId) body.session_id = sessionId;
+
+    const res = await fetch(`${API}/v1/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    showTyping(false);
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      addMessage('assistant', `Error: ${err.detail || res.statusText}`);
+      return;
+    }
+
+    const data = await res.json();
+    sessionId = data.session_id;
+    document.getElementById('session-badge').textContent = sessionId.slice(0, 8) + '...';
+
+    // Log tool calls
+    if (data.tool_calls_executed && data.tool_calls_executed.length > 0) {
+      data.tool_calls_executed.forEach(tc => toolCallsLog.push(tc));
+      document.getElementById('tool-panel-toggle').textContent = `Tools (${toolCallsLog.length})`;
+    }
+
+    addMessage('assistant', data.response, data.tool_calls_executed);
+
+    // Show rating bar after 3+ messages
+    if (messageCount >= 3) {
+      document.getElementById('rating-bar').classList.add('show');
+    }
+
+  } catch (e) {
+    showTyping(false);
+    addMessage('assistant', `Error de conexion: ${e.message}`);
+  } finally {
+    document.getElementById('send-btn').disabled = false;
+    input.focus();
+  }
+}
+
+function newSession() {
+  sessionId = null;
+  toolCallsLog = [];
+  messageCount = 0;
+  document.getElementById('messages').innerHTML = `
+    <div class="message assistant">
+      <div class="bubble">Hola, soy Mariana del equipo TREFA. Con mucho gusto te apoyo a encontrar tu auto ideal. Que tipo de vehiculo buscas?</div>
+    </div>`;
+  document.getElementById('session-badge').textContent = 'Sin sesion';
+  document.getElementById('tool-panel-toggle').textContent = 'Tools (0)';
+  document.getElementById('tool-panel-content').innerHTML =
+    '<p style="color:var(--text-light);font-size:13px;">Los tool calls apareceran aqui cuando Mariana consulte herramientas.</p>';
+  document.getElementById('rating-bar').classList.remove('show');
+  document.getElementById('rating-status').textContent = '';
+  document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
+}
+
+// ===== TOOL PANEL =====
+function toggleToolPanel() {
+  document.getElementById('tool-panel').classList.toggle('open');
+}
+
+function showToolDetail(idx) {
+  const tc = toolCallsLog[idx];
+  if (!tc) return;
+  const panel = document.getElementById('tool-panel');
+  panel.classList.add('open');
+  document.getElementById('tool-panel-content').innerHTML = `
+    <div class="tool-detail">
+      <h4>Herramienta</h4>
+      <pre>${tc.name}</pre>
+    </div>
+    <div class="tool-detail">
+      <h4>Argumentos</h4>
+      <pre>${JSON.stringify(tc.arguments, null, 2)}</pre>
+    </div>
+    ${tc.result ? `<div class="tool-detail"><h4>Resultado</h4><pre>${JSON.stringify(tc.result, null, 2).slice(0, 2000)}</pre></div>` : ''}
+    ${tc.duration_ms !== undefined ? `<div class="tool-detail"><h4>Latencia</h4><pre>${tc.duration_ms} ms</pre></div>` : ''}
+  `;
+}
+
+// ===== RATING =====
+document.getElementById('stars').addEventListener('click', async (e) => {
+  if (!e.target.classList.contains('star')) return;
+  if (!sessionId) return;
+
+  const rating = parseInt(e.target.dataset.v);
+  document.querySelectorAll('.star').forEach(s => {
+    s.classList.toggle('active', parseInt(s.dataset.v) <= rating);
+  });
+
+  try {
+    await fetch(`${API}/v1/feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sessionId, rating }),
+    });
+    document.getElementById('rating-status').textContent = 'Gracias por tu feedback!';
+  } catch (e) {
+    document.getElementById('rating-status').textContent = 'Error al enviar';
+  }
+});
+
+// ===== DASHBOARD =====
+async function loadHealth() {
+  const el = document.getElementById('health-body');
+  try {
+    const res = await fetch(`${API}/health`);
+    const d = await res.json();
+    el.innerHTML = `
+      <div class="status-row">
+        <span><span class="status-dot ${d.vllm_backend === 'healthy' ? 'healthy' : d.vllm_backend === 'unreachable' ? 'unhealthy' : 'unknown'}"></span>vLLM Backend</span>
+        <span>${d.vllm_backend}</span>
+      </div>
+      <div class="status-row">
+        <span><span class="status-dot ${d.mcp_server === 'healthy' ? 'healthy' : d.mcp_server === 'unreachable' ? 'unhealthy' : 'unknown'}"></span>MCP Server</span>
+        <span>${d.mcp_server}</span>
+      </div>
+      <div class="status-row">
+        <span>Modelo cargado</span>
+        <span>${d.model_loaded ? 'Si' : 'No'}</span>
+      </div>
+      <div class="status-row">
+        <span>Tools cargadas</span>
+        <span>${d.tools_loaded}</span>
+      </div>
+      <div class="status-row">
+        <span>Sesiones activas</span>
+        <span>${d.active_sessions}</span>
+      </div>
+    `;
+  } catch (e) {
+    el.innerHTML = `<p style="color:var(--error);font-size:13px;">Error: ${e.message}</p>`;
+  }
+}
+
+async function loadAnalytics() {
+  const el = document.getElementById('analytics-stats');
+  const chartEl = document.getElementById('tools-chart');
+  try {
+    const res = await fetch(`${API}/admin/analytics`);
+    const d = await res.json();
+    el.innerHTML = `
+      <div class="stat-grid">
+        <div class="stat-item">
+          <div class="stat-value">${d.total_chats || 0}</div>
+          <div class="stat-label">Chats totales</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">${((d.tool_calling_rate || 0) * 100).toFixed(0)}%</div>
+          <div class="stat-label">Tasa tool calling</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">${d.average_rating ? d.average_rating.toFixed(1) : '-'}</div>
+          <div class="stat-label">Rating promedio</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">${d.hallucination_flags || 0}</div>
+          <div class="stat-label">Alertas alucinacion</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">${d.chats_with_tools || 0}</div>
+          <div class="stat-label">Chats con tools</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">${d.avg_tool_latency_ms ? d.avg_tool_latency_ms.toFixed(0) + 'ms' : '-'}</div>
+          <div class="stat-label">Latencia promedio</div>
+        </div>
+      </div>
+    `;
+
+    // Top tools bar chart
+    const topTools = d.top_tools || [];
+    if (topTools.length === 0) {
+      chartEl.innerHTML = '<p style="color:var(--text-light);font-size:13px;">Sin datos aun. Envia mensajes al chat para ver estadisticas.</p>';
+    } else {
+      const maxCalls = Math.max(...topTools.map(t => t.calls), 1);
+      chartEl.innerHTML = '<div class="bar-chart">' + topTools.map(t => `
+        <div class="bar-row">
+          <span class="bar-label">${t.name}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${(t.calls / maxCalls * 100).toFixed(0)}%"></div></div>
+          <span class="bar-value">${t.calls}</span>
+        </div>
+      `).join('') + '</div>';
+    }
+  } catch (e) {
+    el.innerHTML = `<p style="color:var(--error);font-size:13px;">Error: ${e.message}</p>`;
+  }
+}
+
+async function loadTools() {
+  const el = document.getElementById('tools-list');
+  try {
+    const res = await fetch(`${API}/v1/tools`);
+    const d = await res.json();
+    const tools = d.tools || [];
+    if (tools.length === 0) {
+      el.innerHTML = '<p style="color:var(--text-light);font-size:13px;">No hay herramientas disponibles. Verifica que el MCP Server este corriendo.</p>';
+      return;
+    }
+    el.innerHTML = '<ul class="tool-list">' + tools.map((t, i) => `
+      <li class="tool-item">
+        <div>
+          <span class="tool-name">${t.name}</span>
+          <div style="font-size:12px;color:var(--text-light);margin-top:2px;">${t.description || ''}</div>
+          <span class="schema-toggle" onclick="this.nextElementSibling.classList.toggle('open')">Ver schema</span>
+          <div class="schema-content">
+            <pre style="font-size:11px;margin-top:4px;background:#f5f5f5;padding:8px;border-radius:6px;border:1px solid var(--border);overflow-x:auto;white-space:pre-wrap;">${JSON.stringify(t.inputSchema || {}, null, 2)}</pre>
+          </div>
+        </div>
+      </li>
+    `).join('') + '</ul>';
+  } catch (e) {
+    el.innerHTML = `<p style="color:var(--error);font-size:13px;">Error: ${e.message}</p>`;
+  }
+}
+
+// ===== UTILS =====
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+// Auto-refresh dashboard every 30s when visible
+setInterval(() => {
+  if (document.getElementById('dashboard-view').classList.contains('active')) {
+    loadHealth();
+    loadAnalytics();
+  }
+}, 30000);
+
+// ===== DATASETS TAB =====
+const DS_PREDEFINED_TAGS = [
+  'busqueda_exitosa','sin_disponibilidad','financiamiento','calculo_mensualidades',
+  'garantia','detalles_vehiculo','comparacion','toma_cuenta','foraneo',
+  'primer_contacto','seguimiento','objecion_precio','gold','needs_review','invalid_format'
+];
+let dsFiles = [];
+let dsCurrentFile = null;
+let dsConversations = [];
+let dsSavedMap = {};       // source_file+line_number -> saved data
+let dsOffset = 0;
+let dsTotal = 0;
+const dsLimit = 50;
+let dsSelectedConv = null;
+let dsSelectedIdx = -1;
+let dsCurrentTags = [];
+let dsCurrentRating = 0;
+let dsEditedMessages = null;
+
+async function dsLoadFiles(rescan) {
+  const el = document.getElementById('ds-file-list');
+  try {
+    const url = rescan ? `${API}/v1/datasets/files?rescan=true` : `${API}/v1/datasets/files`;
+    const res = await fetch(url);
+    const d = await res.json();
+    dsFiles = d.files || [];
+
+    if (dsFiles.length === 0) {
+      el.innerHTML = '<div class="ds-empty-state">No se encontraron archivos JSONL</div>';
+      document.getElementById('ds-file-stats').textContent = '';
+      return;
+    }
+
+    // Agrupar por directorio
+    const groups = {};
+    dsFiles.forEach(f => {
+      const dir = f.directory || 'root';
+      if (!groups[dir]) groups[dir] = [];
+      groups[dir].push(f);
+    });
+
+    let html = '';
+    for (const [dir, files] of Object.entries(groups)) {
+      html += `<div class="ds-dir-label">${escapeHtml(dir)}</div>`;
+      files.forEach(f => {
+        const sizeKB = (f.size_bytes / 1024).toFixed(0);
+        html += `<div class="ds-file-item" data-path="${escapeHtml(f.path)}" onclick="dsSelectFile(this, '${escapeHtml(f.path).replace(/'/g, "\\'")}')">
+          <span class="ds-file-name" title="${escapeHtml(f.path)}">${escapeHtml(f.filename)}</span>
+          <span class="ds-file-meta"><span>${sizeKB} KB</span><span>~${f.line_count} conv</span></span>
+        </div>`;
+      });
+    }
+    el.innerHTML = html;
+
+    document.getElementById('ds-file-stats').textContent = `${dsFiles.length} archivos`;
+  } catch (e) {
+    el.innerHTML = `<div class="ds-empty-state" style="color:var(--error)">Error: ${e.message}</div>`;
+  }
+}
+
+async function dsSelectFile(el, path) {
+  document.querySelectorAll('.ds-file-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+  dsCurrentFile = path;
+  dsOffset = 0;
+  dsSelectedConv = null;
+  dsSelectedIdx = -1;
+  dsEditedMessages = null;
+  document.getElementById('ds-detail-messages').innerHTML = '<div class="ds-empty-state">Selecciona una conversacion</div>';
+  document.getElementById('ds-detail-controls').style.display = 'none';
+  document.getElementById('ds-detail-header').textContent = 'Detalle';
+
+  // Load saved data for this file
+  dsSavedMap = {};
+  try {
+    const sres = await fetch(`${API}/v1/datasets/conversations?source_file=${encodeURIComponent(path)}`);
+    if (sres.ok) {
+      const sd = await sres.json();
+      (sd.conversations || []).forEach(c => {
+        dsSavedMap[c.source_file + ':' + c.line_number] = c;
+      });
+    }
+  } catch(e) { /* supabase may not be configured */ }
+
+  await dsLoadConversations();
+}
+
+async function dsLoadConversations() {
+  const listEl = document.getElementById('ds-conv-list');
+  const titleEl = document.getElementById('ds-conv-title');
+  listEl.innerHTML = '<div class="ds-empty-state">Cargando...</div>';
+
+  try {
+    const res = await fetch(`${API}/v1/datasets/files/${encodeURIComponent(dsCurrentFile)}?offset=${dsOffset}&limit=${dsLimit}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const d = await res.json();
+    dsConversations = d.conversations || [];
+    dsTotal = d.total || 0;
+
+    const fname = dsCurrentFile.split('/').pop();
+    titleEl.textContent = `${fname} (${dsTotal})`;
+
+    dsRenderConvList();
+    dsUpdatePagination();
+  } catch (e) {
+    listEl.innerHTML = `<div class="ds-empty-state" style="color:var(--error)">Error: ${e.message}</div>`;
+  }
+}
+
+function dsRenderConvList() {
+  const listEl = document.getElementById('ds-conv-list');
+  const filterTC = document.getElementById('ds-filter-tc').value;
+  const filterRating = document.getElementById('ds-filter-rating').value;
+
+  let filtered = dsConversations;
+
+  if (filterTC === 'yes') filtered = filtered.filter(c => c.has_tool_calling);
+  else if (filterTC === 'no') filtered = filtered.filter(c => !c.has_tool_calling);
+
+  if (filterRating !== '') {
+    const r = parseInt(filterRating);
+    filtered = filtered.filter(c => {
+      const saved = dsSavedMap[dsCurrentFile + ':' + c.line_number];
+      const rating = saved ? saved.quality_rating : null;
+      return r === 0 ? rating == null : rating === r;
+    });
+  }
+
+  if (filtered.length === 0) {
+    listEl.innerHTML = '<div class="ds-empty-state">No hay conversaciones con estos filtros</div>';
+    return;
+  }
+
+  listEl.innerHTML = filtered.map((c, idx) => {
+    const saved = dsSavedMap[dsCurrentFile + ':' + c.line_number];
+    const rating = saved ? saved.quality_rating : null;
+    const tags = saved ? (saved.tags || []) : [];
+    const validation = !c.parse_error;
+
+    let starsHtml = '';
+    if (rating) {
+      starsHtml = '<span class="ds-conv-stars">';
+      for (let i = 1; i <= 5; i++) starsHtml += `<span class="${i <= rating ? 'filled' : 'empty'}">&#9733;</span>`;
+      starsHtml += '</span>';
+    }
+
+    let badgesHtml = '';
+    if (c.has_tool_calling) badgesHtml += `<span class="ds-badge ds-badge-tc">TC ${c.tools_used.length > 0 ? c.tools_used.join(', ') : ''}</span>`;
+    if (validation) badgesHtml += '<span class="ds-badge ds-badge-valid">OK</span>';
+    else badgesHtml += '<span class="ds-badge ds-badge-invalid">ERR</span>';
+    tags.forEach(t => { badgesHtml += `<span class="ds-badge ds-badge-tag">#${escapeHtml(t)}</span>`; });
+
+    const activeClass = dsSelectedIdx === idx ? 'active' : '';
+
+    return `<div class="ds-conv-card ${activeClass}" onclick="dsSelectConv(${idx})">
+      <div class="ds-conv-card-top">
+        <span class="ds-conv-line">#${c.line_number}</span>
+        <div class="ds-conv-badges">${badgesHtml}</div>
+      </div>
+      <div class="ds-conv-preview">${escapeHtml(c.first_user_message || '(sin mensaje de usuario)')}</div>
+      <div class="ds-conv-card-bottom">
+        <span>${c.message_count} msgs</span>
+        ${starsHtml}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function dsApplyFilters() { dsRenderConvList(); }
+
+function dsUpdatePagination() {
+  const pag = document.getElementById('ds-pagination');
+  pag.style.display = dsTotal > dsLimit ? 'flex' : 'none';
+  const from = dsOffset + 1;
+  const to = Math.min(dsOffset + dsLimit, dsTotal);
+  document.getElementById('ds-page-info').textContent = `${from}-${to} de ${dsTotal}`;
+  document.getElementById('ds-prev-btn').disabled = dsOffset === 0;
+  document.getElementById('ds-next-btn').disabled = dsOffset + dsLimit >= dsTotal;
+}
+
+function dsNextPage() {
+  if (dsOffset + dsLimit < dsTotal) {
+    dsOffset += dsLimit;
+    dsLoadConversations();
+  }
+}
+
+function dsPrevPage() {
+  if (dsOffset > 0) {
+    dsOffset = Math.max(0, dsOffset - dsLimit);
+    dsLoadConversations();
+  }
+}
+
+function dsSelectConv(idx) {
+  dsSelectedIdx = idx;
+  dsSelectedConv = dsConversations[idx];
+  dsEditedMessages = JSON.parse(JSON.stringify(dsSelectedConv.messages));
+  dsRenderConvList();
+
+  // Load saved data
+  const saved = dsSavedMap[dsCurrentFile + ':' + dsSelectedConv.line_number];
+  dsCurrentTags = saved ? [...(saved.tags || [])] : [];
+  dsCurrentRating = saved ? (saved.quality_rating || 0) : 0;
+
+  document.getElementById('ds-detail-header').textContent = `Linea #${dsSelectedConv.line_number} - ${dsSelectedConv.message_count} mensajes`;
+  document.getElementById('ds-notes-input').value = saved ? (saved.review_notes || '') : '';
+  document.getElementById('ds-save-status').textContent = '';
+  document.getElementById('ds-validation-box').innerHTML = '';
+
+  dsRenderMessages();
+  dsRenderTags();
+  dsRenderRating();
+  document.getElementById('ds-detail-controls').style.display = '';
+}
+
+function dsRenderMessages() {
+  const el = document.getElementById('ds-detail-messages');
+  el.innerHTML = dsEditedMessages.map((m, i) => {
+    const role = m.role || 'unknown';
+    let contentHtml = dsHighlightToolContent(escapeHtml(m.content || ''));
+    return `<div class="ds-msg" data-role="${role}">
+      <div class="ds-msg-role">${role}</div>
+      <div class="ds-msg-content" id="ds-msg-content-${i}" onclick="dsEditMsg(${i})">${contentHtml}</div>
+    </div>`;
+  }).join('');
+  el.scrollTop = 0;
+}
+
+function dsHighlightToolContent(text) {
+  // Highlight <tool_call>...</tool_call>
+  text = text.replace(/(&lt;tool_call&gt;)([\s\S]*?)(&lt;\/tool_call&gt;)/g,
+    '<div class="ds-tool-call-highlight">$1$2$3</div>');
+  // Highlight <tool_response>...</tool_response>
+  text = text.replace(/(&lt;tool_response&gt;)([\s\S]*?)(&lt;\/tool_response&gt;)/g,
+    '<div class="ds-tool-response-highlight">$1$2$3</div>');
+  return text;
+}
+
+function dsEditMsg(idx) {
+  const el = document.getElementById(`ds-msg-content-${idx}`);
+  const currentText = dsEditedMessages[idx].content || '';
+  el.innerHTML = `<textarea class="ds-msg-edit" id="ds-msg-textarea-${idx}">${escapeHtml(currentText)}</textarea>
+    <div class="ds-msg-edit-actions">
+      <button class="btn btn-sm" onclick="dsCancelEdit(${idx})">Cancelar</button>
+      <button class="btn btn-sm btn-primary" onclick="dsSaveEdit(${idx})">Aplicar</button>
+    </div>`;
+  const textarea = document.getElementById(`ds-msg-textarea-${idx}`);
+  textarea.focus();
+  textarea.style.height = Math.max(60, textarea.scrollHeight) + 'px';
+}
+
+function dsCancelEdit(idx) {
+  const contentHtml = dsHighlightToolContent(escapeHtml(dsEditedMessages[idx].content || ''));
+  document.getElementById(`ds-msg-content-${idx}`).innerHTML = contentHtml;
+}
+
+function dsSaveEdit(idx) {
+  const textarea = document.getElementById(`ds-msg-textarea-${idx}`);
+  dsEditedMessages[idx].content = textarea.value;
+  const contentHtml = dsHighlightToolContent(escapeHtml(textarea.value));
+  document.getElementById(`ds-msg-content-${idx}`).innerHTML = contentHtml;
+}
+
+function dsRenderTags() {
+  const area = document.getElementById('ds-tags-area');
+  area.innerHTML = dsCurrentTags.map((t, i) =>
+    `<span class="ds-tag-chip">${escapeHtml(t)}<span class="remove" onclick="dsRemoveTag(${i})">&times;</span></span>`
+  ).join('');
+}
+
+function dsRemoveTag(idx) {
+  dsCurrentTags.splice(idx, 1);
+  dsRenderTags();
+}
+
+function dsShowTagSuggestions() {
+  dsFilterTagSuggestions();
+  document.getElementById('ds-tag-suggestions').style.display = 'block';
+}
+
+function dsHideTagSuggestions() {
+  document.getElementById('ds-tag-suggestions').style.display = 'none';
+}
+
+function dsFilterTagSuggestions() {
+  const input = document.getElementById('ds-tag-input').value.toLowerCase();
+  const available = DS_PREDEFINED_TAGS.filter(t => !dsCurrentTags.includes(t) && t.includes(input));
+  const el = document.getElementById('ds-tag-suggestions');
+  if (available.length === 0) { el.style.display = 'none'; return; }
+  el.style.display = 'block';
+  el.innerHTML = available.map(t => `<div onclick="dsAddTag('${t}')">${t}</div>`).join('');
+}
+
+function dsAddTag(tag) {
+  if (!dsCurrentTags.includes(tag)) {
+    dsCurrentTags.push(tag);
+    dsRenderTags();
+  }
+  document.getElementById('ds-tag-input').value = '';
+  dsHideTagSuggestions();
+}
+
+// Also allow Enter to add custom tag
+document.addEventListener('keydown', function(e) {
+  if (e.target.id === 'ds-tag-input' && e.key === 'Enter') {
+    e.preventDefault();
+    const val = e.target.value.trim().toLowerCase().replace(/\s+/g, '_');
+    if (val) dsAddTag(val);
+  }
+});
+
+function dsSetRating(r) {
+  dsCurrentRating = r;
+  dsRenderRating();
+}
+
+function dsRenderRating() {
+  document.querySelectorAll('#ds-rating-stars span').forEach(s => {
+    s.classList.toggle('active', parseInt(s.dataset.v) <= dsCurrentRating);
+  });
+}
+
+async function dsValidate() {
+  const box = document.getElementById('ds-validation-box');
+  box.innerHTML = '<span style="font-size:12px;color:var(--text-light);">Validando...</span>';
+  try {
+    const res = await fetch(`${API}/v1/datasets/validate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: dsEditedMessages }),
+    });
+    const d = await res.json();
+    if (d.valid) {
+      box.innerHTML = '<div class="ds-validation-result valid">Formato Qwen ChatML valido</div>';
+    } else {
+      let html = '<div class="ds-validation-result invalid">';
+      d.errors.forEach(e => { html += `<div>Error: ${escapeHtml(e)}</div>`; });
+      d.warnings.forEach(w => { html += `<div style="color:var(--warning)">Warning: ${escapeHtml(w)}</div>`; });
+      html += '</div>';
+      box.innerHTML = html;
+    }
+  } catch (e) {
+    box.innerHTML = `<div class="ds-validation-result invalid">Error: ${e.message}</div>`;
+  }
+}
+
+async function dsSave() {
+  if (!dsSelectedConv || !dsCurrentFile) return;
+  const statusEl = document.getElementById('ds-save-status');
+  statusEl.textContent = 'Guardando...';
+  statusEl.style.color = 'var(--text-light)';
+
+  try {
+    const body = {
+      source_file: dsCurrentFile,
+      line_number: dsSelectedConv.line_number,
+      messages: dsEditedMessages,
+      tags: dsCurrentTags,
+      quality_rating: dsCurrentRating > 0 ? dsCurrentRating : null,
+      review_notes: document.getElementById('ds-notes-input').value || null,
+      target_format: 'qwen',
+    };
+
+    const res = await fetch(`${API}/v1/datasets/conversations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `HTTP ${res.status}`);
+    }
+
+    const d = await res.json();
+
+    // Update saved map
+    if (d.data && d.data.length > 0) {
+      dsSavedMap[dsCurrentFile + ':' + dsSelectedConv.line_number] = d.data[0];
+    }
+
+    statusEl.textContent = 'Guardado!';
+    statusEl.style.color = 'var(--success)';
+    dsRenderConvList();
+  } catch (e) {
+    statusEl.textContent = `Error: ${e.message}`;
+    statusEl.style.color = 'var(--error)';
+  }
+}
+
+// ===== GENERATION & JOBS =====
+
+let genJobsPollTimer = null;
+
+function genShowModal(type) {
+  const modal = document.getElementById('modal-' + type);
+  if (modal) {
+    modal.classList.add('open');
+    if (type === 'settings') genLoadKeys();
+    if (type === 'jobs') genRefreshJobs();
+  }
+}
+
+function genCloseModal(type) {
+  const modal = document.getElementById('modal-' + type);
+  if (modal) modal.classList.remove('open');
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(ov => {
+  ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('open'); });
+});
+
+// -- API Key helpers --
+function genGetHeaders() {
+  const h = { 'Content-Type': 'application/json' };
+  const ak = localStorage.getItem('trefa_anthropic_key');
+  const gk = localStorage.getItem('trefa_gemini_key');
+  if (ak) h['X-Anthropic-Key'] = ak;
+  if (gk) h['X-Gemini-Key'] = gk;
+  return h;
+}
+
+function genLoadKeys() {
+  document.getElementById('gen-anthropic-key').value = localStorage.getItem('trefa_anthropic_key') || '';
+  document.getElementById('gen-gemini-key').value = localStorage.getItem('trefa_gemini_key') || '';
+  genUpdateKeyIndicators();
+}
+
+function genSaveKeys() {
+  const ak = document.getElementById('gen-anthropic-key').value.trim();
+  const gk = document.getElementById('gen-gemini-key').value.trim();
+  if (ak) localStorage.setItem('trefa_anthropic_key', ak); else localStorage.removeItem('trefa_anthropic_key');
+  if (gk) localStorage.setItem('trefa_gemini_key', gk); else localStorage.removeItem('trefa_gemini_key');
+  genUpdateKeyIndicators();
+  genCloseModal('settings');
+}
+
+function genUpdateKeyIndicators() {
+  const ak = localStorage.getItem('trefa_anthropic_key');
+  const gk = localStorage.getItem('trefa_gemini_key');
+  const indA = document.getElementById('key-ind-anthropic');
+  const indG = document.getElementById('key-ind-gemini');
+  if (indA) { indA.className = 'key-indicator ' + (ak ? 'set' : 'unset'); }
+  if (indG) { indG.className = 'key-indicator ' + (gk ? 'set' : 'unset'); }
+}
+
+// -- Jobs --
+async function genRefreshJobs() {
+  try {
+    const res = await fetch(`${API}/v1/datasets/jobs?limit=20`);
+    const data = await res.json();
+    const jobs = data.jobs || [];
+    const container = document.getElementById('gen-jobs-list');
+
+    const running = jobs.filter(j => j.status === 'running' || j.status === 'pending').length;
+    const badge = document.getElementById('gen-jobs-badge');
+    if (running > 0) {
+      badge.textContent = running;
+      badge.style.display = 'inline-block';
+    } else {
+      badge.style.display = 'none';
+    }
+
+    if (!jobs.length) {
+      container.innerHTML = '<div class="ds-empty-state">Sin jobs recientes</div>';
+      return;
+    }
+
+    container.innerHTML = jobs.map(j => {
+      const dur = j.completed_at ? ((j.completed_at - (j.started_at || j.created_at)) | 0) + 's' :
+                  j.started_at ? (((Date.now()/1000 - j.started_at) | 0) + 's...') : '-';
+      const canCancel = j.status === 'running' || j.status === 'pending';
+      return `<div class="job-item">
+        <div class="job-header">
+          <span class="job-type">${j.type}</span>
+          <span class="job-status ${j.status}">${j.status}</span>
+          <span style="font-size:11px;color:var(--text-light);">${dur}</span>
+        </div>
+        ${j.status === 'running' ? `<div class="job-progress"><div class="job-progress-bar" style="width:${j.progress}%"></div></div>` : ''}
+        <div class="job-detail">${j.progress_detail || (j.error ? 'Error: ' + j.error : (j.result ? JSON.stringify(j.result).substring(0, 120) + '...' : j.id))}</div>
+        ${canCancel ? `<div class="job-actions"><button class="job-cancel-btn" onclick="genCancelJob('${j.id}')">Cancelar</button></div>` : ''}
+      </div>`;
+    }).join('');
+  } catch (e) {
+    console.error('Jobs refresh error:', e);
+  }
+}
+
+async function genCancelJob(jobId) {
+  try {
+    await fetch(`${API}/v1/datasets/jobs/${jobId}/cancel`, { method: 'POST' });
+    genRefreshJobs();
+  } catch (e) { console.error(e); }
+}
+
+function genStartPolling() {
+  if (genJobsPollTimer) return;
+  genJobsPollTimer = setInterval(async () => {
+    try {
+      const res = await fetch(`${API}/v1/datasets/jobs?limit=5`);
+      const data = await res.json();
+      const running = (data.jobs || []).filter(j => j.status === 'running' || j.status === 'pending').length;
+      const badge = document.getElementById('gen-jobs-badge');
+      if (running > 0) {
+        badge.textContent = running;
+        badge.style.display = 'inline-block';
+      } else {
+        badge.style.display = 'none';
+        clearInterval(genJobsPollTimer);
+        genJobsPollTimer = null;
+        dsLoadFiles(true); // Rescan files when jobs complete
+      }
+      // Refresh if jobs modal is open
+      if (document.getElementById('modal-jobs').classList.contains('open')) {
+        genRefreshJobs();
+      }
+    } catch (e) { /* silent */ }
+  }, 3000);
+}
+
+// -- Launch functions --
+async function genLaunchTemplate() {
+  const filename = document.getElementById('gen-tpl-filename').value.trim() || 'plantillas.jsonl';
+  const countVal = document.getElementById('gen-tpl-count').value;
+  const count = countVal ? parseInt(countVal) : null;
+  try {
+    const res = await fetch(`${API}/v1/datasets/generate/template`, {
+      method: 'POST', headers: genGetHeaders(),
+      body: JSON.stringify({ output_filename: filename, count })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    genCloseModal('template');
+    genShowModal('jobs');
+    genStartPolling();
+    genRefreshJobs();
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function genLaunchSynthetic() {
+  const body = {
+    output_filename: document.getElementById('gen-syn-filename').value.trim() || 'sinteticos.jsonl',
+    count: parseInt(document.getElementById('gen-syn-count').value) || 100,
+    model: document.getElementById('gen-syn-model').value,
+    pause_seconds: parseFloat(document.getElementById('gen-syn-pause').value) || 0.3,
+  };
+  try {
+    const res = await fetch(`${API}/v1/datasets/generate/synthetic`, {
+      method: 'POST', headers: genGetHeaders(), body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    genCloseModal('synthetic');
+    genShowModal('jobs');
+    genStartPolling();
+    genRefreshJobs();
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function genLaunchCurate() {
+  const body = {
+    synthetic_path: document.getElementById('gen-cur-synthetic').value.trim(),
+    reference_path: document.getElementById('gen-cur-reference').value.trim(),
+    threshold: parseInt(document.getElementById('gen-cur-threshold').value) || 6,
+    only_evaluate: document.getElementById('gen-cur-only-eval').checked,
+  };
+  if (!body.synthetic_path || !body.reference_path) { alert('Rutas requeridas'); return; }
+  try {
+    const res = await fetch(`${API}/v1/datasets/generate/curate`, {
+      method: 'POST', headers: genGetHeaders(), body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    genCloseModal('curate');
+    genShowModal('jobs');
+    genStartPolling();
+    genRefreshJobs();
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function genLaunchPipeline() {
+  const body = {
+    stages: document.getElementById('gen-pip-stages').value,
+    count_stage1: parseInt(document.getElementById('gen-pip-e1').value) || 40,
+    count_stage2: parseInt(document.getElementById('gen-pip-e2').value) || 400,
+    threshold: parseFloat(document.getElementById('gen-pip-threshold').value) || 7.0,
+  };
+  try {
+    const res = await fetch(`${API}/v1/datasets/generate/pipeline`, {
+      method: 'POST', headers: genGetHeaders(), body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    genCloseModal('pipeline');
+    genShowModal('jobs');
+    genStartPolling();
+    genRefreshJobs();
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function genLaunchAnalyze() {
+  const text = document.getElementById('gen-analyze-files').value.trim();
+  const filepaths = text.split('\n').map(l => l.trim()).filter(Boolean);
+  if (!filepaths.length) { alert('Ingresa al menos un archivo'); return; }
+  const resultDiv = document.getElementById('gen-analyze-result');
+  resultDiv.innerHTML = '<div style="font-size:13px;color:var(--text-light);">Analizando...</div>';
+  try {
+    const res = await fetch(`${API}/v1/datasets/analyze/tools`, {
+      method: 'POST', headers: genGetHeaders(),
+      body: JSON.stringify({ filepaths })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    if (data.job_id) {
+      resultDiv.innerHTML = `<div style="font-size:13px;">Job lanzado: ${data.job_id}. Revisa en Jobs.</div>`;
+      genStartPolling();
+    } else {
+      genRenderAnalysis(data, resultDiv);
+    }
+  } catch (e) {
+    resultDiv.innerHTML = `<div style="color:var(--error);font-size:13px;">Error: ${e.message}</div>`;
+  }
+}
+
+function genRenderAnalysis(data, container) {
+  const maxCount = Math.max(1, ...Object.values(data.tools_por_herramienta || {}));
+  let html = `<div style="font-size:13px;margin-bottom:8px;">
+    <strong>${data.archivo || 'Resultado'}</strong> | Total: ${data.total} | Con TC: ${data.con_tools} (${data.porcentaje}%) | Sin TC: ${data.sin_tools}
+  </div>`;
+  html += '<div style="margin-bottom:8px;"><strong style="font-size:12px;">Herramientas:</strong></div>';
+  for (const [tool, count] of Object.entries(data.tools_por_herramienta || {})) {
+    const pct = (count / maxCount * 100) | 0;
+    html += `<div class="analysis-bar">
+      <span class="analysis-bar-label">${tool}</span>
+      <div style="flex:1;"><div class="analysis-bar-fill" style="width:${pct}%"></div></div>
+      <span class="analysis-bar-count">${count}</span>
+    </div>`;
+  }
+  if (data.herramientas_no_encontradas && data.herramientas_no_encontradas.length) {
+    html += `<div style="font-size:12px;color:var(--warning);margin-top:8px;">No encontradas: ${data.herramientas_no_encontradas.join(', ')}</div>`;
+  }
+  if (data.escenarios_detectados && Object.keys(data.escenarios_detectados).length) {
+    html += '<div style="margin-top:8px;"><strong style="font-size:12px;">Escenarios:</strong></div>';
+    for (const [esc, cnt] of Object.entries(data.escenarios_detectados)) {
+      html += `<div style="font-size:12px;">${esc}: ${cnt}</div>`;
+    }
+  }
+  container.innerHTML = html;
+}
+
+function genFillAnalyzeFromSelected() {
+  if (typeof dsCurrentFile !== 'undefined' && dsCurrentFile) {
+    document.getElementById('gen-analyze-files').value = dsCurrentFile;
+  }
+}
+
+async function genLaunchUpdatePrompt() {
+  const files = document.getElementById('gen-up-files').value.trim().split('\n').map(l => l.trim()).filter(Boolean);
+  const prompt = document.getElementById('gen-up-prompt').value.trim();
+  if (!files.length || !prompt) { alert('Archivos y prompt requeridos'); return; }
+  try {
+    const res = await fetch(`${API}/v1/datasets/analyze/update-prompt`, {
+      method: 'POST', headers: genGetHeaders(),
+      body: JSON.stringify({ target_files: files, new_system_prompt: prompt })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    genCloseModal('update-prompt');
+    genShowModal('jobs');
+    genStartPolling();
+    genRefreshJobs();
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function genLoadCurrentPrompt() {
+  try {
+    const res = await fetch(`${API}/v1/datasets/generate/current-prompt?variant=tc`);
+    const data = await res.json();
+    document.getElementById('gen-up-prompt').value = data.system_prompt_tc || data.prompt || '';
+  } catch (e) { console.error(e); }
+}
+
+// Init key indicators on load
+genUpdateKeyIndicators();
+
+// Focus input on load
+document.getElementById('msg-input').focus();
+</script>
+</body>
+</html>

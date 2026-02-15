@@ -1,5 +1,42 @@
-.vercel
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Entorno
+.env
+.env.*
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Modelos y binarios grandes
+*.tar.gz
+*.zip
+*.gguf
+*.bin
+*.safetensors
+
+# mcp-server (tiene su propio repo)
+mcp-server/
+
+# Node
 node_modules/
 dist/
-.env
-.DS_Store
+
+# Vercel
+.vercel
+
+# Claude
+.claude/
+
+# Logs
+*.log

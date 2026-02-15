@@ -1,0 +1,868 @@
+"""
+FastAPI Application for Qwen3-14B Fine-Tuned Model Inference
+Supports both direct GGUF inference and LoRA adapters via vLLM
++ Tool calling orchestration via MCP Server
++ Session management multi-turno
++ Feedback y monitoreo
+"""
+
+import os
+import json
+import time
+import asyncio
+from typing import Optional, List, Dict, Any, AsyncGenerator
+from contextlib import asynccontextmanager
+
+import pathlib
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, Request
+from fastapi.responses import StreamingResponse, JSONResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from pydantic import BaseModel, Field
+import httpx
+import structlog
+from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
+
+from app.config import Settings
+from app.model_manager import ModelManager
+from app.mcp_client import MCPClient
+from app.tool_orchestrator import ToolOrchestrator
+from app.session_manager import InMemorySessionManager
+from app.system_prompts import build_system_prompt
+from app.feedback import FeedbackManager
+from app import dataset_manager
+from app.generation_routes import router as generation_router
+from app.job_manager import JobManager
+
+# Configure logging
+structlog.configure(
+    processors=[
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.JSONRenderer()
+    ]
+)
+logger = structlog.get_logger()
+
+# Prometheus metrics
+REQUEST_COUNT = Counter('inference_requests_total', 'Total requests', ['endpoint', 'status'])
+REQUEST_LATENCY = Histogram('inference_request_duration_seconds', 'Request latency', ['endpoint'])
+TOKENS_GENERATED = Counter('tokens_generated_total', 'Total tokens generated')
+TOOL_CALLS_TOTAL = Counter('tool_calls_total', 'Total tool calls', ['tool_name', 'status'])
+TOOL_CALL_DURATION = Histogram('tool_call_duration_seconds', 'Tool call latency', ['tool_name'])
+ORCHESTRATOR_ITERATIONS = Histogram('orchestrator_iterations', 'Iterations per chat request', buckets=[1, 2, 3, 4, 5])
+ACTIVE_SESSIONS = Gauge('active_sessions', 'Currently active sessions')
+HALLUCINATION_FLAGS = Counter('hallucination_flags_total', 'Potential hallucinations detected')
+
+# Settings
+settings = Settings()
+security = HTTPBearer(auto_error=False)
+
+
+# Pydantic models
+class ChatMessage(BaseModel):
+    role: str = Field(..., description="Role: system, user, or assistant")
+    content: str = Field(..., description="Message content")
+
+
+class ChatCompletionRequest(BaseModel):
+    model: str = Field(default="qwen3-14b-trefa", description="Model name")
+    messages: List[ChatMessage] = Field(..., description="Conversation messages")
+    max_tokens: int = Field(default=1024, ge=1, le=32768)
+    temperature: float = Field(default=0.7, ge=0.0, le=2.0)
+    top_p: float = Field(default=0.9, ge=0.0, le=1.0)
+    top_k: int = Field(default=50, ge=1, le=100)
+    repetition_penalty: float = Field(default=1.0, ge=1.0, le=2.0)
+    stream: bool = Field(default=False)
+    use_lora: bool = Field(default=True, description="Use LoRA adapter")
+    lora_name: Optional[str] = Field(default="trefa-lora", description="LoRA adapter name")
+
+
+class CompletionRequest(BaseModel):
+    model: str = Field(default="qwen3-14b-trefa")
+    prompt: str = Field(..., description="Input prompt")
+    max_tokens: int = Field(default=1024, ge=1, le=32768)
+    temperature: float = Field(default=0.7, ge=0.0, le=2.0)
+    top_p: float = Field(default=0.9, ge=0.0, le=1.0)
+    stream: bool = Field(default=False)
+    use_lora: bool = Field(default=True)
+    lora_name: Optional[str] = Field(default="trefa-lora", description="LoRA adapter name")
+
+
+class EmbeddingRequest(BaseModel):
+    model: str = Field(default="qwen3-14b-trefa")
+    input: str | List[str] = Field(..., description="Text to embed")
+
+
+class ModelInfo(BaseModel):
+    id: str
+    object: str = "model"
+    created: int
+    owned_by: str
+    permission: List[Dict] = []
+
+
+class ModelList(BaseModel):
+    object: str = "list"
+    data: List[ModelInfo]
+
+
+class ChatRequest(BaseModel):
+    message: str = Field(..., description="Mensaje del usuario")
+    session_id: Optional[str] = Field(default=None, description="ID de sesión existente")
+    max_tokens: int = Field(default=1024, ge=1, le=32768)
+    temperature: float = Field(default=0.7, ge=0.0, le=2.0)
+
+
+class FeedbackRequest(BaseModel):
+    session_id: str = Field(..., description="ID de la sesión")
+    rating: int = Field(..., ge=1, le=5, description="Calificación 1-5")
+    comment: Optional[str] = Field(default=None, description="Comentario opcional")
+
+
+class ToolCallRequest(BaseModel):
+    arguments: Dict[str, Any] = Field(default_factory=dict, description="Argumentos de la herramienta")
+
+
+# Global state
+model_manager: Optional[ModelManager] = None
+http_client: Optional[httpx.AsyncClient] = None
+mcp_client: Optional[MCPClient] = None
+tool_orchestrator: Optional[ToolOrchestrator] = None
+session_manager: Optional[InMemorySessionManager] = None
+feedback_manager: Optional[FeedbackManager] = None
+system_prompt: str = ""
+tools_definitions: List[Dict] = []
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan manager"""
+    global model_manager, http_client, mcp_client, tool_orchestrator
+    global session_manager, feedback_manager, system_prompt, tools_definitions
+
+    logger.info("Starting up Qwen3-14B Inference Server...")
+
+    # Initialize HTTP client for vLLM communication
+    http_client = httpx.AsyncClient(
+        base_url=f"http://localhost:{settings.vllm_port}",
+        timeout=300.0,
+        limits=httpx.Limits(max_keepalive_connections=20, max_connections=100)
+    )
+
+    # Initialize model manager
+    model_manager = ModelManager(settings)
+
+    # Initialize MCP client
+    mcp_client = MCPClient(
+        base_url=settings.mcp_server_url,
+        api_key=settings.mcp_api_key,
+    )
+    await mcp_client.initialize()
+
+    # Load tool definitions from MCP and build system prompt
+    try:
+        tools_definitions = await mcp_client.list_tools()
+        system_prompt = build_system_prompt(tools_definitions)
+        known_tools = [t["name"] for t in tools_definitions]
+        logger.info("mcp_tools_loaded", count=len(tools_definitions), tools=known_tools)
+    except Exception as e:
+        logger.error("mcp_tools_load_failed", error=str(e))
+        tools_definitions = []
+        known_tools = []
+        system_prompt = build_system_prompt([])
+
+    # Initialize tool orchestrator
+    tool_orchestrator = ToolOrchestrator(
+        mcp_client=mcp_client,
+        vllm_client=http_client,
+        known_tools=known_tools,
+        max_iterations=settings.max_tool_iterations,
+    )
+
+    # Initialize session manager
+    session_manager = InMemorySessionManager()
+
+    # Initialize feedback manager
+    feedback_manager = FeedbackManager()
+
+    # Verify vLLM is accessible
+    try:
+        response = await http_client.get("/health")
+        if response.status_code == 200:
+            logger.info("vllm_connected")
+        else:
+            logger.warning("vllm_health_non_200")
+    except Exception as e:
+        logger.error("vllm_connect_failed", error=str(e))
+
+    # Verify MCP is accessible
+    try:
+        mcp_health = await mcp_client.health_check()
+        logger.info("mcp_connected", status=mcp_health.get("status"))
+    except Exception as e:
+        logger.error("mcp_connect_failed", error=str(e))
+
+    # Initialize JobManager for dataset generation
+    app.state.job_manager = JobManager(max_concurrent=2)
+    app.state.settings = settings
+    logger.info("job_manager_initialized")
+
+    yield
+
+    # Shutdown
+    logger.info("Shutting down...")
+    if http_client:
+        await http_client.aclose()
+    if mcp_client:
+        await mcp_client.close()
+
+
+# Create FastAPI app
+app = FastAPI(
+    title="Qwen3-14B TRefA Inference API",
+    description="""
+    Production inference API for fine-tuned Qwen3-14B model with LoRA adapters.
+
+    Features:
+    - OpenAI-compatible chat completions API
+    - Tool calling orchestration via MCP Server
+    - Multi-turn session management
+    - Streaming support
+    - LoRA adapter hot-swapping
+    - Feedback and monitoring
+    """,
+    version="2.0.0",
+    lifespan=lifespan,
+    docs_url="/docs",
+    redoc_url="/redoc"
+)
+
+# Include generation router
+app.include_router(generation_router)
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# Serve static files
+_STATIC_DIR = pathlib.Path(__file__).parent / "static"
+if _STATIC_DIR.exists():
+    app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="static")
+
+
+@app.get("/ui", response_class=HTMLResponse)
+async def chat_ui():
+    """Chat UI + Dashboard"""
+    html_path = _STATIC_DIR / "index.html"
+    return HTMLResponse(content=html_path.read_text(encoding="utf-8"))
+
+
+# Authentication dependency
+async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Verify API token if configured"""
+    if settings.api_key and credentials:
+        if credentials.credentials != settings.api_key:
+            raise HTTPException(status_code=401, detail="Invalid API key")
+    return credentials
+
+
+# ============================================================================
+# Core endpoints
+# ============================================================================
+
+@app.get("/")
+async def root():
+    """Root endpoint"""
+    return {
+        "name": "Qwen3-14B TRefA Inference API",
+        "version": "2.0.0",
+        "status": "healthy",
+        "endpoints": {
+            "ui": "/ui",
+            "chat": "/v1/chat",
+            "chat_completions": "/v1/chat/completions",
+            "completions": "/v1/completions",
+            "sessions": "/v1/sessions/{id}",
+            "tools": "/v1/tools",
+            "feedback": "/v1/feedback",
+            "models": "/v1/models",
+            "health": "/health",
+            "metrics": "/metrics",
+            "analytics": "/admin/analytics",
+        }
+    }
+
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    try:
+        vllm_status = "unknown"
+        mcp_status = "unknown"
+
+        if http_client:
+            try:
+                vllm_health = await http_client.get("/health")
+                vllm_status = "healthy" if vllm_health.status_code == 200 else "unhealthy"
+            except Exception:
+                vllm_status = "unreachable"
+
+        if mcp_client:
+            try:
+                await mcp_client.health_check()
+                mcp_status = "healthy"
+            except Exception:
+                mcp_status = "unreachable"
+
+        return {
+            "status": "healthy",
+            "vllm_backend": vllm_status,
+            "mcp_server": mcp_status,
+            "model_loaded": model_manager is not None,
+            "tools_loaded": len(tools_definitions),
+            "active_sessions": session_manager.active_count if session_manager else 0,
+        }
+    except Exception as e:
+        return JSONResponse(
+            status_code=503,
+            content={"status": "unhealthy", "error": str(e)}
+        )
+
+
+@app.get("/metrics")
+async def metrics():
+    """Prometheus metrics endpoint"""
+    if session_manager:
+        ACTIVE_SESSIONS.set(session_manager.active_count)
+    from starlette.responses import Response
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+
+# ============================================================================
+# Chat endpoint with tool orchestration (Phase 2 — core feature)
+# ============================================================================
+
+@app.post("/v1/chat")
+async def chat(
+    request: ChatRequest,
+    token: HTTPAuthorizationCredentials = Depends(verify_token),
+):
+    """
+    Endpoint principal del chatbot TREFA.
+    Recibe mensaje, orquesta tool calling, retorna respuesta.
+    """
+    with REQUEST_LATENCY.labels(endpoint="chat").time():
+        try:
+            # Get or create session
+            session = None
+            if request.session_id:
+                session = session_manager.get_session(request.session_id)
+            if session is None:
+                session = session_manager.create_session()
+
+            # Add user message to session
+            session.add_message("user", request.message)
+
+            # Build messages with system prompt + session history
+            messages = session.get_messages(system_prompt)
+
+            # Execute with tool orchestration
+            result = await tool_orchestrator.execute_with_tools(
+                messages=messages,
+                model=settings.default_lora,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens,
+            )
+
+            # Save assistant response to session
+            session.add_message("assistant", result["response"])
+
+            # Log tool calls in session and metrics
+            for tc in result["tool_calls_executed"]:
+                session.add_tool_call(tc)
+                status = "error" if "error" in tc.get("result", {}) else "success"
+                TOOL_CALLS_TOTAL.labels(tool_name=tc["name"], status=status).inc()
+                TOOL_CALL_DURATION.labels(tool_name=tc["name"]).observe(tc["duration_ms"] / 1000.0)
+
+            ORCHESTRATOR_ITERATIONS.observe(result["iterations"])
+
+            # Hallucination detection
+            if feedback_manager:
+                is_suspect = feedback_manager.detect_potential_hallucination(
+                    result["response"], result["tool_calls_executed"]
+                )
+                if is_suspect:
+                    HALLUCINATION_FLAGS.inc()
+
+            # Log conversation for review
+            if feedback_manager:
+                feedback_manager.log_conversation(session, result["tool_calls_executed"])
+
+            REQUEST_COUNT.labels(endpoint="chat", status="success").inc()
+
+            return {
+                "session_id": session.id,
+                "response": result["response"],
+                "tool_calls_executed": [
+                    {"name": tc["name"], "arguments": tc["arguments"]}
+                    for tc in result["tool_calls_executed"]
+                ],
+                "iterations": result["iterations"],
+                "usage": result.get("usage", {}),
+            }
+
+        except Exception as e:
+            REQUEST_COUNT.labels(endpoint="chat", status="error").inc()
+            logger.error("chat_error", error=str(e))
+            raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================
+# Session endpoints
+# ============================================================================
+
+@app.get("/v1/sessions/{session_id}")
+async def get_session(
+    session_id: str,
+    token: HTTPAuthorizationCredentials = Depends(verify_token),
+):
+    """Obtener historial completo de una sesión"""
+    session = session_manager.get_session(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Sesión no encontrada")
+    return session.to_dict()
+
+
+@app.delete("/v1/sessions/{session_id}")
+async def delete_session(
+    session_id: str,
+    token: HTTPAuthorizationCredentials = Depends(verify_token),
+):
+    """Eliminar sesión"""
+    deleted = session_manager.delete_session(session_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Sesión no encontrada")
+    return {"status": "deleted", "session_id": session_id}
+
+
+# ============================================================================
+# Tool proxy endpoints
+# ============================================================================
+
+@app.get("/v1/tools")
+async def list_tools(
+    token: HTTPAuthorizationCredentials = Depends(verify_token),
+):
+    """Lista herramientas disponibles del MCP Server"""
+    try:
+        tools = await mcp_client.list_tools()
+        return {"tools": tools, "count": len(tools)}
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"MCP Server error: {e}")
+
+
+@app.post("/v1/tools/{tool_name}")
+async def call_tool(
+    tool_name: str,
+    request: ToolCallRequest,
+    token: HTTPAuthorizationCredentials = Depends(verify_token),
+):
+    """Ejecutar herramienta directamente via MCP Server"""
+    try:
+        start = time.monotonic()
+        result = await mcp_client.call_tool(tool_name, request.arguments)
+        duration = time.monotonic() - start
+        TOOL_CALLS_TOTAL.labels(tool_name=tool_name, status="success").inc()
+        TOOL_CALL_DURATION.labels(tool_name=tool_name).observe(duration)
+        return result
+    except httpx.HTTPStatusError as e:
+        TOOL_CALLS_TOTAL.labels(tool_name=tool_name, status="error").inc()
+        raise HTTPException(status_code=e.response.status_code, detail=e.response.text)
+    except Exception as e:
+        TOOL_CALLS_TOTAL.labels(tool_name=tool_name, status="error").inc()
+        raise HTTPException(status_code=502, detail=f"MCP Server error: {e}")
+
+
+# ============================================================================
+# Feedback endpoint (Phase 3)
+# ============================================================================
+
+@app.post("/v1/feedback")
+async def submit_feedback(
+    request: FeedbackRequest,
+    token: HTTPAuthorizationCredentials = Depends(verify_token),
+):
+    """Enviar feedback sobre una sesión"""
+    session = session_manager.get_session(request.session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Sesión no encontrada")
+
+    if feedback_manager:
+        feedback_manager.submit_rating(
+            session_id=request.session_id,
+            rating=request.rating,
+            comment=request.comment,
+        )
+
+    return {
+        "status": "received",
+        "session_id": request.session_id,
+        "rating": request.rating,
+    }
+
+
+# ============================================================================
+# Admin analytics (Phase 3)
+# ============================================================================
+
+@app.get("/admin/analytics")
+async def analytics(
+    token: HTTPAuthorizationCredentials = Depends(verify_token),
+):
+    """Dashboard de analíticas: herramientas más usadas, sesiones, tasa de tool calling"""
+    stats = {}
+    if feedback_manager:
+        stats = feedback_manager.get_analytics()
+    stats["active_sessions"] = session_manager.active_count if session_manager else 0
+    stats["tools_loaded"] = len(tools_definitions)
+    return stats
+
+
+# ============================================================================
+# OpenAI-compatible endpoints (existing, preserved)
+# ============================================================================
+
+@app.get("/v1/models", response_model=ModelList)
+async def list_models():
+    """List available models"""
+    models = [
+        ModelInfo(
+            id="qwen3-14b-trefa",
+            created=1700000000,
+            owned_by="trefa"
+        ),
+        ModelInfo(
+            id="qwen3-14b-trefa-lora",
+            created=1700000000,
+            owned_by="trefa"
+        )
+    ]
+
+    for quant in ["q4", "q5", "q8"]:
+        models.append(ModelInfo(
+            id=f"qwen3-14b-trefa-{quant}",
+            created=1700000000,
+            owned_by="trefa"
+        ))
+
+    return ModelList(object="list", data=models)
+
+
+@app.post("/v1/chat/completions")
+async def chat_completions(
+    request: ChatCompletionRequest,
+    token: HTTPAuthorizationCredentials = Depends(verify_token)
+):
+    """
+    OpenAI-compatible chat completions endpoint
+
+    Supports streaming and non-streaming responses.
+    Can toggle LoRA adapter with use_lora parameter.
+    """
+    with REQUEST_LATENCY.labels(endpoint="chat_completions").time():
+        try:
+            vllm_request = {
+                "model": request.lora_name if request.use_lora else "qwen3-14b",
+                "messages": [{"role": m.role, "content": m.content} for m in request.messages],
+                "max_tokens": request.max_tokens,
+                "temperature": request.temperature,
+                "top_p": request.top_p,
+                "stream": request.stream,
+                "extra_body": {
+                    "top_k": request.top_k,
+                    "repetition_penalty": request.repetition_penalty
+                }
+            }
+
+            if request.stream:
+                return StreamingResponse(
+                    stream_chat_completion(vllm_request),
+                    media_type="text/event-stream"
+                )
+
+            response = await http_client.post(
+                "/v1/chat/completions",
+                json=vllm_request,
+                timeout=300.0
+            )
+
+            if response.status_code != 200:
+                raise HTTPException(
+                    status_code=response.status_code,
+                    detail=response.text
+                )
+
+            result = response.json()
+            REQUEST_COUNT.labels(endpoint="chat_completions", status="success").inc()
+
+            if "usage" in result and "completion_tokens" in result["usage"]:
+                TOKENS_GENERATED.inc(result["usage"]["completion_tokens"])
+
+            return result
+
+        except httpx.TimeoutException:
+            REQUEST_COUNT.labels(endpoint="chat_completions", status="timeout").inc()
+            raise HTTPException(status_code=504, detail="Request timeout")
+        except Exception as e:
+            REQUEST_COUNT.labels(endpoint="chat_completions", status="error").inc()
+            logger.error(f"Chat completion error: {e}")
+            raise HTTPException(status_code=500, detail=str(e))
+
+
+async def stream_chat_completion(vllm_request: Dict) -> AsyncGenerator[str, None]:
+    """Stream chat completion from vLLM"""
+    try:
+        async with http_client.stream(
+            "POST",
+            "/v1/chat/completions",
+            json=vllm_request,
+            timeout=300.0
+        ) as response:
+            async for line in response.aiter_lines():
+                if line.startswith("data: "):
+                    yield f"{line}\n\n"
+                elif line == "data: [DONE]":
+                    yield "data: [DONE]\n\n"
+                    break
+    except Exception as e:
+        logger.error(f"Streaming error: {e}")
+        yield f"data: {{'error': '{str(e)}'}}\n\n"
+
+
+@app.post("/v1/completions")
+async def completions(
+    request: CompletionRequest,
+    token: HTTPAuthorizationCredentials = Depends(verify_token)
+):
+    """Legacy completions endpoint"""
+    with REQUEST_LATENCY.labels(endpoint="completions").time():
+        try:
+            vllm_request = {
+                "model": request.lora_name if request.use_lora else "qwen3-14b",
+                "prompt": request.prompt,
+                "max_tokens": request.max_tokens,
+                "temperature": request.temperature,
+                "top_p": request.top_p,
+                "stream": request.stream
+            }
+
+            if request.stream:
+                return StreamingResponse(
+                    stream_completion(vllm_request),
+                    media_type="text/event-stream"
+                )
+
+            response = await http_client.post(
+                "/v1/completions",
+                json=vllm_request,
+                timeout=300.0
+            )
+
+            REQUEST_COUNT.labels(endpoint="completions", status="success").inc()
+            return response.json()
+
+        except Exception as e:
+            REQUEST_COUNT.labels(endpoint="completions", status="error").inc()
+            raise HTTPException(status_code=500, detail=str(e))
+
+
+async def stream_completion(vllm_request: Dict) -> AsyncGenerator[str, None]:
+    """Stream completion from vLLM"""
+    async with http_client.stream(
+        "POST",
+        "/v1/completions",
+        json=vllm_request,
+        timeout=300.0
+    ) as response:
+        async for line in response.aiter_lines():
+            if line:
+                yield f"{line}\n\n"
+
+
+@app.post("/v1/embeddings")
+async def embeddings(
+    request: EmbeddingRequest,
+    token: HTTPAuthorizationCredentials = Depends(verify_token)
+):
+    """Generate embeddings (if supported by model)"""
+    raise HTTPException(status_code=501, detail="Embeddings not yet implemented for this model")
+
+
+@app.post("/v1/load_lora")
+async def load_lora_adapter(
+    adapter_name: str,
+    adapter_path: Optional[str] = None,
+    token: HTTPAuthorizationCredentials = Depends(verify_token)
+):
+    """Dynamically load a LoRA adapter"""
+    try:
+        load_request = {
+            "lora_name": adapter_name,
+            "lora_path": adapter_path or f"/app/adapters/{adapter_name}"
+        }
+
+        response = await http_client.post(
+            "/v1/load_lora_adapter",
+            json=load_request,
+            timeout=60.0
+        )
+
+        if response.status_code == 200:
+            return {"status": "success", "message": f"LoRA adapter '{adapter_name}' loaded"}
+        else:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=response.text
+            )
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/v1/loaded_loras")
+async def list_loaded_loras(
+    token: HTTPAuthorizationCredentials = Depends(verify_token)
+):
+    """List currently loaded LoRA adapters"""
+    try:
+        response = await http_client.get("/v1/models")
+        data = response.json()
+
+        loras = [
+            model for model in data.get("data", [])
+            if "lora" in model.get("id", "").lower()
+        ]
+
+        return {"loaded_loras": loras}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+class DatasetConversationSave(BaseModel):
+    source_file: str
+    line_number: int
+    messages: List[Dict[str, str]]
+    tags: List[str] = []
+    quality_rating: Optional[int] = Field(None, ge=1, le=5)
+    review_notes: Optional[str] = None
+    target_format: str = "qwen"
+
+
+class SwitchQuantizationRequest(BaseModel):
+    quant_level: str = Field(..., pattern="^(Q4|Q5|Q8|q4|q5|q8)$")
+
+
+@app.post("/admin/switch_quantization")
+async def switch_quantization(
+    request: SwitchQuantizationRequest,
+    token: HTTPAuthorizationCredentials = Depends(verify_token)
+):
+    """
+    Admin endpoint to switch between quantization levels
+    Note: This requires restarting the vLLM server
+    """
+    quant_level = request.quant_level.upper()
+    model_file = f"/app/models/qwen3-14b-{quant_level}.gguf"
+
+    if not os.path.exists(model_file):
+        raise HTTPException(
+            status_code=404,
+            detail=f"Quantization level {quant_level} not found at {model_file}"
+        )
+
+    return {
+        "message": f"To switch to {quant_level}, restart container with DEFAULT_QUANT={quant_level}",
+        "model_file": model_file,
+        "required_action": "container_restart"
+    }
+
+
+# ============================================================================
+# Dataset endpoints (Datasets tab)
+# ============================================================================
+
+@app.get("/v1/datasets/files")
+async def dataset_list_files(rescan: bool = False):
+    """Lista archivos JSONL escaneados en los directorios configurados"""
+    dirs = [d.strip() for d in settings.dataset_dirs.split(",") if d.strip()]
+    files = dataset_manager.scan_jsonl_files(dirs, force_rescan=rescan)
+    return {"files": files, "count": len(files), "directories": dirs}
+
+
+@app.get("/v1/datasets/files/{file_path:path}")
+async def dataset_read_file(file_path: str, offset: int = 0, limit: int = 50):
+    """Lee conversaciones paginadas de un archivo JSONL"""
+    # Validar que el path esté dentro de los directorios configurados
+    dirs = [d.strip() for d in settings.dataset_dirs.split(",") if d.strip()]
+    allowed = any(file_path.startswith(d) for d in dirs)
+    if not allowed:
+        raise HTTPException(status_code=403, detail="Ruta fuera de directorios permitidos")
+    result = dataset_manager.read_jsonl_page(file_path, offset=offset, limit=limit)
+    if "error" in result:
+        raise HTTPException(status_code=404, detail=result["error"])
+    return result
+
+
+@app.post("/v1/datasets/validate")
+async def dataset_validate(request: Request):
+    """Valida un array de mensajes contra formato Qwen ChatML"""
+    body = await request.json()
+    messages = body.get("messages", [])
+    return dataset_manager.validate_qwen_format(messages)
+
+
+@app.post("/v1/datasets/conversations")
+async def dataset_save_conversation(request: DatasetConversationSave):
+    """Guarda/actualiza conversación en Supabase"""
+    if not settings.supabase_url or not settings.supabase_key:
+        raise HTTPException(status_code=503, detail="Supabase no configurado (TREFA_SUPABASE_URL, TREFA_SUPABASE_KEY)")
+    return dataset_manager.save_conversation(
+        settings.supabase_url, settings.supabase_key, request.model_dump()
+    )
+
+
+@app.get("/v1/datasets/conversations")
+async def dataset_get_conversations(
+    source_file: Optional[str] = None,
+    rating: Optional[int] = None,
+    tag: Optional[str] = None,
+):
+    """Obtiene conversaciones guardadas con filtros opcionales"""
+    if not settings.supabase_url or not settings.supabase_key:
+        raise HTTPException(status_code=503, detail="Supabase no configurado")
+    data = dataset_manager.get_saved_conversations(
+        settings.supabase_url, settings.supabase_key,
+        source_file=source_file, rating=rating, tag=tag
+    )
+    return {"conversations": data, "count": len(data)}
+
+
+@app.get("/v1/datasets/stats")
+async def dataset_stats():
+    """Estadísticas de revisión de datasets"""
+    if not settings.supabase_url or not settings.supabase_key:
+        return {"total": 0, "reviewed": 0, "pending": 0, "review_rate": 0, "by_rating": {}, "by_tag": {}}
+    return dataset_manager.get_review_stats(settings.supabase_url, settings.supabase_key)
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=settings.fastapi_port)
