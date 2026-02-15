@@ -463,6 +463,7 @@ def _formatear_conv_gold(conv: dict, max_msgs: int = 12) -> str:
 
 
 def _validar_conv_tc(mensajes: list[dict]) -> bool:
+    """Valida estructura y formato MCP de una conversación con tool calling."""
     if len(mensajes) < 3:
         return False
     if mensajes[0].get("role") != "system":
@@ -470,10 +471,102 @@ def _validar_conv_tc(mensajes: list[dict]) -> bool:
     roles = [m["role"] for m in mensajes]
     if "user" not in roles or "assistant" not in roles:
         return False
+
     for i, m in enumerate(mensajes):
-        if m["role"] == "assistant" and "<tool_call>" in m.get("content", ""):
+        content = m.get("content", "")
+
+        # tool_call debe ir seguido de role:tool
+        if m["role"] == "assistant" and "<tool_call>" in content:
             if i + 1 >= len(mensajes) or mensajes[i + 1]["role"] != "tool":
                 return False
+            # tool_call no debe mezclar texto + llamada
+            if not content.strip().startswith("<tool_call>"):
+                return False
+
+        # tool_response debe tener role:tool (no role:user)
+        if "<tool_response>" in content and m["role"] != "tool":
+            return False
+
+        # Validar formato MCP de tool responses
+        if m["role"] == "tool" and "<tool_response>" in content:
+            if not _validar_tool_response_mcp(content):
+                return False
+
+    return True
+
+
+# Root keys de herramientas que retornan vehículos
+_VEHICLE_ROOT_KEYS = {"vehiculos", "alternativas"}
+
+# Campos mínimos que un vehículo MCP debe tener
+_VEHICLE_REQUIRED_FIELDS = {"id", "titulo", "marca", "precio", "kilometraje", "ubicacion"}
+
+# Root keys de herramientas de conocimiento (no vehículos)
+_KNOWLEDGE_ROOT_KEYS = {
+    "informacion": {"id", "titulo", "contenido"},
+    "resultados": {"id", "titulo", "contenido"},
+    "faqs": {"id", "pregunta", "respuesta"},
+}
+
+
+def _validar_tool_response_mcp(content: str) -> bool:
+    """Valida que un tool_response tenga formato MCP correcto."""
+    match = re.search(r"<tool_response>\s*(.*?)\s*</tool_response>", content, re.DOTALL)
+    if not match:
+        return False
+    try:
+        data = json.loads(match.group(1))
+    except json.JSONDecodeError:
+        return False
+
+    # Si tiene wrapper {name, content}, extraer inner
+    inner = data.get("content", data) if isinstance(data, dict) else data
+    if not isinstance(inner, dict):
+        return False
+
+    # Validar herramientas que retornan vehículos
+    for root_key in _VEHICLE_ROOT_KEYS:
+        if root_key in inner:
+            vehicles = inner[root_key]
+            if isinstance(vehicles, list) and len(vehicles) > 0:
+                v = vehicles[0]
+                if isinstance(v, dict) and "marca" in v:
+                    # Validar campos mínimos de vehículo
+                    if not _VEHICLE_REQUIRED_FIELDS.issubset(v.keys()):
+                        return False
+                    # precio debe ser string formateado (no número)
+                    if isinstance(v.get("precio"), (int, float)):
+                        return False
+                    # kilometraje debe ser string formateado (no número)
+                    if isinstance(v.get("kilometraje"), (int, float)):
+                        return False
+            break
+
+    # Validar herramientas de conocimiento
+    for root_key, required_fields in _KNOWLEDGE_ROOT_KEYS.items():
+        if root_key in inner:
+            items = inner[root_key]
+            if isinstance(items, list) and len(items) > 0:
+                item = items[0]
+                if isinstance(item, dict) and not required_fields.issubset(item.keys()):
+                    return False
+            break
+
+    # Validar calcular_financiamiento
+    if "mensualidad_estimada" in inner:
+        # Valores monetarios deben ser strings
+        for field in ("precio_vehiculo", "enganche", "monto_a_financiar", "mensualidad_estimada", "total_a_pagar"):
+            val = inner.get(field)
+            if val is not None and isinstance(val, (int, float)):
+                return False
+        if "nota" not in inner:
+            return False
+
+    # Validar solicitar_datos_contacto / enviar_cotizacion_email
+    if "datos_registrados" in inner or "enviado" in inner:
+        if "mensaje" not in inner:
+            return False
+
     return True
 
 

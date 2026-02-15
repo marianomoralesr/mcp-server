@@ -1247,6 +1247,15 @@ Evalúa cada conversación sintética en estos ejes (1-10):
 3. **coherencia**: ¿El flujo de la conversación tiene sentido? ¿No hay saltos lógicos?
 4. **fidelidad_negocio**: ¿Los datos del negocio son correctos?
 5. **diversidad**: ¿Aporta algo diferente o es una conversación genérica repetitiva?
+6. **formato_tool_calling**: Si la conversación tiene tool calling, ¿el formato es correcto? Verificar:
+   - ¿Las tool_responses usan role:"tool" (NO role:"user")?
+   - ¿Cada <tool_call> va en su propio mensaje sin texto extra?
+   - ¿Los precios en tool responses son strings formateados ("$359,900") y NO números?
+   - ¿El kilometraje es string ("28,000 km") y NO número?
+   - ¿buscar_vehiculos usa root key "vehiculos", buscar_alternativas usa "alternativas"?
+   - ¿obtener_info_negocio usa "informacion" con campos id/titulo/contenido?
+   - ¿calcular_financiamiento tiene "total_a_pagar" y "nota"?
+   - Si no tiene tool calling, puntuar 10 (no aplica).
 
 ## CRITERIOS DE DESCARTE INMEDIATO
 - Conversaciones donde el assistant inventa precios específicos sin aclarar que son estimados
@@ -1254,6 +1263,9 @@ Evalúa cada conversación sintética en estos ejes (1-10):
 - Errores factuales graves sobre el negocio
 - Conversaciones extremadamente cortas (< 3 turnos útiles) sin valor
 - El assistant se sale de personaje o rompe las reglas del system prompt
+- Tool responses con role:"user" en vez de role:"tool"
+- Precios como números crudos en tool responses (ej: 359900 en vez de "$359,900")
+- Texto mezclado con <tool_call> en un mismo mensaje assistant
 
 ## CONVERSACIONES SINTÉTICAS A EVALUAR
 {conversaciones}
@@ -1264,7 +1276,7 @@ Responde EXCLUSIVAMENTE con un JSON array. Para cada conversación:
   {{
     "indice": 0,
     "puntaje_total": 7.5,
-    "desglose": {{"naturalidad": 8, "utilidad": 7, "coherencia": 8, "fidelidad": 7, "diversidad": 7}},
+    "desglose": {{"naturalidad": 8, "utilidad": 7, "coherencia": 8, "fidelidad": 7, "diversidad": 7, "formato_tc": 9}},
     "veredicto": "mejorar",
     "problemas": ["El cliente suena muy formal", "Falta captura de nombre"],
     "sugerencias": ["Hacer más coloquial al cliente", "Agregar captura progresiva de datos"]
@@ -1286,6 +1298,14 @@ PROMPT_MEJORAR = """Eres un experto en crear datos de entrenamiento para chatbot
 2. **Assistant más humano**: Cálido pero profesional, emojis con moderación, conciso.
 3. **Flujo realista**: Las conversaciones reales no son lineales.
 4. **Datos del negocio correctos**: Sucursales, enganche 20%, garantía, etc.
+5. **Formato tool calling correcto** (si aplica):
+   - tool_responses SIEMPRE con role:"tool" (NUNCA role:"user")
+   - Cada <tool_call> en su propio mensaje assistant, SIN texto extra
+   - Precios en responses como strings: "$359,900" (NO números)
+   - Kilometraje como string: "28,000 km" (NO número)
+   - buscar_vehiculos → root key "vehiculos", buscar_alternativas → "alternativas"
+   - calcular_financiamiento → incluir "total_a_pagar", "costo_financiamiento", "nota"
+   - solicitar_datos_contacto/enviar_cotizacion_email → incluir "mensaje"
 
 ## CONVERSACIÓN A MEJORAR
 Problemas detectados: {problemas}
