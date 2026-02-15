@@ -22,7 +22,9 @@ from app.trefa_assets import (
     ESCENARIOS_TC,
     META_PROMPT_E1_TC,
     META_PROMPT_E2_TC,
+    META_PROMPT_GOLD_AMPLIFIER,
     META_PROMPT_SINTETICO,
+    NOMBRES_MEXICANOS,
     PERSONALIDADES,
     PERSONALIDADES_TC,
     PROMPT_EVALUAR_CURACION,
@@ -994,6 +996,222 @@ async def curate_dataset(
         "eval_path": output_eval_path,
         "cost_usd": round(cost, 4),
         "tokens": {"input": client.usage.tokens_input, "output": client.usage.tokens_output},
+    }
+    job_manager.complete_job(job_id, result)
+    return result
+
+
+# ============================================================
+# 4.5 GOLD AMPLIFIER (generación masiva de alta calidad)
+# ============================================================
+
+def _cargar_preguntas_reales(datasets_dir: str) -> list[str]:
+    """Extrae preguntas reales (primer mensaje user) de datasets existentes."""
+    preguntas = []
+    archivos = ["semillas_mariana.jsonl", "mariana_training_v1.jsonl"]
+
+    for nombre in archivos:
+        ruta = os.path.join(datasets_dir, nombre)
+        if not os.path.exists(ruta):
+            continue
+        with open(ruta, "r", encoding="utf-8") as f:
+            for linea in f:
+                linea = linea.strip()
+                if not linea:
+                    continue
+                try:
+                    conv = json.loads(linea)
+                    msgs = conv.get("messages", [])
+                    for m in msgs:
+                        if m.get("role") == "user":
+                            texto = m.get("content", "").strip()
+                            if (
+                                len(texto) > 10
+                                and "<tool_call>" not in texto
+                                and "<tool_response>" not in texto
+                            ):
+                                preguntas.append(texto)
+                            break
+                except json.JSONDecodeError:
+                    pass
+
+    if not preguntas:
+        # Fallback: usar SEMILLAS_REALES
+        for s in SEMILLAS_REALES:
+            for m in s.get("mensajes", []):
+                if m.get("role") == "user":
+                    texto = m.get("content", "").strip()
+                    if len(texto) > 10:
+                        preguntas.append(texto)
+                    break
+
+    return preguntas
+
+
+async def generate_gold_amplified(
+    job_manager,
+    job_id: str,
+    gemini_api_key: str,
+    output_path: str,
+    gold_file: str,
+    count: int = 400,
+    pause_seconds: float = 1.5,
+    datasets_dir: str = "",
+) -> dict:
+    """Genera conversaciones TC de alta calidad usando Gold Amplifier."""
+    from app.llm_clients import GeminiClient, parsear_json_respuesta
+
+    client = GeminiClient(api_key=gemini_api_key, model="gemini-2.5-flash")
+
+    # Cargar gold conversations
+    gold_convs = _cargar_gold_jsonl(gold_file)
+    if not gold_convs:
+        job_manager.fail_job(job_id, "No se encontraron conversaciones gold")
+        return {"error": "No gold conversations found"}
+
+    # Cargar preguntas reales
+    preguntas = _cargar_preguntas_reales(datasets_dir) if datasets_dir else []
+    if not preguntas:
+        for s in SEMILLAS_REALES:
+            for m in s.get("mensajes", []):
+                if m.get("role") == "user":
+                    texto = m.get("content", "").strip()
+                    if len(texto) > 10:
+                        preguntas.append(texto)
+                    break
+
+    logger.info(
+        "gold_amplifier_start",
+        gold_count=len(gold_convs),
+        preguntas_count=len(preguntas),
+        target=count,
+    )
+
+    # Generar plan de cobertura: rotar por escenarios uniformemente
+    escenarios_keys = list(ESCENARIOS_TC.keys())
+    plan = []
+    while len(plan) < count:
+        random.shuffle(escenarios_keys)
+        for key in escenarios_keys:
+            if len(plan) >= count:
+                break
+            esc = ESCENARIOS_TC[key]
+            ctx = random.choice(esc["contextos"])
+            plan.append({"escenario": key, "contexto": ctx})
+
+    # Preparar pool de preguntas sin repetición
+    preguntas_pool = list(preguntas)
+    random.shuffle(preguntas_pool)
+    pregunta_idx = 0
+
+    # Pool de gold examples para rotar
+    gold_pool = list(range(len(gold_convs)))
+
+    generadas = 0
+    fallidas = 0
+
+    os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
+
+    with open(output_path, "w", encoding="utf-8") as f_out:
+        for i, item in enumerate(plan):
+            if job_manager.is_cancelled(job_id):
+                break
+
+            key = item["escenario"]
+            ctx = item["contexto"]
+            esc = ESCENARIOS_TC[key]
+
+            personalidad = random.choice(PERSONALIDADES_TC)
+            nombre = random.choice(NOMBRES_MEXICANOS)
+
+            # Pregunta real (rotar sin repetir)
+            if pregunta_idx >= len(preguntas_pool):
+                random.shuffle(preguntas_pool)
+                pregunta_idx = 0
+            pregunta_real = preguntas_pool[pregunta_idx]
+            pregunta_idx += 1
+
+            # 2 ejemplos gold (rotar)
+            if len(gold_pool) < 2:
+                gold_pool = list(range(len(gold_convs)))
+                random.shuffle(gold_pool)
+            idx1 = gold_pool.pop()
+            idx2 = gold_pool.pop()
+            ejemplo1 = _formatear_conv_gold(gold_convs[idx1])
+            ejemplo2 = _formatear_conv_gold(gold_convs[idx2])
+
+            prompt = META_PROMPT_GOLD_AMPLIFIER.format(
+                escenario_desc=esc["descripcion"],
+                estrategia_venta=esc["estrategia_venta"],
+                tools_esperadas=", ".join(esc["tools_esperadas"]),
+                contexto=json.dumps(ctx, ensure_ascii=False),
+                personalidad=personalidad,
+                nombre_cliente=nombre,
+                pregunta_real=pregunta_real,
+                ejemplo_gold_1=ejemplo1,
+                ejemplo_gold_2=ejemplo2,
+                system_prompt=SYSTEM_PROMPT_CON_TOOLS,
+            )
+
+            # Intentar generar (con 1 retry)
+            conv_ok = False
+            for attempt, temp in enumerate([0.92, 0.85]):
+                try:
+                    respuesta = await client.generate(prompt, temperature=temp)
+                    datos = parsear_json_respuesta(respuesta)
+
+                    if datos and "mensajes" in datos:
+                        mensajes = datos["mensajes"]
+
+                        # Reemplazar/insertar system prompt
+                        if mensajes and mensajes[0].get("role") == "system":
+                            mensajes[0]["content"] = SYSTEM_PROMPT_CON_TOOLS
+                        else:
+                            mensajes.insert(0, {"role": "system", "content": SYSTEM_PROMPT_CON_TOOLS})
+
+                        # Validar: formato MCP + mínimo 6 mensajes sin system
+                        msgs_sin_system = [m for m in mensajes if m["role"] != "system"]
+                        if _validar_conv_tc(mensajes) and len(msgs_sin_system) >= 6:
+                            f_out.write(json.dumps({"messages": mensajes}, ensure_ascii=False) + "\n")
+                            generadas += 1
+                            conv_ok = True
+                            break
+                        elif attempt == 0:
+                            logger.debug("gold_amplifier_retry", i=i, reason="validation_failed")
+                            continue
+                except Exception as e:
+                    logger.warning("gold_amplifier_error", i=i, attempt=attempt, error=str(e))
+                    if attempt == 0:
+                        await asyncio.sleep(2)
+                        continue
+
+            if not conv_ok:
+                fallidas += 1
+
+            pct = int((i + 1) / count * 100)
+            job_manager.update_progress(
+                job_id, pct,
+                f"{generadas} generadas, {fallidas} fallidas ({i+1}/{count})"
+            )
+            await asyncio.sleep(pause_seconds)
+
+    # Estimar costo
+    cost_input = client.usage.tokens_input / 1_000_000 * 0.15
+    cost_output = client.usage.tokens_output / 1_000_000 * 0.60
+    cost_total = cost_input + cost_output
+
+    result = {
+        "count": generadas,
+        "failed": fallidas,
+        "success_rate": f"{generadas / max(count, 1) * 100:.1f}%",
+        "output_path": output_path,
+        "cost_usd": round(cost_total, 4),
+        "tokens": {
+            "input": client.usage.tokens_input,
+            "output": client.usage.tokens_output,
+        },
+        "gold_source": os.path.basename(gold_file),
+        "preguntas_reales_used": len(preguntas),
     }
     job_manager.complete_job(job_id, result)
     return result

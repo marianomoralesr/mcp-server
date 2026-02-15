@@ -1178,9 +1178,53 @@ body {
   .ds-file-panel { width: 100%; max-height: 150px; border-right: none; border-bottom: 1px solid var(--border); }
   .ds-detail-panel { width: 100%; }
 }
+
+/* Login Screen */
+#login-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: linear-gradient(135deg, #0d1b3e 0%, #1a237e 50%, #283593 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+#login-screen.hidden { display: none; }
+.login-card {
+  background: #fff; border-radius: 16px; padding: 40px 36px; width: 360px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;
+}
+.login-card h1 { font-size: 28px; color: var(--primary); margin-bottom: 4px; }
+.login-card p { font-size: 14px; color: var(--text-light); margin-bottom: 28px; }
+.login-card input {
+  width: 100%; padding: 12px 14px; font-size: 14px; border: 1px solid var(--border);
+  border-radius: 8px; margin-bottom: 14px; outline: none; transition: border 0.2s;
+}
+.login-card input:focus { border-color: var(--primary); }
+.login-card .login-btn {
+  width: 100%; padding: 12px; font-size: 15px; font-weight: 600; color: #fff;
+  background: var(--primary); border: none; border-radius: 8px; cursor: pointer;
+  transition: background 0.2s;
+}
+.login-card .login-btn:hover { background: var(--primary-light); }
+#login-error { color: var(--error); font-size: 13px; margin-top: 10px; min-height: 18px; }
+.btn-logout {
+  background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.25);
+  padding: 5px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; margin-left: 12px;
+  transition: all 0.2s;
+}
+.btn-logout:hover { background: rgba(255,255,255,0.25); color: #fff; }
 </style>
 </head>
 <body>
+
+<!-- Login Screen -->
+<div id="login-screen">
+  <div class="login-card">
+    <h1>TREFA</h1>
+    <p>Mariana AI - Inicia sesion para continuar</p>
+    <input type="text" id="login-user" placeholder="Usuario" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('login-pass').focus()">
+    <input type="password" id="login-pass" placeholder="Contrasena" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Iniciar sesion</button>
+    <div id="login-error"></div>
+  </div>
+</div>
 
 <!-- Header -->
 <div class="header">
@@ -1191,6 +1235,7 @@ body {
     <button class="tab" onclick="switchView('dashboard')">Dashboard</button>
     <button class="tab" onclick="switchView('datasets')">Datasets</button>
   </div>
+  <button class="btn-logout" onclick="doLogout()">Salir</button>
 </div>
 
 <!-- Main -->
@@ -1329,6 +1374,7 @@ body {
       <button class="btn-gen" onclick="genShowModal('curate')">Curar Dataset</button>
       <button class="btn-gen" onclick="genShowModal('pipeline')">Pipeline TC</button>
       <button class="btn-gen" onclick="genShowModal('update-prompt')">Act. Prompt</button>
+      <button class="btn-gen" style="background:#d97706;color:white;" onclick="genShowModal('gold-amplifier')">Gold Amplifier</button>
       <div class="spacer"></div>
       <button class="btn-gen" onclick="genShowModal('jobs')" id="gen-jobs-btn">Jobs <span class="jobs-badge" id="gen-jobs-badge" style="display:none;">0</span></button>
       <button class="btn-gen" onclick="genShowModal('settings')" title="API Keys">&#9881;</button>
@@ -1421,6 +1467,29 @@ body {
   </div>
 
   <!-- === MODALS === -->
+
+  <!-- Gold Amplifier Modal -->
+  <div class="modal-overlay" id="modal-gold-amplifier">
+    <div class="modal">
+      <h3>Gold Amplifier (Gemini Flash)</h3>
+      <p style="font-size:12px;color:var(--text-light);margin-bottom:12px;">
+        Genera conversaciones TC de alta calidad basadas en tus 25 gold + preguntas reales.
+        Cada ejecucion produce combinaciones unicas de escenarios, personalidades y preguntas.
+      </p>
+      <label>Cantidad de conversaciones</label>
+      <input type="number" id="gen-gold-count" value="400" min="10" max="2000">
+      <label>Archivo gold (vacio = auto-detectar)</label>
+      <input type="text" id="gen-gold-file" placeholder="(auto: golden_qwen_mariana.jsonl)">
+      <label>Archivo salida</label>
+      <input type="text" id="gen-gold-output" placeholder="(auto-generado)">
+      <label>Pausa entre llamadas (s)</label>
+      <input type="number" id="gen-gold-pause" value="1.5" min="0.5" max="10" step="0.5">
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('gold-amplifier')">Cancelar</button>
+        <button class="btn-modal btn-submit" style="background:#d97706;" onclick="genLaunchGoldAmplifier()">Generar</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Settings Modal -->
   <div class="modal-overlay" id="modal-settings">
@@ -1561,6 +1630,74 @@ body {
 </div>
 
 <script>
+// ===== AUTH =====
+function getAuthToken() { return localStorage.getItem('trefa_auth_token'); }
+
+async function doLogin() {
+  const user = document.getElementById('login-user').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  const errEl = document.getElementById('login-error');
+  errEl.textContent = '';
+  if (!user || !pass) { errEl.textContent = 'Ingresa usuario y contrasena'; return; }
+  try {
+    const res = await _originalFetch(window.location.origin + '/api/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({username: user, password: pass})
+    });
+    if (!res.ok) { errEl.textContent = 'Credenciales invalidas'; return; }
+    const data = await res.json();
+    localStorage.setItem('trefa_auth_token', data.token);
+    document.getElementById('login-screen').classList.add('hidden');
+  } catch (e) {
+    errEl.textContent = 'Error de conexion';
+  }
+}
+
+function doLogout() {
+  localStorage.removeItem('trefa_auth_token');
+  location.reload();
+}
+
+async function checkAuth() {
+  const token = getAuthToken();
+  if (!token) return; // no token — show login
+  try {
+    const res = await fetch(window.location.origin + '/v1/datasets/jobs?limit=1');
+    if (res.ok) {
+      document.getElementById('login-screen').classList.add('hidden');
+    } else {
+      localStorage.removeItem('trefa_auth_token');
+    }
+  } catch (e) {
+    localStorage.removeItem('trefa_auth_token');
+  }
+}
+
+// Global fetch interceptor — inyecta X-Auth-Token en todas las requests
+const _originalFetch = window.fetch.bind(window);
+window.fetch = function(url, opts = {}) {
+  const token = getAuthToken();
+  if (token) {
+    opts.headers = opts.headers || {};
+    if (opts.headers instanceof Headers) {
+      opts.headers.set('X-Auth-Token', token);
+    } else {
+      opts.headers['X-Auth-Token'] = token;
+    }
+  }
+  return _originalFetch(url, opts).then(res => {
+    if (res.status === 401 && token) {
+      localStorage.removeItem('trefa_auth_token');
+      location.reload();
+    }
+    return res;
+  });
+};
+
+// Check auth on load
+checkAuth();
+
 const API = window.location.origin;
 let sessionId = null;
 let toolCallsLog = [];
@@ -2548,6 +2685,26 @@ async function genLaunchPipeline() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || 'Error');
     genCloseModal('pipeline');
+    genShowModal('jobs');
+    genStartPolling();
+    genRefreshJobs();
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function genLaunchGoldAmplifier() {
+  const body = {
+    count: parseInt(document.getElementById('gen-gold-count').value) || 400,
+    gold_file: document.getElementById('gen-gold-file').value.trim(),
+    output_filename: document.getElementById('gen-gold-output').value.trim(),
+    pause_seconds: parseFloat(document.getElementById('gen-gold-pause').value) || 1.5,
+  };
+  try {
+    const res = await fetch(`${API}/v1/datasets/generate/gold-amplifier`, {
+      method: 'POST', headers: genGetHeaders(), body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    genCloseModal('gold-amplifier');
     genShowModal('jobs');
     genStartPolling();
     genRefreshJobs();

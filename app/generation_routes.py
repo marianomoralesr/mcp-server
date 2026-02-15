@@ -54,6 +54,13 @@ class PipelineRequest(BaseModel):
     pause_seconds: float = Field(default=2.0, ge=0.5, le=10.0)
 
 
+class GoldAmplifierRequest(BaseModel):
+    gold_file: str = Field(default="", description="Ruta al archivo gold JSONL (auto-detect si vacío)")
+    output_filename: str = Field(default="", description="Nombre archivo salida")
+    count: int = Field(default=400, ge=10, le=2000)
+    pause_seconds: float = Field(default=1.5, ge=0.5, le=10.0)
+
+
 class AnalyzeToolsRequest(BaseModel):
     filepaths: list[str]
 
@@ -212,6 +219,40 @@ async def pipeline(body: PipelineRequest, request: Request):
     ))
 
     return {"job_id": job_id, "working_dir": working_dir}
+
+
+@router.post("/generate/gold-amplifier")
+async def gold_amplifier(body: GoldAmplifierRequest, request: Request):
+    """Generación masiva de conversaciones TC de alta calidad con Gold Amplifier."""
+    from app.generators import generate_gold_amplified
+
+    jm = _get_job_manager(request)
+    api_key = _get_api_key(request, "X-Gemini-Key", "TREFA_GEMINI_API_KEY")
+    output_dir = _get_output_dir(request)
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Auto-detect gold file
+    gold_file = body.gold_file
+    if not gold_file:
+        datasets_dir = os.path.join(os.path.dirname(output_dir), "datasets")
+        candidate = os.path.join(datasets_dir, "golden_qwen_mariana.jsonl")
+        if os.path.exists(candidate):
+            gold_file = candidate
+        else:
+            raise HTTPException(400, "No se encontró archivo gold. Especifica gold_file.")
+
+    filename = body.output_filename or f"gold_amplified_{body.count}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jsonl"
+    output_path = os.path.join(output_dir, filename)
+    datasets_dir = os.path.join(os.path.dirname(output_dir), "datasets")
+
+    job_id = jm.create_job("gold_amplifier", {"gold": os.path.basename(gold_file), "count": body.count})
+    jm.start_job(job_id, lambda: generate_gold_amplified(
+        jm, job_id, api_key, output_path, gold_file,
+        count=body.count, pause_seconds=body.pause_seconds,
+        datasets_dir=datasets_dir
+    ))
+
+    return {"job_id": job_id, "output_path": output_path}
 
 
 # ── Endpoints análisis ────────────────────────────────

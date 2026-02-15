@@ -10,6 +10,7 @@ import os
 import json
 import time
 import asyncio
+import hashlib
 from typing import Optional, List, Dict, Any, AsyncGenerator
 from contextlib import asynccontextmanager
 
@@ -129,6 +130,19 @@ class ToolCallRequest(BaseModel):
 
 class VLLMTestConnectionRequest(BaseModel):
     url: str = Field(..., description="URL del backend LLM (ej: http://1.2.3.4:8000 o https://abc.ngrok.io)")
+
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+
+# Auth token determinista (sobrevive reinicios)
+AUTH_TOKEN = hashlib.sha256("admin:AutosTREFA2026!".encode()).hexdigest()
+
+# Rutas publicas (no requieren auth)
+PUBLIC_PATHS = {"/", "/ui", "/health", "/metrics", "/api/login", "/api/info",
+                "/docs", "/redoc", "/openapi.json"}
 
 
 # Global state
@@ -267,6 +281,29 @@ app.add_middleware(
 )
 
 
+# Auth middleware
+@app.middleware("http")
+async def auth_middleware(request: Request, call_next):
+    # OPTIONS (CORS preflight) pasan sin auth
+    if request.method == "OPTIONS":
+        return await call_next(request)
+
+    path = request.url.path
+    # Rutas publicas exactas
+    if path in PUBLIC_PATHS:
+        return await call_next(request)
+    # Static files
+    if path.startswith("/static"):
+        return await call_next(request)
+
+    # Todas las demas rutas requieren X-Auth-Token
+    token = request.headers.get("X-Auth-Token")
+    if token != AUTH_TOKEN:
+        return JSONResponse(status_code=401, content={"detail": "No autorizado"})
+
+    return await call_next(request)
+
+
 # Serve static files
 _STATIC_DIR = pathlib.Path(__file__).parent / "static"
 if _STATIC_DIR.exists():
@@ -293,9 +330,24 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(secur
 # Core endpoints
 # ============================================================================
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 async def root():
-    """Root endpoint"""
+    """Dashboard UI (root)"""
+    html_path = _STATIC_DIR / "index.html"
+    return HTMLResponse(content=html_path.read_text(encoding="utf-8"))
+
+
+@app.post("/api/login")
+async def login(request: LoginRequest):
+    """Autenticacion — retorna token si credenciales validas"""
+    if request.username == "admin" and request.password == "AutosTREFA2026!":
+        return {"token": AUTH_TOKEN}
+    raise HTTPException(status_code=401, detail="Credenciales invalidas")
+
+
+@app.get("/api/info")
+async def api_info():
+    """API info endpoint"""
     return {
         "name": "Qwen3-14B TRefA Inference API",
         "version": "2.0.0",
