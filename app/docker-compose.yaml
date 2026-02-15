@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  qwen3-inference:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    image: mmoralesf/qwen3-14b-trefa:latest
+    container_name: qwen3-14b-inference
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - CUDA_VISIBLE_DEVICES=0
+      - DEFAULT_QUANT=Q5
+      - MAX_MODEL_LEN=32768
+      - GPU_MEMORY_UTILIZATION=0.95
+      - ENABLE_LORA=true
+      - API_KEY=${API_KEY:-} # Optional API key
+    ports:
+      - "8080:8080" # FastAPI Orchestrator (público)
+      - "3001:3001" # MCP Server
+    volumes:
+      # Mount models for development (optional - models are baked in)
+      - ./models:/app/models:ro
+      - ./adapters:/app/adapters:ro
+      # Cache directory
+      - huggingface_cache:/root/.cache/huggingface
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+volumes:
+  huggingface_cache:

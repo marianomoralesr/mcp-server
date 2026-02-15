@@ -9,9 +9,10 @@ from pydantic import Field
 
 
 class Settings(BaseSettings):
-    # vLLM backend (interno)
+    # vLLM backend (local o remoto)
     vllm_host: str = Field(default="localhost", description="Host del servidor vLLM")
     vllm_port: int = Field(default=8000, description="Puerto del servidor vLLM")
+    vllm_base_url: Optional[str] = Field(default=None, description="URL completa del backend LLM (ej: http://remote:8000). Si se define, ignora vllm_host/vllm_port")
 
     # FastAPI (público)
     fastapi_port: int = Field(default=8080, description="Puerto de la API FastAPI")

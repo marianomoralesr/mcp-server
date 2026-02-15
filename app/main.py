@@ -146,13 +146,15 @@ async def lifespan(app: FastAPI):
 
     logger.info("Starting up Qwen3-14B Inference Server...")
 
-    # Initialize HTTP client for vLLM communication (skip if disabled)
+    # Initialize HTTP client for LLM backend (local or remote, skip if disabled)
     if not VLLM_DISABLED:
+        vllm_url = settings.vllm_base_url or f"http://{settings.vllm_host}:{settings.vllm_port}"
         http_client = httpx.AsyncClient(
-            base_url=f"http://localhost:{settings.vllm_port}",
+            base_url=vllm_url,
             timeout=300.0,
             limits=httpx.Limits(max_keepalive_connections=20, max_connections=100)
         )
+        logger.info("vllm_client_configured", base_url=vllm_url)
     else:
         http_client = None
         logger.info("vllm_disabled", reason="TREFA_VLLM_DISABLED=true")
