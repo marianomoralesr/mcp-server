@@ -31,8 +31,9 @@ RUN pip install --no-cache-dir -r /app/app/requirements.txt
 # Copiar app
 COPY app/ /app/app/
 
-# Directorios y entrypoint
-RUN mkdir -p /app/datasets /app/generated /var/log
+# Datasets y directorios
+COPY datasets/ /app/datasets/
+RUN mkdir -p /app/generated /var/log
 COPY railway-entrypoint.sh /app/railway-entrypoint.sh
 RUN chmod +x /app/railway-entrypoint.sh
 
