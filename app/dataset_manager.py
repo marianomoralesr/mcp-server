@@ -269,15 +269,19 @@ def save_conversation(url: str, key: str, data: dict) -> dict:
     """Upsert conversación en dataset_conversations."""
     sb = _get_supabase(url, key)
 
-    has_tc, tools_used = _has_tool_calling(data["messages"])
-    validation = validate_qwen_format(data["messages"])
+    messages = data.get("messages") or []
+    has_tc, tools_used = _has_tool_calling(messages)
+    validation = validate_qwen_format(messages)
 
     record = {
         "source_file": data["source_file"],
         "line_number": data["line_number"],
-        "messages": data["messages"],
-        "metadata": data.get("metadata", {}),
-        "tags": data.get("tags", []),
+        "messages": [
+            {"role": m.get("role", ""), "content": m.get("content", "")}
+            for m in messages
+        ],
+        "metadata": data.get("metadata") or {},
+        "tags": data.get("tags") or [],
         "has_tool_calling": has_tc,
         "tools_used": tools_used,
         "format_valid": validation["valid"],

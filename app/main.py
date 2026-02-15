@@ -921,9 +921,13 @@ async def dataset_save_conversation(request: DatasetConversationSave):
     """Guarda/actualiza conversación en Supabase"""
     if not settings.supabase_url or not settings.supabase_key:
         raise HTTPException(status_code=503, detail="Supabase no configurado (TREFA_SUPABASE_URL, TREFA_SUPABASE_KEY)")
-    return dataset_manager.save_conversation(
-        settings.supabase_url, settings.supabase_key, request.model_dump()
-    )
+    try:
+        return dataset_manager.save_conversation(
+            settings.supabase_url, settings.supabase_key, request.model_dump()
+        )
+    except Exception as e:
+        logger.error("dataset_save_error", error=str(e), source_file=request.source_file, line=request.line_number)
+        raise HTTPException(status_code=502, detail=f"Error al guardar en Supabase: {str(e)}")
 
 
 @app.get("/v1/datasets/conversations")
@@ -935,11 +939,15 @@ async def dataset_get_conversations(
     """Obtiene conversaciones guardadas con filtros opcionales"""
     if not settings.supabase_url or not settings.supabase_key:
         raise HTTPException(status_code=503, detail="Supabase no configurado")
-    data = dataset_manager.get_saved_conversations(
-        settings.supabase_url, settings.supabase_key,
-        source_file=source_file, rating=rating, tag=tag
-    )
-    return {"conversations": data, "count": len(data)}
+    try:
+        data = dataset_manager.get_saved_conversations(
+            settings.supabase_url, settings.supabase_key,
+            source_file=source_file, rating=rating, tag=tag
+        )
+        return {"conversations": data, "count": len(data)}
+    except Exception as e:
+        logger.error("dataset_get_error", error=str(e))
+        raise HTTPException(status_code=502, detail=f"Error al consultar Supabase: {str(e)}")
 
 
 @app.get("/v1/datasets/stats")
