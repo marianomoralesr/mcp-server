@@ -498,6 +498,107 @@ body {
   color: var(--text-light);
 }
 
+/* GPU Remote Card */
+.gpu-card { grid-column: 1 / -1; }
+.gpu-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.gpu-input-row input[type="text"] {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.gpu-input-row input[type="text"]:focus {
+  border-color: var(--primary);
+}
+#gpu-result {
+  margin-top: 14px;
+  display: none;
+}
+#gpu-result.visible { display: block; }
+.gpu-status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+.gpu-status-badge.ok { background: var(--success); }
+.gpu-status-badge.fail { background: var(--error); }
+.gpu-detail-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+  align-items: center;
+}
+.gpu-detail-grid .stat-item {
+  text-align: center;
+  min-width: 80px;
+}
+.gpu-models-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+.gpu-model-chip {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--primary);
+  font-weight: 500;
+}
+.gpu-note {
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--text-light);
+  line-height: 1.5;
+  padding: 8px 10px;
+  background: #fffde7;
+  border-radius: 6px;
+  border: 1px solid #fff9c4;
+}
+.gpu-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: gpuSpin 0.6s linear infinite;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+@keyframes gpuSpin {
+  to { transform: rotate(360deg); }
+}
+.gpu-error-msg {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--error);
+}
+.gpu-vllm-current {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-light);
+}
+.gpu-vllm-current code {
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
 .refresh-btn {
   margin-left: auto;
   background: none;
@@ -1150,6 +1251,26 @@ body {
   <div id="dashboard-view" class="view dashboard-view">
     <div class="dash-grid">
 
+      <!-- GPU Remoto -->
+      <div class="card gpu-card">
+        <div class="card-header">
+          &#128752; Conexion GPU Remoto
+        </div>
+        <div class="card-body">
+          <div class="gpu-input-row">
+            <input type="text" id="gpu-url-input" placeholder="http://IP:8000 o https://tunnel.ngrok.io">
+            <button class="btn btn-primary" id="gpu-test-btn" onclick="testGPUConnection()">Verificar Conexion</button>
+          </div>
+          <div id="gpu-vllm-current" class="gpu-vllm-current"></div>
+          <div id="gpu-result">
+            <div id="gpu-result-content"></div>
+          </div>
+          <div class="gpu-note">
+            Para usar este servidor permanentemente, configura <strong>TREFA_VLLM_BASE_URL</strong> en las variables de entorno del servidor (ej. Railway).
+          </div>
+        </div>
+      </div>
+
       <!-- Health -->
       <div class="card">
         <div class="card-header">
@@ -1627,6 +1748,7 @@ async function loadHealth() {
         <span><span class="status-dot ${d.vllm_backend === 'healthy' ? 'healthy' : d.vllm_backend === 'unreachable' ? 'unhealthy' : 'unknown'}"></span>vLLM Backend</span>
         <span>${d.vllm_backend}</span>
       </div>
+      ${d.vllm_url ? `<div class="status-row"><span>URL vLLM</span><span style="font-family:monospace;font-size:12px;">${d.vllm_url}</span></div>` : ''}
       <div class="status-row">
         <span><span class="status-dot ${d.mcp_server === 'healthy' ? 'healthy' : d.mcp_server === 'unreachable' ? 'unhealthy' : 'unknown'}"></span>MCP Server</span>
         <span>${d.mcp_server}</span>
@@ -1644,6 +1766,13 @@ async function loadHealth() {
         <span>${d.active_sessions}</span>
       </div>
     `;
+    // Mostrar URL actual de vLLM en la tarjeta GPU
+    const gpuCurrentEl = document.getElementById('gpu-vllm-current');
+    if (gpuCurrentEl) {
+      gpuCurrentEl.innerHTML = d.vllm_url
+        ? 'URL configurada actualmente: <code>' + d.vllm_url + '</code>'
+        : d.mode === 'no-inference' ? 'Modo sin vLLM (TREFA_VLLM_DISABLED=true)' : '';
+    }
   } catch (e) {
     el.innerHTML = `<p style="color:var(--error);font-size:13px;">Error: ${e.message}</p>`;
   }
@@ -1727,6 +1856,79 @@ async function loadTools() {
     `).join('') + '</ul>';
   } catch (e) {
     el.innerHTML = `<p style="color:var(--error);font-size:13px;">Error: ${e.message}</p>`;
+  }
+}
+
+// ===== GPU REMOTE CONNECTION =====
+(function prefillGPUInput() {
+  const saved = localStorage.getItem('trefa_gpu_url');
+  if (saved) {
+    const inp = document.getElementById('gpu-url-input');
+    if (inp) inp.value = saved;
+  }
+})();
+
+async function testGPUConnection() {
+  const input = document.getElementById('gpu-url-input');
+  const btn = document.getElementById('gpu-test-btn');
+  const resultDiv = document.getElementById('gpu-result');
+  const contentDiv = document.getElementById('gpu-result-content');
+  const url = input.value.trim();
+
+  if (!url) {
+    input.focus();
+    return;
+  }
+
+  // Mostrar spinner
+  resultDiv.classList.add('visible');
+  contentDiv.innerHTML = '<span class="gpu-spinner"></span> Verificando...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${API}/admin/vllm/test-connection`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+    });
+    const d = await res.json();
+
+    if (d.connected) {
+      localStorage.setItem('trefa_gpu_url', url);
+      const modelsHtml = d.models.length > 0
+        ? '<div class="gpu-models-list">' + d.models.map(m => `<span class="gpu-model-chip">${m}</span>`).join('') + '</div>'
+        : '';
+      contentDiv.innerHTML = `
+        <div class="gpu-detail-grid">
+          <span class="gpu-status-badge ok">Conectado</span>
+          <div class="stat-item">
+            <div class="stat-value" style="font-size:18px;">${d.latency_ms}ms</div>
+            <div class="stat-label">Latencia</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" style="font-size:18px;">${d.models.length}</div>
+            <div class="stat-label">Modelos</div>
+          </div>
+        </div>
+        ${modelsHtml}
+      `;
+    } else {
+      contentDiv.innerHTML = `
+        <div class="gpu-detail-grid">
+          <span class="gpu-status-badge fail">Error</span>
+        </div>
+        <div class="gpu-error-msg">${d.error || 'Error desconocido'}</div>
+      `;
+    }
+  } catch (e) {
+    contentDiv.innerHTML = `
+      <div class="gpu-detail-grid">
+        <span class="gpu-status-badge fail">Error</span>
+      </div>
+      <div class="gpu-error-msg">${e.message}</div>
+    `;
+  } finally {
+    btn.disabled = false;
   }
 }
 

@@ -127,6 +127,10 @@ class ToolCallRequest(BaseModel):
     arguments: Dict[str, Any] = Field(default_factory=dict, description="Argumentos de la herramienta")
 
 
+class VLLMTestConnectionRequest(BaseModel):
+    url: str = Field(..., description="URL del backend LLM (ej: http://1.2.3.4:8000 o https://abc.ngrok.io)")
+
+
 # Global state
 model_manager: Optional[ModelManager] = None
 http_client: Optional[httpx.AsyncClient] = None
@@ -337,10 +341,15 @@ async def health_check():
             except Exception:
                 mcp_status = "unreachable"
 
+        vllm_url = None
+        if not VLLM_DISABLED and http_client:
+            vllm_url = str(http_client.base_url).rstrip("/")
+
         return {
             "status": "healthy",
             "mode": "no-inference" if VLLM_DISABLED else "full",
             "vllm_backend": vllm_status,
+            "vllm_url": vllm_url,
             "mcp_server": mcp_status,
             "model_loaded": model_manager is not None and not VLLM_DISABLED,
             "tools_loaded": len(tools_definitions),
@@ -557,6 +566,54 @@ async def analytics(
     stats["active_sessions"] = session_manager.active_count if session_manager else 0
     stats["tools_loaded"] = len(tools_definitions)
     return stats
+
+
+@app.post("/admin/vllm/test-connection")
+async def test_vllm_connection(request: VLLMTestConnectionRequest):
+    """Probar conexión a un servidor vLLM remoto sin modificar el estado global"""
+    # Normalizar URL
+    url = request.url.strip().rstrip("/")
+    if not url.startswith("http://") and not url.startswith("https://"):
+        url = "http://" + url
+
+    result = {
+        "connected": False,
+        "url": url,
+        "latency_ms": None,
+        "health_status": None,
+        "models": [],
+        "error": None,
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            # Probar /health
+            t0 = time.monotonic()
+            health_resp = await client.get(f"{url}/health")
+            latency = (time.monotonic() - t0) * 1000
+            result["latency_ms"] = round(latency, 1)
+            result["health_status"] = "healthy" if health_resp.status_code == 200 else f"status {health_resp.status_code}"
+
+            # Obtener modelos
+            try:
+                models_resp = await client.get(f"{url}/v1/models")
+                if models_resp.status_code == 200:
+                    data = models_resp.json()
+                    result["models"] = [m["id"] for m in data.get("data", [])]
+            except Exception:
+                pass  # modelos no disponibles, pero health sí respondió
+
+            result["connected"] = True
+    except httpx.ConnectError:
+        result["error"] = "Connection refused"
+    except httpx.ConnectTimeout:
+        result["error"] = "Connection timeout (10s)"
+    except httpx.ReadTimeout:
+        result["error"] = "Read timeout (10s)"
+    except Exception as e:
+        result["error"] = str(e)
+
+    return result
 
 
 # ============================================================================
