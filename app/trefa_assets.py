@@ -77,9 +77,11 @@ TOOLS_SCHEMA = [
                     "tipo_carroceria": {"type": "string", "description": "Tipo: SUV, Sedan, Hatchback, Pickup, Van"},
                     "transmision": {"type": "string", "description": "Automática o Manual"},
                     "combustible": {"type": "string", "description": "Gasolina, Diesel, Híbrido, Eléctrico"},
-                    "con_oferta": {"type": "boolean", "description": "Solo vehículos en oferta"},
-                    "kilometraje_maximo": {"type": "number", "description": "Kilometraje máximo"},
-                    "limite": {"type": "number", "description": "Número máximo de resultados (default: 10)"}
+                    "ubicacion": {"type": "string", "description": "Sucursal: Monterrey, Guadalupe, Saltillo, Reynosa"},
+                    "kilometraje_max": {"type": "number", "description": "Kilometraje máximo"},
+                    "garantia": {"type": "string", "description": "Tipo de garantía"},
+                    "motor": {"type": "string", "description": "Tamaño de motor (ej: 2.0L, 1.5L)"},
+                    "limite": {"type": "number", "description": "Número máximo de resultados (default: 5)"}
                 }
             }
         }
@@ -93,8 +95,7 @@ TOOLS_SCHEMA = [
                 "type": "object",
                 "properties": {
                     "id": {"type": "number", "description": "ID numérico del vehículo"},
-                    "slug": {"type": "string", "description": "Slug URL del vehículo"},
-                    "record_id": {"type": "string", "description": "Record ID de Airtable"}
+                    "slug": {"type": "string", "description": "Slug URL del vehículo"}
                 }
             }
         }
@@ -111,7 +112,8 @@ TOOLS_SCHEMA = [
                     "modelo_original": {"type": "string", "description": "Modelo que buscaba"},
                     "presupuesto": {"type": "number", "description": "Presupuesto máximo en MXN"},
                     "tipo_uso": {"type": "string", "description": "Para qué usará: familia, trabajo, ciudad, carretera"},
-                    "prioridad": {"type": "string", "enum": ["precio", "año", "equipamiento", "marca_premium"], "description": "Qué prioriza"}
+                    "carroceria": {"type": "string", "description": "Tipo de carrocería preferido"},
+                    "ubicacion": {"type": "string", "description": "Sucursal preferida"}
                 },
                 "required": ["marca_original", "presupuesto"]
             }
@@ -152,11 +154,11 @@ TOOLS_SCHEMA = [
                 "type": "object",
                 "properties": {
                     "precio_vehiculo": {"type": "number", "description": "Precio del vehículo en MXN"},
-                    "enganche_porcentaje": {"type": "number", "description": "Porcentaje de enganche (10-90)"},
-                    "plazo_meses": {"type": "number", "description": "Plazo en meses (12, 24, 36, 48, 60)"},
-                    "tasa_anual": {"type": "number", "description": "Tasa de interés anual (opcional, default 15%)"}
-                },
-                "required": ["precio_vehiculo"]
+                    "vehiculo_id": {"type": "number", "description": "ID del vehículo en base de datos"},
+                    "enganche_porcentaje": {"type": "number", "description": "Porcentaje de enganche (10-90, default 20)"},
+                    "plazo_meses": {"type": "number", "description": "Plazo en meses (12, 24, 36, 48, 60, default 48)"},
+                    "tasa_anual": {"type": "number", "description": "Tasa de interés anual en % (default 15)"}
+                }
             }
         }
     },
@@ -214,9 +216,12 @@ TOOLS_SCHEMA = [
                 "type": "object",
                 "properties": {
                     "nombre": {"type": "string", "description": "Nombre completo del cliente"},
+                    "telefono": {"type": "string", "description": "Teléfono del cliente"},
                     "email": {"type": "string", "description": "Correo electrónico del cliente"},
-                    "telefono": {"type": "string", "description": "Teléfono del cliente"}
-                }
+                    "vehiculo_interes": {"type": "string", "description": "Vehículo de interés del cliente"},
+                    "comentarios": {"type": "string", "description": "Comentarios adicionales"}
+                },
+                "required": ["nombre", "telefono"]
             }
         }
     },
@@ -224,18 +229,17 @@ TOOLS_SCHEMA = [
         "type": "function",
         "function": {
             "name": "enviar_cotizacion_email",
-            "description": "Envía cotización o ficha técnica del vehículo al correo del cliente.",
+            "description": "Envía cotización del vehículo al correo del cliente.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "email": {"type": "string", "description": "Correo del destinatario"},
+                    "email_destino": {"type": "string", "description": "Correo del destinatario"},
+                    "nombre_cliente": {"type": "string", "description": "Nombre del cliente"},
                     "vehiculo_id": {"type": "number", "description": "ID del vehículo a cotizar"},
-                    "tipo": {"type": "string", "enum": ["cotizacion", "ficha_tecnica", "ambos"], "description": "Tipo de documento"},
-                    "incluir_financiamiento": {"type": "boolean", "description": "Incluir cálculo de financiamiento"},
-                    "enganche_porcentaje": {"type": "number", "description": "Porcentaje de enganche"},
-                    "plazo_meses": {"type": "number", "description": "Plazo en meses"}
+                    "enganche_porcentaje": {"type": "number", "description": "Porcentaje de enganche (default 20)"},
+                    "plazo_meses": {"type": "number", "description": "Plazo en meses (default 48)"}
                 },
-                "required": ["email", "vehiculo_id", "tipo"]
+                "required": ["email_destino", "nombre_cliente", "vehiculo_id"]
             }
         }
     }
@@ -517,7 +521,18 @@ VEHICULOS_MUESTRA = [
 # ============================================================
 
 def fmt_precio(p: int) -> str:
-    return f"${p:,.0f}".replace(",", ",") + " MXN"
+    """Formato para mensajes del assistant: $359,900 MXN"""
+    return f"${p:,}" + " MXN"
+
+
+def _fmt_precio_mcp(p: int) -> str:
+    """Formato MCP (tool responses): $359,900"""
+    return f"${p:,}"
+
+
+def _fmt_km_mcp(km: int) -> str:
+    """Formato MCP (tool responses): 28,000 km"""
+    return f"{km:,} km"
 
 
 def tool_call(nombre: str, argumentos: dict) -> str:
@@ -528,7 +543,85 @@ def tool_response(nombre: str, contenido: dict) -> str:
     return f'<tool_response>\n{json.dumps({"name": nombre, "content": contenido}, ensure_ascii=False)}\n</tool_response>'
 
 
+def vehiculo_a_mcp_busqueda(v: dict) -> dict:
+    """Convierte VEHICULOS_MUESTRA → formato MCP buscar_vehiculos/buscar_alternativas."""
+    return {
+        "id": v["id"],
+        "titulo": v["titulo"],
+        "marca": v["marca"],
+        "modelo": v["modelo"],
+        "año": v["autoano"],
+        "precio": _fmt_precio_mcp(v["precio"]),
+        "precio_numerico": v["precio"],
+        "transmision": v["transmision"],
+        "combustible": v["combustible"],
+        "carroceria": v["carroceria"],
+        "motor": v.get("motor", "2.0L"),
+        "cilindros": v.get("cilindros", 4),
+        "ubicacion": v["ubicacion"],
+        "kilometraje": _fmt_km_mcp(v["kilometraje"]),
+        "garantia": v["garantia"],
+        "enganche_minimo": _fmt_precio_mcp(int(v["precio"] * v["enganchemin"] / 100)),
+        "mensualidad_desde": _fmt_precio_mcp(v["mensualidad_minima"]),
+        "url": f"https://autostrefa.mx/inventario/{v['slug']}",
+        "liga_mariana": f"https://autostrefa.mx/bots/{v['slug']}",
+    }
+
+
+def vehiculo_a_mcp_detalle(v: dict) -> dict:
+    """Convierte VEHICULOS_MUESTRA → formato MCP obtener_vehiculo."""
+    base = vehiculo_a_mcp_busqueda(v)
+    base.update({
+        "descripcion": f"{v['titulo']} en excelente estado, revisión mecánica de 150 puntos aprobada.",
+        "enganche_recomendado": _fmt_precio_mcp(int(v["precio"] * 0.25)),
+        "mensualidad_recomendada": _fmt_precio_mcp(int(v["mensualidad_minima"] * 0.85)),
+        "plazo_maximo": 60,
+        "con_oferta": False,
+        "oferta": None,
+        "promociones": None,
+        "imagen_principal": f"https://autostrefa.mx/images/{v['slug']}.jpg",
+        "galeria_exterior": [],
+        "galeria_interior": [],
+    })
+    return base
+
+
+def vehiculo_a_mcp_comparacion(v: dict) -> dict:
+    """Convierte VEHICULOS_MUESTRA → formato MCP comparar_vehiculos."""
+    base = vehiculo_a_mcp_busqueda(v)
+    base.update({
+        "kilometraje_numerico": v["kilometraje"],
+        "enganche_recomendado": _fmt_precio_mcp(int(v["precio"] * 0.25)),
+        "mensualidad_recomendada": _fmt_precio_mcp(int(v["mensualidad_minima"] * 0.85)),
+        "plazo_maximo": 60,
+    })
+    return base
+
+
+def calcular_financiamiento_mcp(precio: int, enganche_pct: int = 20, plazo: int = 48, tasa: float = 15.0) -> dict:
+    """Genera respuesta MCP de calcular_financiamiento con formato correcto."""
+    enganche = int(precio * enganche_pct / 100)
+    monto = precio - enganche
+    tasa_m = tasa / 100 / 12
+    mensualidad = int(monto * (tasa_m * (1 + tasa_m)**plazo) / ((1 + tasa_m)**plazo - 1))
+    total = mensualidad * plazo + enganche
+    costo = total - precio
+    return {
+        "precio_vehiculo": _fmt_precio_mcp(precio),
+        "enganche_porcentaje": enganche_pct,
+        "enganche": _fmt_precio_mcp(enganche),
+        "monto_a_financiar": _fmt_precio_mcp(monto),
+        "tasa_anual": f"{tasa:.0f}%",
+        "plazo_meses": plazo,
+        "mensualidad_estimada": _fmt_precio_mcp(mensualidad),
+        "total_a_pagar": _fmt_precio_mcp(total),
+        "costo_financiamiento": _fmt_precio_mcp(costo),
+        "nota": "Cálculo estimado con tasa de referencia. La tasa final depende del perfil crediticio del cliente y la institución financiera seleccionada.",
+    }
+
+
 def presentar_vehiculo(v: dict) -> str:
+    """Formato de presentación para mensajes del assistant."""
     return (
         f'**{v["titulo"]}**\n'
         f'📅 {v["autoano"]} | ⚙️ {v["transmision"]} | ⛽ {v["combustible"]}\n'
@@ -971,7 +1064,7 @@ La conversación tiene 4 tipos de roles: "system", "user", "assistant", "tool".
 === REGLAS ESTRICTAS ===
 1. El bot SIEMPRE se presenta como TREFABOT al inicio.
 2. SIEMPRE captura el nombre del cliente (usar solicitar_datos_contacto).
-3. Genera tool_responses REALISTAS con datos inventados pero creíbles.
+3. Genera tool_responses REALISTAS con datos inventados pero creíbles, usando EXACTAMENTE los formatos descritos abajo.
 4. Las respuestas del bot después de tools deben integrar NATURALMENTE los datos del tool_response.
 5. Máximo 1 pregunta por respuesta del bot.
 6. Incluir links reales cuando corresponda: autostrefa.mx/autos, /registro, /acceder, /escritorio/aplicacion, /escritorio/citas, /vacantes.
@@ -980,6 +1073,29 @@ La conversación tiene 4 tipos de roles: "system", "user", "assistant", "tool".
 9. Español mexicano coloquial (tuteo). Cliente escribe como WhatsApp real.
 10. NO uses markdown ni backticks en tu respuesta.
 11. Genera entre {min_turnos} y {max_turnos} turnos de usuario.
+12. Un mensaje assistant con <tool_call> NO debe contener texto adicional. Separa texto y tool_call en mensajes distintos.
+
+=== FORMATO EXACTO DE TOOL RESPONSES (OBLIGATORIO) ===
+
+buscar_vehiculos → {{"vehiculos": [{{"id": 101, "titulo": "Toyota Corolla 2022", "marca": "Toyota", "modelo": "Corolla", "año": 2022, "precio": "$359,900", "precio_numerico": 359900, "transmision": "Automática", "combustible": "Gasolina", "carroceria": "Sedan", "motor": "2.0L", "cilindros": 4, "ubicacion": "Monterrey", "kilometraje": "28,000 km", "garantia": "3 meses / 5,000 km", "enganche_minimo": "$71,980", "mensualidad_desde": "$7,998", "url": "https://autostrefa.mx/inventario/slug", "liga_mariana": "https://autostrefa.mx/bots/slug"}}], "total": 1}}
+
+buscar_alternativas → {{"alternativas": [mismos campos que vehiculos], "total": 1}}
+
+obtener_vehiculo → mismos campos que buscar_vehiculos MÁS: "descripcion", "enganche_recomendado", "mensualidad_recomendada", "plazo_maximo", "con_oferta", "oferta", "promociones", "imagen_principal", "galeria_exterior", "galeria_interior"
+
+comparar_vehiculos → {{"vehiculos": [campos de buscar_vehiculos MÁS "kilometraje_numerico", "enganche_recomendado", "mensualidad_recomendada", "plazo_maximo"]}}
+
+calcular_financiamiento → {{"precio_vehiculo": "$385,000", "enganche_porcentaje": 20, "enganche": "$77,000", "monto_a_financiar": "$308,000", "tasa_anual": "15%", "plazo_meses": 48, "mensualidad_estimada": "$8,553", "total_a_pagar": "$488,544", "costo_financiamiento": "$103,544", "nota": "Cálculo estimado..."}}
+
+estadisticas_inventario → {{"total_vehiculos": 45, "rango_precios": {{"minimo": "$189,900", "maximo": "$749,900", "promedio": "$385,000"}}, "marcas_disponibles": [{{"nombre": "Toyota", "cantidad": 8}}], "carrocerias_disponibles": [{{"nombre": "SUV", "cantidad": 15}}], ...}}
+
+obtener_info_negocio → {{"informacion": [{{"id": 1, "titulo": "...", "contenido": "..."}}]}}
+buscar_informacion → {{"resultados": [{{"id": 1, "categoria": "...", "titulo": "...", "contenido": "..."}}]}}
+obtener_faqs → {{"faqs": [{{"id": 1, "pregunta": "...", "respuesta": "..."}}]}}
+solicitar_datos_contacto → {{"mensaje": "Datos registrados correctamente.", "datos_registrados": true}}
+enviar_cotizacion_email → {{"mensaje": "Cotización enviada exitosamente a email@ejemplo.com", "enviado": true}}
+
+IMPORTANTE: Precios SIEMPRE como strings formateados ("$359,900"), kilometraje como strings ("28,000 km"), tasa como string ("15%"). NUNCA números crudos en estos campos.
 
 === FORMATO DE SALIDA ===
 Devuelve JSON estricto (sin markdown, sin backticks):
@@ -997,7 +1113,7 @@ Recuerda:
 - 7 bancos: Scotiabank, Banorte, BBVA, Hey Banco, AFIRME, Santander, Banregio
 - Formato tool_call: <tool_call>{{"name":"...", "arguments":{{...}}}}</tool_call>
 - Formato tool_response: <tool_response>{{...}}</tool_response>
-- NO MSI. Enganche mínimo 10%. Devolución 7 días."""
+- NO MSI. Enganche mínimo 20%. Devolución 7 días."""
 
 
 META_PROMPT_E2_TC = """Genera una conversación realista de WhatsApp entre un cliente y TREFABOT-v1 (chatbot de Autos TREFA).
@@ -1037,7 +1153,7 @@ La conversación tiene 4 tipos de roles: "system", "user", "assistant", "tool".
 === REGLAS ESTRICTAS ===
 1. El bot SIEMPRE se presenta como TREFABOT al inicio.
 2. SIEMPRE captura el nombre del cliente (usar solicitar_datos_contacto).
-3. Genera tool_responses REALISTAS con datos inventados pero creíbles.
+3. Genera tool_responses REALISTAS con datos inventados pero creíbles, usando EXACTAMENTE los formatos descritos abajo.
 4. Las respuestas del bot después de tools deben integrar NATURALMENTE los datos del tool_response.
 5. Máximo 1 pregunta por respuesta del bot.
 6. Incluir links reales cuando corresponda.
@@ -1047,6 +1163,22 @@ La conversación tiene 4 tipos de roles: "system", "user", "assistant", "tool".
 10. NO uses markdown ni backticks en tu respuesta.
 11. Genera entre {min_turnos} y {max_turnos} turnos de usuario.
 12. VARÍA significativamente respecto a la semilla — NO la copies, solo usa su formato y calidad como referencia.
+13. Un mensaje assistant con <tool_call> NO debe contener texto adicional. Separa texto y tool_call en mensajes distintos.
+
+=== FORMATO EXACTO DE TOOL RESPONSES (OBLIGATORIO) ===
+
+Precios SIEMPRE como strings formateados ("$359,900"), kilometraje como strings ("28,000 km"), tasa como string ("15%").
+
+buscar_vehiculos → {{"vehiculos": [{{"id": N, "titulo": "...", "marca": "...", "modelo": "...", "año": N, "precio": "$XXX,XXX", "precio_numerico": N, "transmision": "...", "combustible": "...", "carroceria": "...", "motor": "...", "cilindros": N, "ubicacion": "...", "kilometraje": "XX,XXX km", "garantia": "...", "enganche_minimo": "$XX,XXX", "mensualidad_desde": "$X,XXX", "url": "https://autostrefa.mx/inventario/slug", "liga_mariana": "https://autostrefa.mx/bots/slug"}}], "total": N}}
+
+buscar_alternativas → {{"alternativas": [mismos campos], "total": N}}
+comparar_vehiculos → {{"vehiculos": [campos + "kilometraje_numerico", "enganche_recomendado", "mensualidad_recomendada", "plazo_maximo"]}}
+calcular_financiamiento → {{"precio_vehiculo": "$X", "enganche_porcentaje": N, "enganche": "$X", "monto_a_financiar": "$X", "tasa_anual": "15%", "plazo_meses": N, "mensualidad_estimada": "$X", "total_a_pagar": "$X", "costo_financiamiento": "$X", "nota": "..."}}
+obtener_info_negocio → {{"informacion": [{{"id": N, "titulo": "...", "contenido": "..."}}]}}
+buscar_informacion → {{"resultados": [{{"id": N, "categoria": "...", "titulo": "...", "contenido": "..."}}]}}
+obtener_faqs → {{"faqs": [{{"id": N, "pregunta": "...", "respuesta": "..."}}]}}
+solicitar_datos_contacto → {{"mensaje": "...", "datos_registrados": true}}
+enviar_cotizacion_email → {{"mensaje": "...", "enviado": true}}
 
 === FORMATO DE SALIDA ===
 Devuelve JSON estricto (sin markdown, sin backticks):
@@ -1067,8 +1199,8 @@ Evalúa las siguientes conversaciones de TREFABOT-v1 (Autos TREFA) comparándola
 Criterios de evaluación (escala 1-10 cada uno):
 1. **Naturalidad del cliente** — ¿Escribe como mexicano real en WhatsApp?
 2. **Calidad de respuesta del bot** — ¿Sigue reglas TREFA? ¿Máx 1 pregunta por mensaje?
-3. **Formato tool calling** — ¿<tool_call> seguido de <tool_response> seguido de assistant? ¿JSON válido?
-4. **Información correcta** — ¿Links correctos? ¿Bancos correctos? ¿Sucursales con Google Maps?
+3. **Formato tool calling** — ¿<tool_call> seguido de <tool_response> seguido de assistant? ¿JSON válido? ¿Precios como strings "$XXX,XXX"? ¿Un tool_call por mensaje sin texto extra? ¿role:"tool" para respuestas?
+4. **Información correcta** — ¿Links correctos? ¿Bancos correctos? ¿Sucursales con Google Maps? ¿Campos correctos en responses (vehiculos, alternativas, resultados, faqs, informacion)?
 5. **Valor para entrenamiento** — ¿Ayuda al modelo a aprender cuándo y cómo usar tools?
 
 Puntaje total = promedio de los 5 criterios.

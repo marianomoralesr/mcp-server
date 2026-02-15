@@ -33,10 +33,14 @@ from app.trefa_assets import (
     SYSTEM_PROMPT_SIMPLE,
     SYSTEM_PROMPT_TREFA_BOT,
     VEHICULOS_MUESTRA,
+    calcular_financiamiento_mcp,
     fmt_precio,
     presentar_vehiculo,
     tool_call,
     tool_response,
+    vehiculo_a_mcp_busqueda,
+    vehiculo_a_mcp_comparacion,
+    vehiculo_a_mcp_detalle,
 )
 
 
@@ -61,6 +65,7 @@ def _saludo_simple():
 def _busqueda_marca():
     v = random.sample(VEHICULOS_MUESTRA, min(3, len(VEHICULOS_MUESTRA)))
     marca = v[0]["marca"]
+    v_mcp = [vehiculo_a_mcp_busqueda(vi) for vi in v]
     presentacion = f"¡Claro! Déjame buscar qué {marca} tenemos disponibles 🔍\n\n"
     presentacion += "\n\n".join([presentar_vehiculo(vi) for vi in v])
     presentacion += "\n\n¿Alguno te llama la atención? Puedo darte más detalles o calcular un financiamiento personalizado."
@@ -68,7 +73,7 @@ def _busqueda_marca():
         {"role": "system", "content": SYSTEM_PROMPT_SIMPLE},
         {"role": "user", "content": f"Busco un {marca}"},
         {"role": "assistant", "content": tool_call("buscar_vehiculos", {"marca": marca})},
-        {"role": "user", "content": tool_response("buscar_vehiculos", {"vehiculos": v, "total": len(v)})},
+        {"role": "tool", "content": tool_response("buscar_vehiculos", {"vehiculos": v_mcp, "total": len(v_mcp)})},
         {"role": "assistant", "content": presentacion},
     ]}
 
@@ -78,6 +83,7 @@ def _busqueda_presupuesto():
     v = [vi for vi in VEHICULOS_MUESTRA if vi["precio"] <= presupuesto][:3]
     if not v:
         v = VEHICULOS_MUESTRA[:3]
+    v_mcp = [vehiculo_a_mcp_busqueda(vi) for vi in v]
     presentacion = f"Tengo excelentes opciones dentro de tu presupuesto de {fmt_precio(presupuesto)} 😊\n\n"
     presentacion += "\n\n".join([presentar_vehiculo(vi) for vi in v])
     presentacion += "\n\n¿Te interesa alguno? Puedo calcular las mensualidades con el enganche que prefieras."
@@ -85,7 +91,7 @@ def _busqueda_presupuesto():
         {"role": "system", "content": SYSTEM_PROMPT_SIMPLE},
         {"role": "user", "content": f"Busco un auto, mi presupuesto es de {presupuesto // 1000} mil pesos"},
         {"role": "assistant", "content": tool_call("buscar_vehiculos", {"precio_maximo": presupuesto})},
-        {"role": "user", "content": tool_response("buscar_vehiculos", {"vehiculos": v, "total": len(v)})},
+        {"role": "tool", "content": tool_response("buscar_vehiculos", {"vehiculos": v_mcp, "total": len(v_mcp)})},
         {"role": "assistant", "content": presentacion},
     ]}
 
@@ -94,6 +100,7 @@ def _busqueda_tipo():
     tipos = [("SUV", "SUV"), ("sedan", "Sedan"), ("camioneta", "SUV")]
     tipo_user, tipo_filtro = random.choice(tipos)
     v = [vi for vi in VEHICULOS_MUESTRA if vi["carroceria"] == tipo_filtro][:3]
+    v_mcp = [vehiculo_a_mcp_busqueda(vi) for vi in v]
     presentacion = f"¡Tenemos varias opciones de {tipo_user}! Aquí van las más destacadas:\n\n"
     presentacion += "\n\n".join([presentar_vehiculo(vi) for vi in v])
     presentacion += "\n\n¿Alguna te interesa? Puedo darte todos los detalles."
@@ -101,7 +108,7 @@ def _busqueda_tipo():
         {"role": "system", "content": SYSTEM_PROMPT_SIMPLE},
         {"role": "user", "content": f"Quiero ver {tipo_user}s"},
         {"role": "assistant", "content": tool_call("buscar_vehiculos", {"tipo_carroceria": tipo_filtro})},
-        {"role": "user", "content": tool_response("buscar_vehiculos", {"vehiculos": v, "total": len(v)})},
+        {"role": "tool", "content": tool_response("buscar_vehiculos", {"vehiculos": v_mcp, "total": len(v_mcp)})},
         {"role": "assistant", "content": presentacion},
     ]}
 
@@ -109,26 +116,27 @@ def _busqueda_tipo():
 def _auto_no_disponible():
     marca = random.choice(["BMW", "Audi", "Mercedes", "Subaru"])
     alternativas = random.sample(VEHICULOS_MUESTRA, 3)
+    alt_mcp = [vehiculo_a_mcp_busqueda(vi) for vi in alternativas]
     return {"messages": [
         {"role": "system", "content": SYSTEM_PROMPT_SIMPLE},
         {"role": "user", "content": f"Tienen algún {marca}?"},
         {"role": "assistant", "content": tool_call("buscar_vehiculos", {"marca": marca})},
-        {"role": "user", "content": tool_response("buscar_vehiculos", {"vehiculos": [], "total": 0})},
+        {"role": "tool", "content": tool_response("buscar_vehiculos", {"vehiculos": [], "total": 0})},
         {"role": "assistant", "content": tool_call("buscar_alternativas", {"marca_original": marca, "presupuesto": 450000})},
-        {"role": "user", "content": tool_response("buscar_alternativas", {"alternativas": alternativas, "total": len(alternativas)})},
+        {"role": "tool", "content": tool_response("buscar_alternativas", {"alternativas": alt_mcp, "total": len(alt_mcp)})},
         {"role": "assistant", "content": f"Actualmente no tenemos {marca} en inventario, pero tengo estas opciones que podrían interesarte:\n\n" + "\n\n".join([presentar_vehiculo(v) for v in alternativas]) + "\n\n¿Te gustaría saber más de alguno?"},
     ]}
 
 
 def _detalle_vehiculo():
     v = random.choice(VEHICULOS_MUESTRA)
-    v_detalle = {**v, "motor": "2.0L", "cilindros": 4, "color": "Blanco", "puertas": 4}
+    v_mcp = vehiculo_a_mcp_detalle(v)
     return {"messages": [
         {"role": "system", "content": SYSTEM_PROMPT_SIMPLE},
         {"role": "user", "content": f"Me interesa el {v['titulo']}, ¿qué más me puedes decir?"},
         {"role": "assistant", "content": tool_call("obtener_vehiculo", {"id": v["id"]})},
-        {"role": "user", "content": tool_response("obtener_vehiculo", v_detalle)},
-        {"role": "assistant", "content": f"¡Excelente elección! Aquí tienes todos los detalles del **{v['titulo']}**:\n\n📅 Año: {v['autoano']}\n⚙️ Transmisión: {v['transmision']}\n⛽ Combustible: {v['combustible']}\n🔧 Motor: 2.0L, 4 cilindros\n📏 Kilometraje: {v['kilometraje']:,} km\n🎨 Color: Blanco\n🛡️ Garantía: {v['garantia']}\n\n💰 Precio: {fmt_precio(v['precio'])}\n💳 Enganche mínimo: {fmt_precio(int(v['precio'] * 0.2))}\n📊 Mensualidad desde: {fmt_precio(v['mensualidad_minima'])}/mes\n\n📍 Disponible en: {v['ubicacion']}\n🔗 Ver más: https://autostrefa.mx/inventario/{v['slug']}\n\n¿Te gustaría que calcule el financiamiento con un enganche y plazo específicos?"},
+        {"role": "tool", "content": tool_response("obtener_vehiculo", v_mcp)},
+        {"role": "assistant", "content": f"¡Excelente elección! Aquí tienes todos los detalles del **{v['titulo']}**:\n\n📅 Año: {v['autoano']}\n⚙️ Transmisión: {v['transmision']}\n⛽ Combustible: {v['combustible']}\n🔧 Motor: {v_mcp['motor']}, {v_mcp['cilindros']} cilindros\n📏 Kilometraje: {v['kilometraje']:,} km\n🚗 Carrocería: {v['carroceria']}\n🛡️ Garantía: {v['garantia']}\n\n💰 Precio: {fmt_precio(v['precio'])}\n💳 Enganche mínimo: {fmt_precio(int(v['precio'] * 0.2))}\n📊 Mensualidad desde: {fmt_precio(v['mensualidad_minima'])}/mes\n\n📍 Disponible en: {v['ubicacion']}\n🔗 Ver más: https://autostrefa.mx/inventario/{v['slug']}\n\n¿Te gustaría que calcule el financiamiento con un enganche y plazo específicos?"},
     ]}
 
 
@@ -137,20 +145,16 @@ def _calcular_financiamiento():
     enganche_pct = random.choice([20, 25, 30])
     plazo = random.choice([36, 48, 60])
     precio = v["precio"]
+    resultado = calcular_financiamiento_mcp(precio, enganche_pct, plazo)
     enganche = int(precio * enganche_pct / 100)
     monto = precio - enganche
     tasa_m = 0.15 / 12
     mensualidad = int(monto * (tasa_m * (1 + tasa_m)**plazo) / ((1 + tasa_m)**plazo - 1))
-    resultado = {
-        "precio_vehiculo": precio, "enganche": enganche, "enganche_porcentaje": enganche_pct,
-        "monto_a_financiar": monto, "plazo_meses": plazo, "tasa_anual": 15,
-        "mensualidad_estimada": mensualidad, "pago_total": mensualidad * plazo + enganche,
-    }
     return {"messages": [
         {"role": "system", "content": SYSTEM_PROMPT_SIMPLE},
         {"role": "user", "content": f"¿Cuánto pagaría mensualmente por el {v['titulo']} con {enganche_pct}% de enganche a {plazo} meses?"},
         {"role": "assistant", "content": tool_call("calcular_financiamiento", {"precio_vehiculo": precio, "enganche_porcentaje": enganche_pct, "plazo_meses": plazo})},
-        {"role": "user", "content": tool_response("calcular_financiamiento", resultado)},
+        {"role": "tool", "content": tool_response("calcular_financiamiento", resultado)},
         {"role": "assistant", "content": f"Aquí está tu cotización para el **{v['titulo']}**:\n\n💰 Precio: {fmt_precio(precio)}\n💵 Enganche ({enganche_pct}%): {fmt_precio(enganche)}\n📊 Monto a financiar: {fmt_precio(monto)}\n📅 Plazo: {plazo} meses\n💳 **Mensualidad estimada: {fmt_precio(mensualidad)}/mes**\n\n⚠️ La mensualidad es estimada con una tasa referencia del 15% anual. La tasa final depende de tu perfil crediticio.\n\n¿Te gustaría que un asesor te contacte para iniciar el proceso?"},
     ]}
 
@@ -164,23 +168,25 @@ def _pregunta_info_negocio():
         ("¿Tienen política de devolución?", "devoluciones", "Sí, contamos con **política de devolución de 7 días o 500 km**. ¿Hay algo más en lo que pueda ayudarte?"),
     ]
     pregunta, tema, respuesta_texto = random.choice(temas)
-    info = {"informacion": [{"title": tema.capitalize(), "content": "info relevante"}]}
+    info = {"informacion": [{"id": 1, "titulo": tema.capitalize(), "contenido": respuesta_texto}]}
     return {"messages": [
         {"role": "system", "content": SYSTEM_PROMPT_SIMPLE},
         {"role": "user", "content": pregunta},
         {"role": "assistant", "content": tool_call("obtener_info_negocio", {"tema": tema})},
-        {"role": "user", "content": tool_response("obtener_info_negocio", info)},
+        {"role": "tool", "content": tool_response("obtener_info_negocio", info)},
         {"role": "assistant", "content": respuesta_texto},
     ]}
 
 
 def _comparar_vehiculos():
     v1, v2 = random.sample(VEHICULOS_MUESTRA, 2)
+    v1_mcp = vehiculo_a_mcp_comparacion(v1)
+    v2_mcp = vehiculo_a_mcp_comparacion(v2)
     return {"messages": [
         {"role": "system", "content": SYSTEM_PROMPT_SIMPLE},
         {"role": "user", "content": f"¿Me puedes comparar el {v1['titulo']} con el {v2['titulo']}?"},
         {"role": "assistant", "content": tool_call("comparar_vehiculos", {"vehiculo_ids": [v1["id"], v2["id"]]})},
-        {"role": "user", "content": tool_response("comparar_vehiculos", {"vehiculos": [v1, v2]})},
+        {"role": "tool", "content": tool_response("comparar_vehiculos", {"vehiculos": [v1_mcp, v2_mcp]})},
         {"role": "assistant", "content": f"Aquí tienes la comparación:\n\n**{v1['titulo']}**\n📅 {v1['autoano']} | ⚙️ {v1['transmision']}\n📏 {v1['kilometraje']:,} km\n💰 {fmt_precio(v1['precio'])}\n📍 {v1['ubicacion']}\n\n**{v2['titulo']}**\n📅 {v2['autoano']} | ⚙️ {v2['transmision']}\n📏 {v2['kilometraje']:,} km\n💰 {fmt_precio(v2['precio'])}\n📍 {v2['ubicacion']}\n\n¿Te interesa alguno en particular?"},
     ]}
 
@@ -204,6 +210,9 @@ def _conversacion_simple():
 def _flujo_completo():
     v = random.choice(VEHICULOS_MUESTRA)
     precio = v["precio"]
+    v_mcp_busq = vehiculo_a_mcp_busqueda(v)
+    v_mcp_det = vehiculo_a_mcp_detalle(v)
+    fin_mcp = calcular_financiamiento_mcp(precio, 20, 48)
     enganche = int(precio * 0.2)
     monto = precio - enganche
     tasa_m = 0.15 / 12
@@ -214,15 +223,15 @@ def _flujo_completo():
         {"role": "assistant", "content": "¡Buenas tardes! 👋 Soy Mariana, del equipo de Autos TREFA. ¿Estás buscando un auto en especial?"},
         {"role": "user", "content": f"Me interesan los {v['marca']}"},
         {"role": "assistant", "content": tool_call("buscar_vehiculos", {"marca": v["marca"]})},
-        {"role": "user", "content": tool_response("buscar_vehiculos", {"vehiculos": [v], "total": 1})},
+        {"role": "tool", "content": tool_response("buscar_vehiculos", {"vehiculos": [v_mcp_busq], "total": 1})},
         {"role": "assistant", "content": f"¡Tenemos opciones de {v['marca']}!\n\n{presentar_vehiculo(v)}\n\n¿Te gustaría más detalles?"},
         {"role": "user", "content": "Sí, cuéntame más"},
         {"role": "assistant", "content": tool_call("obtener_vehiculo", {"id": v["id"]})},
-        {"role": "user", "content": tool_response("obtener_vehiculo", {**v, "motor": "2.0L", "cilindros": 4, "color": "Plata"})},
-        {"role": "assistant", "content": f"**{v['titulo']}**:\n📅 {v['autoano']} | ⚙️ {v['transmision']}\n🔧 Motor: 2.0L\n📏 {v['kilometraje']:,} km\n💰 **{fmt_precio(precio)}**\n\n¿Te gustaría que calcule las mensualidades? 😊"},
+        {"role": "tool", "content": tool_response("obtener_vehiculo", v_mcp_det)},
+        {"role": "assistant", "content": f"**{v['titulo']}**:\n📅 {v['autoano']} | ⚙️ {v['transmision']}\n🔧 Motor: {v_mcp_det['motor']}\n📏 {v['kilometraje']:,} km\n💰 **{fmt_precio(precio)}**\n\n¿Te gustaría que calcule las mensualidades? 😊"},
         {"role": "user", "content": "Sí, con 20% de enganche a 48 meses"},
         {"role": "assistant", "content": tool_call("calcular_financiamiento", {"precio_vehiculo": precio, "enganche_porcentaje": 20, "plazo_meses": 48})},
-        {"role": "user", "content": tool_response("calcular_financiamiento", {"precio_vehiculo": precio, "enganche": enganche, "monto_a_financiar": monto, "plazo_meses": 48, "tasa_anual": 15, "mensualidad_estimada": mensualidad})},
+        {"role": "tool", "content": tool_response("calcular_financiamiento", fin_mcp)},
         {"role": "assistant", "content": f"💵 Enganche (20%): {fmt_precio(enganche)}\n📊 Monto a financiar: {fmt_precio(monto)}\n💳 **Mensualidad: {fmt_precio(mensualidad)}/mes**\n\n⚠️ Tasa referencia 15% anual, sujeta a aprobación.\n\n¿Te gustaría que un asesor te contacte?"},
     ]}
 
