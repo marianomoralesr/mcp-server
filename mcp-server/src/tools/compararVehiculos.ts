@@ -11,7 +11,7 @@ export async function compararVehiculos(params: z.infer<typeof CompararVehiculos
 
     const { data, error } = await supabase
       .from('vehiculos_completos')
-      .select('id, titulo, marca, modelo, autoano, precio, transmision, combustible, carroceria, motor, cilindros, ubicacion, kilometraje, garantia, enganchemin, mensualidad_minima, slug, liga_web')
+      .select('id, titulo, marca, modelo, autoano, precio, transmision, combustible, carroceria, motor, cilindros, ubicacion, kilometraje, garantia, enganchemin, enganche_recomendado, mensualidad_minima, mensualidad_recomendada, plazomax, slug, liga_web, liga_bot')
       .in('id', params.vehiculo_ids);
 
     if (error) throw new Error(error.message);
@@ -29,7 +29,7 @@ export async function compararVehiculos(params: z.infer<typeof CompararVehiculos
       modelo: v.modelo,
       año: v.autoano,
       precio: formatPrice(v.precio),
-      precio_numerico: v.precio,
+      precio_numerico: Number(v.precio),
       transmision: v.transmision,
       combustible: v.combustible,
       carroceria: v.carroceria,
@@ -37,11 +37,15 @@ export async function compararVehiculos(params: z.infer<typeof CompararVehiculos
       cilindros: v.cilindros,
       ubicacion: v.ubicacion,
       kilometraje: formatKm(v.kilometraje),
-      kilometraje_numerico: v.kilometraje,
+      kilometraje_numerico: Number(v.kilometraje),
       garantia: v.garantia,
       enganche_minimo: v.enganchemin ? formatPrice(v.enganchemin) : null,
+      enganche_recomendado: v.enganche_recomendado ? formatPrice(v.enganche_recomendado) : null,
       mensualidad_desde: v.mensualidad_minima ? formatPrice(v.mensualidad_minima) : null,
+      mensualidad_recomendada: v.mensualidad_recomendada ? formatPrice(v.mensualidad_recomendada) : null,
+      plazo_maximo: v.plazomax ? `${v.plazomax} meses` : null,
       url: v.liga_web || (v.slug ? `https://autostrefa.mx/autos/${v.slug}` : null),
+      liga_mariana: v.liga_bot || null,
     }));
 
     return { vehiculos };

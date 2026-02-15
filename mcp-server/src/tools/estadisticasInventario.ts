@@ -1,4 +1,4 @@
-import { getSupabaseClient, formatPrice, aplicarFiltrosBase } from '../lib/supabase.js';
+import { getSupabaseClient, formatPrice, formatKm, aplicarFiltrosBase } from '../lib/supabase.js';
 
 export async function estadisticasInventario() {
   try {
@@ -6,7 +6,7 @@ export async function estadisticasInventario() {
 
     let query = supabase
       .from('vehiculos_completos')
-      .select('marca, precio, autoano');
+      .select('marca, precio, autoano, carroceria, transmision, combustible, ubicacion, kilometraje, garantia');
 
     query = aplicarFiltrosBase(query);
 
@@ -24,8 +24,9 @@ export async function estadisticasInventario() {
       };
     }
 
-    const precios = vehiculos.map((v: any) => v.precio).filter(Boolean) as number[];
+    const precios = vehiculos.map((v: any) => Number(v.precio)).filter(Boolean);
     const años = vehiculos.map((v: any) => v.autoano).filter(Boolean) as number[];
+    const kms = vehiculos.map((v: any) => Number(v.kilometraje)).filter(Boolean);
 
     const precioMin = Math.min(...precios);
     const precioMax = Math.max(...precios);
@@ -34,14 +35,21 @@ export async function estadisticasInventario() {
     const añoMin = Math.min(...años);
     const añoMax = Math.max(...años);
 
-    const marcas: Record<string, number> = {};
-    vehiculos.forEach((v: any) => {
-      if (v.marca) marcas[v.marca] = (marcas[v.marca] || 0) + 1;
-    });
+    const kmMin = kms.length > 0 ? Math.min(...kms) : 0;
+    const kmMax = kms.length > 0 ? Math.max(...kms) : 0;
+    const kmPromedio = kms.length > 0 ? kms.reduce((a, b) => a + b, 0) / kms.length : 0;
 
-    const marcasDisponibles = Object.entries(marcas)
-      .sort((a, b) => b[1] - a[1])
-      .map(([marca, cantidad]) => ({ marca, cantidad }));
+    // Agrupar por diferentes dimensiones
+    const agrupar = (campo: string): { nombre: string; cantidad: number }[] => {
+      const conteo: Record<string, number> = {};
+      vehiculos.forEach((v: any) => {
+        const val = v[campo];
+        if (val && val.trim()) conteo[val] = (conteo[val] || 0) + 1;
+      });
+      return Object.entries(conteo)
+        .sort((a, b) => b[1] - a[1])
+        .map(([nombre, cantidad]) => ({ nombre, cantidad }));
+    };
 
     return {
       total_vehiculos: total,
@@ -51,7 +59,17 @@ export async function estadisticasInventario() {
         promedio: formatPrice(precioPromedio),
       },
       rango_anos: { desde: añoMin, hasta: añoMax },
-      marcas_disponibles: marcasDisponibles,
+      rango_kilometraje: {
+        minimo: formatKm(kmMin),
+        maximo: formatKm(kmMax),
+        promedio: formatKm(Math.round(kmPromedio)),
+      },
+      marcas_disponibles: agrupar('marca'),
+      carrocerias_disponibles: agrupar('carroceria'),
+      ubicaciones: agrupar('ubicacion'),
+      transmisiones: agrupar('transmision'),
+      combustibles: agrupar('combustible'),
+      garantias: agrupar('garantia'),
     };
   } catch (err) {
     console.error('[estadisticas_inventario]', err instanceof Error ? err.message : '');

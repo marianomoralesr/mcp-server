@@ -49,19 +49,23 @@ const TOOL_REGISTRY: Record<string, ToolRegistryEntry> = {
     schema: BuscarVehiculosSchema,
     definition: {
       name: 'buscar_vehiculos',
-      description: 'Busca vehículos en el inventario con filtros opcionales (marca, modelo, año, precio, carrocería, transmisión, combustible).',
+      description: 'Busca vehículos en el inventario con filtros opcionales (marca, modelo, año, precio, carrocería, transmisión, combustible, ubicación, kilometraje, garantía, motor).',
       inputSchema: {
         type: 'object',
         properties: {
-          marca: { type: 'string', description: 'Marca del vehículo' },
-          modelo: { type: 'string', description: 'Modelo específico' },
-          año_minimo: { type: 'number', description: 'Año mínimo' },
-          año_maximo: { type: 'number', description: 'Año máximo' },
+          marca: { type: 'string', description: 'Marca del vehículo (ej: Toyota, Honda, Mazda)' },
+          modelo: { type: 'string', description: 'Modelo específico (ej: Corolla, Civic, CX-5)' },
+          año_minimo: { type: 'number', description: 'Año mínimo del vehículo' },
+          año_maximo: { type: 'number', description: 'Año máximo del vehículo' },
           precio_minimo: { type: 'number', description: 'Precio mínimo en MXN' },
           precio_maximo: { type: 'number', description: 'Precio máximo en MXN' },
-          tipo_carroceria: { type: 'string', description: 'SUV, Sedan, Hatchback, Pickup, Van' },
-          transmision: { type: 'string', description: 'Automática o Manual' },
-          combustible: { type: 'string', description: 'Gasolina, Diesel, Híbrido, Eléctrico' },
+          tipo_carroceria: { type: 'string', description: 'Tipo: SUV, Sedán, Hatchback, Pick Up, Van' },
+          transmision: { type: 'string', description: 'Automático o Manual' },
+          combustible: { type: 'string', description: 'Gasolina o Híbrido' },
+          ubicacion: { type: 'string', description: 'Sucursal: Monterrey, Guadalupe, Saltillo, Reynosa' },
+          kilometraje_max: { type: 'number', description: 'Kilometraje máximo (ej: 50000)' },
+          garantia: { type: 'string', description: 'Tipo de garantía: Agencia, 365 días, 90 días, Sin Garantía' },
+          motor: { type: 'string', description: 'Motor del vehículo (ej: 2.0L, 1.5L)' },
           limite: { type: 'number', description: 'Máximo de resultados (default: 5)' },
         },
       },
@@ -95,6 +99,8 @@ const TOOL_REGISTRY: Record<string, ToolRegistryEntry> = {
           presupuesto: { type: 'number', description: 'Presupuesto máximo en MXN' },
           modelo_original: { type: 'string', description: 'Modelo que buscaba' },
           tipo_uso: { type: 'string', description: 'Uso: familia, trabajo, ciudad, carretera' },
+          carroceria: { type: 'string', description: 'Tipo preferido: SUV, Sedán, Hatchback, Pick Up, Van' },
+          ubicacion: { type: 'string', description: 'Sucursal preferida: Monterrey, Guadalupe, Saltillo, Reynosa' },
         },
         required: ['marca_original', 'presupuesto'],
       },
@@ -119,7 +125,7 @@ const TOOL_REGISTRY: Record<string, ToolRegistryEntry> = {
     handler: () => estadisticasInventario(),
     definition: {
       name: 'estadisticas_inventario',
-      description: 'Estadísticas generales: total vehículos, rangos de precio/año, marcas disponibles.',
+      description: 'Estadísticas generales del inventario: total vehículos, rangos de precio/año/kilometraje, marcas, carrocerías, ubicaciones, transmisiones, combustibles y garantías disponibles.',
       inputSchema: { type: 'object', properties: {} },
     },
   },
@@ -128,16 +134,16 @@ const TOOL_REGISTRY: Record<string, ToolRegistryEntry> = {
     schema: CalcularFinanciamientoSchema,
     definition: {
       name: 'calcular_financiamiento',
-      description: 'Calcula mensualidades estimadas. Defaults: enganche 20%, plazo 48 meses, tasa 15%.',
+      description: 'Calcula mensualidades estimadas. Puede usar vehiculo_id para obtener datos reales de la base de datos (enganche mínimo, mensualidad real, plazo máximo). Defaults: enganche 20%, plazo 48 meses, tasa 15%.',
       inputSchema: {
         type: 'object',
         properties: {
-          precio_vehiculo: { type: 'number', description: 'Precio del vehículo en MXN' },
+          precio_vehiculo: { type: 'number', description: 'Precio del vehículo en MXN (opcional si se usa vehiculo_id)' },
+          vehiculo_id: { type: 'number', description: 'ID del vehículo para usar datos reales de financiamiento' },
           enganche_porcentaje: { type: 'number', description: 'Porcentaje de enganche (default: 20)' },
           plazo_meses: { type: 'number', description: 'Plazo en meses (default: 48)' },
           tasa_anual: { type: 'number', description: 'Tasa de interés anual en % (default: 15)' },
         },
-        required: ['precio_vehiculo'],
       },
     },
   },
@@ -239,17 +245,21 @@ function createMcpServer(): McpServer {
   // 1. buscar_vehiculos
   server.tool(
     'buscar_vehiculos',
-    'Busca vehículos en el inventario con filtros opcionales (marca, modelo, año, precio, carrocería, transmisión, combustible).',
+    'Busca vehículos en el inventario con filtros opcionales (marca, modelo, año, precio, carrocería, transmisión, combustible, ubicación, kilometraje, garantía, motor).',
     {
-      marca: z.string().optional().describe('Marca del vehículo'),
-      modelo: z.string().optional().describe('Modelo específico'),
-      año_minimo: z.number().optional().describe('Año mínimo'),
-      año_maximo: z.number().optional().describe('Año máximo'),
+      marca: z.string().optional().describe('Marca del vehículo (ej: Toyota, Honda, Mazda)'),
+      modelo: z.string().optional().describe('Modelo específico (ej: Corolla, Civic, CX-5)'),
+      año_minimo: z.number().optional().describe('Año mínimo del vehículo'),
+      año_maximo: z.number().optional().describe('Año máximo del vehículo'),
       precio_minimo: z.number().optional().describe('Precio mínimo en MXN'),
       precio_maximo: z.number().optional().describe('Precio máximo en MXN'),
-      tipo_carroceria: z.string().optional().describe('SUV, Sedan, Hatchback, Pickup, Van'),
-      transmision: z.string().optional().describe('Automática o Manual'),
-      combustible: z.string().optional().describe('Gasolina, Diesel, Híbrido, Eléctrico'),
+      tipo_carroceria: z.string().optional().describe('Tipo: SUV, Sedán, Hatchback, Pick Up, Van'),
+      transmision: z.string().optional().describe('Automático o Manual'),
+      combustible: z.string().optional().describe('Gasolina o Híbrido'),
+      ubicacion: z.string().optional().describe('Sucursal: Monterrey, Guadalupe, Saltillo, Reynosa'),
+      kilometraje_max: z.number().optional().describe('Kilometraje máximo (ej: 50000)'),
+      garantia: z.string().optional().describe('Tipo de garantía: Agencia, 365 días, 90 días, Sin Garantía'),
+      motor: z.string().optional().describe('Motor del vehículo (ej: 2.0L, 1.5L)'),
       limite: z.number().optional().describe('Máximo de resultados (default: 5)'),
     },
     async (args) => {
@@ -281,6 +291,8 @@ function createMcpServer(): McpServer {
       presupuesto: z.number().describe('Presupuesto máximo en MXN'),
       modelo_original: z.string().optional().describe('Modelo que buscaba'),
       tipo_uso: z.string().optional().describe('Uso: familia, trabajo, ciudad, carretera'),
+      carroceria: z.string().optional().describe('Tipo preferido: SUV, Sedán, Hatchback, Pick Up, Van'),
+      ubicacion: z.string().optional().describe('Sucursal preferida: Monterrey, Guadalupe, Saltillo, Reynosa'),
     },
     async (args) => {
       const result = await buscarAlternativas(BuscarAlternativasSchema.parse(args));
@@ -304,7 +316,7 @@ function createMcpServer(): McpServer {
   // 5. estadisticas_inventario
   server.tool(
     'estadisticas_inventario',
-    'Estadísticas generales: total vehículos, rangos de precio/año, marcas disponibles.',
+    'Estadísticas generales del inventario: total vehículos, rangos de precio/año/kilometraje, marcas, carrocerías, ubicaciones, transmisiones, combustibles y garantías disponibles.',
     {},
     async () => {
       const result = await estadisticasInventario();
@@ -315,9 +327,10 @@ function createMcpServer(): McpServer {
   // 6. calcular_financiamiento
   server.tool(
     'calcular_financiamiento',
-    'Calcula mensualidades estimadas. Defaults: enganche 20%, plazo 48 meses, tasa 15%.',
+    'Calcula mensualidades estimadas. Puede usar vehiculo_id para obtener datos reales de la base de datos. Defaults: enganche 20%, plazo 48 meses, tasa 15%.',
     {
-      precio_vehiculo: z.number().describe('Precio del vehículo en MXN'),
+      precio_vehiculo: z.number().optional().describe('Precio del vehículo en MXN (opcional si se usa vehiculo_id)'),
+      vehiculo_id: z.number().optional().describe('ID del vehículo para usar datos reales de financiamiento'),
       enganche_porcentaje: z.number().optional().describe('Porcentaje de enganche (default: 20)'),
       plazo_meses: z.number().optional().describe('Plazo en meses (default: 48)'),
       tasa_anual: z.number().optional().describe('Tasa anual en % (default: 15)'),

@@ -10,9 +10,13 @@ export const BuscarVehiculosSchema = z.object({
   año_maximo: z.number().optional().describe('Año máximo del vehículo'),
   precio_minimo: z.number().optional().describe('Precio mínimo en MXN'),
   precio_maximo: z.number().optional().describe('Precio máximo en MXN'),
-  tipo_carroceria: z.string().optional().describe('Tipo: SUV, Sedan, Hatchback, Pickup, Van'),
-  transmision: z.string().optional().describe('Automática o Manual'),
-  combustible: z.string().optional().describe('Gasolina, Diesel, Híbrido, Eléctrico'),
+  tipo_carroceria: z.string().optional().describe('Tipo: SUV, Sedán, Hatchback, Pick Up, Van'),
+  transmision: z.string().optional().describe('Automático o Manual'),
+  combustible: z.string().optional().describe('Gasolina o Híbrido'),
+  ubicacion: z.string().optional().describe('Sucursal: Monterrey, Guadalupe, Saltillo, Reynosa'),
+  kilometraje_max: z.number().optional().describe('Kilometraje máximo (ej: 50000)'),
+  garantia: z.string().optional().describe('Tipo de garantía: Agencia, 365 días, 90 días, Sin Garantía'),
+  motor: z.string().optional().describe('Motor del vehículo (ej: 2.0L, 1.5L)'),
   limite: z.number().optional().default(5).describe('Número máximo de resultados (default: 5)'),
 });
 
@@ -57,7 +61,7 @@ export async function buscarVehiculos(params: z.infer<typeof BuscarVehiculosSche
 
     let query = supabase
       .from('vehiculos_completos')
-      .select('id, titulo, marca, modelo, autoano, precio, transmision, combustible, carroceria, ubicacion, kilometraje, garantia, enganchemin, mensualidad_minima, slug, liga_web');
+      .select('id, titulo, marca, modelo, autoano, precio, transmision, combustible, carroceria, motor, cilindros, ubicacion, kilometraje, garantia, enganchemin, mensualidad_minima, slug, liga_web, liga_bot');
 
     query = aplicarFiltrosBase(query);
 
@@ -70,6 +74,10 @@ export async function buscarVehiculos(params: z.infer<typeof BuscarVehiculosSche
     if (params.tipo_carroceria) query = query.ilike('carroceria', `%${params.tipo_carroceria}%`);
     if (params.transmision) query = query.ilike('transmision', `%${params.transmision}%`);
     if (params.combustible) query = query.ilike('combustible', `%${params.combustible}%`);
+    if (params.ubicacion) query = query.ilike('ubicacion', `%${params.ubicacion}%`);
+    if (params.kilometraje_max) query = query.lte('kilometraje', params.kilometraje_max);
+    if (params.garantia) query = query.ilike('garantia', `%${params.garantia}%`);
+    if (params.motor) query = query.ilike('motor', `%${params.motor}%`);
 
     query = query
       .order('precio', { ascending: true })
@@ -90,12 +98,15 @@ export async function buscarVehiculos(params: z.infer<typeof BuscarVehiculosSche
       transmision: v.transmision,
       combustible: v.combustible,
       carroceria: v.carroceria,
+      motor: v.motor,
+      cilindros: v.cilindros,
       ubicacion: v.ubicacion,
       kilometraje: formatKm(v.kilometraje),
       garantia: v.garantia,
       enganche_minimo: v.enganchemin ? formatPrice(v.enganchemin) : null,
       mensualidad_desde: v.mensualidad_minima ? formatPrice(v.mensualidad_minima) : null,
       url: v.liga_web || (v.slug ? `https://autostrefa.mx/autos/${v.slug}` : null),
+      liga_mariana: v.liga_bot || null,
     }));
 
     // Si hay resultados, devolver normalmente

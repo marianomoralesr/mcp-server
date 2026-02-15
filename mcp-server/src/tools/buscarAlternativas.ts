@@ -8,6 +8,8 @@ export const BuscarAlternativasSchema = z.object({
   presupuesto: z.number().describe('Presupuesto máximo del cliente en MXN'),
   modelo_original: z.string().optional().describe('Modelo que buscaba'),
   tipo_uso: z.string().optional().describe('Para qué usará el auto: familia, trabajo, ciudad, carretera'),
+  carroceria: z.string().optional().describe('Tipo preferido: SUV, Sedán, Hatchback, Pick Up, Van'),
+  ubicacion: z.string().optional().describe('Sucursal preferida: Monterrey, Guadalupe, Saltillo, Reynosa'),
 });
 
 export async function buscarAlternativas(params: z.infer<typeof BuscarAlternativasSchema>) {
@@ -32,13 +34,18 @@ export async function buscarAlternativas(params: z.infer<typeof BuscarAlternativ
 
     let query = supabase
       .from('vehiculos_completos')
-      .select('id, titulo, marca, modelo, autoano, precio, transmision, combustible, carroceria, ubicacion, kilometraje, garantia, enganchemin, mensualidad_minima, slug, liga_web');
+      .select('id, titulo, marca, modelo, autoano, precio, transmision, combustible, carroceria, motor, cilindros, ubicacion, kilometraje, garantia, enganchemin, mensualidad_minima, slug, liga_web, liga_bot');
 
     query = aplicarFiltrosBase(query);
     query = query
       .not('marca', 'ilike', `%${params.marca_original}%`)
       .gte('precio', precioMin)
-      .lte('precio', precioMax)
+      .lte('precio', precioMax);
+
+    if (params.carroceria) query = query.ilike('carroceria', `%${params.carroceria}%`);
+    if (params.ubicacion) query = query.ilike('ubicacion', `%${params.ubicacion}%`);
+
+    query = query
       .order('precio', { ascending: true })
       .limit(5);
 
@@ -57,12 +64,15 @@ export async function buscarAlternativas(params: z.infer<typeof BuscarAlternativ
       transmision: v.transmision,
       combustible: v.combustible,
       carroceria: v.carroceria,
+      motor: v.motor,
+      cilindros: v.cilindros,
       ubicacion: v.ubicacion,
       kilometraje: formatKm(v.kilometraje),
       garantia: v.garantia,
       enganche_minimo: v.enganchemin ? formatPrice(v.enganchemin) : null,
       mensualidad_desde: v.mensualidad_minima ? formatPrice(v.mensualidad_minima) : null,
       url: v.liga_web || (v.slug ? `https://autostrefa.mx/autos/${v.slug}` : null),
+      liga_mariana: v.liga_bot || null,
     }));
 
     if (alternativas.length > 0) {
