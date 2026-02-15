@@ -49,7 +49,7 @@ if [ -n "${SUPABASE_URL:-}" ] && [ -n "${SUPABASE_SERVICE_ROLE_KEY:-}" ]; then
     cat > /app/mcp-server/.env <<EOF
 SUPABASE_URL=${SUPABASE_URL}
 SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
-PORT=${MCP_PORT:-3001}
+MCP_PORT=${MCP_PORT:-3001}
 EOF
     if [ -n "${MCP_API_KEY:-}" ]; then
         echo "API_KEY=${MCP_API_KEY}" >> /app/mcp-server/.env

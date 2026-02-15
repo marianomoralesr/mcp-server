@@ -26,7 +26,7 @@ import { enviarCotizacionEmail, EnviarCotizacionEmailSchema } from './tools/envi
 // CONFIGURACIÓN
 // ============================================================================
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.MCP_PORT || 3001;
 const API_KEY = process.env.MCP_API_KEY;
 
 // ============================================================================
