@@ -5,6 +5,7 @@ Incluye: plantillas (sin LLM), sintético con Claude, pipeline TC con Gemini, cu
 
 import asyncio
 import csv
+import hashlib
 import json
 import os
 import random
@@ -29,6 +30,8 @@ from app.trefa_assets import (
     PERSONALIDADES_TC,
     PROMPT_EVALUAR_CURACION,
     PROMPT_EVALUAR_TC,
+    PROMPT_GEMINI3_MERGE_EVAL,
+    PROMPT_GEMINI_FINAL_CHECK,
     PROMPT_MEJORAR,
     SEMILLAS_REALES,
     SYSTEM_PROMPT_CON_TOOLS,
@@ -1213,5 +1216,383 @@ async def generate_gold_amplified(
         "gold_source": os.path.basename(gold_file),
         "preguntas_reales_used": len(preguntas),
     }
+    job_manager.complete_job(job_id, result)
+    return result
+
+
+# ============================================================
+# 4.6 MERGE & EVALUATE (Sonnet + Gemini Flash)
+# ============================================================
+
+def _hash_conversation(conv: dict) -> str:
+    """Hash SHA256 de mensajes sin system prompt para deduplicación."""
+    msgs = conv.get("messages", [])
+    payload = []
+    for m in msgs:
+        if m.get("role") == "system":
+            continue
+        payload.append(f"{m.get('role', '')}:{m.get('content', '')}")
+    raw = "\n".join(payload).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def _validate_structural(msgs: list[dict], only_tc: bool) -> tuple[bool, str]:
+    """Validación estructural local rápida. Retorna (ok, motivo_rechazo)."""
+    if not msgs or len(msgs) < 3:
+        return False, "menos_de_3_mensajes"
+
+    # Roles válidos
+    valid_roles = {"system", "user", "assistant", "tool"}
+    for m in msgs:
+        if m.get("role") not in valid_roles:
+            return False, "role_invalido"
+        if not m.get("content"):
+            return False, "content_vacio"
+
+    # System prompt como primer mensaje
+    if msgs[0].get("role") != "system":
+        return False, "sin_system_prompt"
+
+    # Debe tener al menos user y assistant
+    roles = {m["role"] for m in msgs}
+    if "user" not in roles or "assistant" not in roles:
+        return False, "falta_user_o_assistant"
+
+    # Validación TC si se requiere
+    if only_tc:
+        if not _validar_conv_tc(msgs):
+            return False, "tc_formato_invalido"
+
+    return True, ""
+
+
+async def merge_and_evaluate(
+    job_manager,
+    job_id: str,
+    gemini_api_key: str,
+    output_train_path: str,
+    output_eval_path: str,
+    dataset_dirs: list[str],
+    threshold_eval: float = 7.5,
+    threshold_verify: float = 8.0,
+    eval_split: float = 0.10,
+    exclude_patterns: list[str] | None = None,
+    only_tc: bool = False,
+) -> dict:
+    """Pipeline de 5 fases: Discovery, Validación, Gemini 3 Flash eval, Gemini 2.5 Flash verify, Split."""
+    from app.llm_clients import GeminiClient, parsear_json_respuesta
+
+    exclude_patterns = exclude_patterns or []
+
+    # ── Fase 1: Discovery & Merge (0-10%) ────────────────
+    job_manager.update_progress(job_id, 1, "Fase 1: Escaneando datasets...")
+
+    all_convs = []
+    files_scanned = 0
+
+    for d in dataset_dirs:
+        if not os.path.isdir(d):
+            continue
+        for root, _dirs, files in os.walk(d):
+            for fname in files:
+                if not fname.endswith(".jsonl"):
+                    continue
+                fpath = os.path.join(root, fname)
+
+                # Excluir por patrones
+                skip = False
+                for pat in exclude_patterns:
+                    if pat in fpath:
+                        skip = True
+                        break
+                if skip:
+                    continue
+
+                files_scanned += 1
+                try:
+                    with open(fpath, "r", encoding="utf-8") as f:
+                        for line in f:
+                            line = line.strip()
+                            if not line:
+                                continue
+                            try:
+                                conv = json.loads(line)
+                                if "messages" in conv and isinstance(conv["messages"], list):
+                                    conv["_source"] = fpath
+                                    all_convs.append(conv)
+                            except json.JSONDecodeError:
+                                continue
+                except Exception:
+                    continue
+
+    if job_manager.is_cancelled(job_id):
+        return {}
+
+    # Deduplicar por hash
+    seen_hashes = set()
+    unique_convs = []
+    for conv in all_convs:
+        h = _hash_conversation(conv)
+        if h not in seen_hashes:
+            seen_hashes.add(h)
+            conv["_hash"] = h
+            unique_convs.append(conv)
+
+    discovered = len(all_convs)
+    after_dedup = len(unique_convs)
+
+    job_manager.update_progress(
+        job_id, 10,
+        f"Fase 1: {discovered} encontradas, {after_dedup} únicas ({files_scanned} archivos)"
+    )
+
+    logger.info(
+        "merge_eval_phase1",
+        files=files_scanned,
+        discovered=discovered,
+        unique=after_dedup,
+    )
+
+    if not unique_convs:
+        job_manager.fail_job(job_id, "No se encontraron conversaciones en los directorios especificados")
+        return {"error": "No conversations found"}
+
+    # ── Fase 2: Validación estructural (10-20%) ──────────
+    job_manager.update_progress(job_id, 11, "Fase 2: Validación estructural...")
+
+    valid_convs = []
+    validation_stats = {}
+
+    for i, conv in enumerate(unique_convs):
+        if job_manager.is_cancelled(job_id):
+            return {}
+
+        msgs = conv.get("messages", [])
+        ok, motivo = _validate_structural(msgs, only_tc)
+
+        if ok:
+            valid_convs.append(conv)
+        else:
+            validation_stats[motivo] = validation_stats.get(motivo, 0) + 1
+
+        if (i + 1) % 100 == 0:
+            pct = 10 + int((i + 1) / len(unique_convs) * 10)
+            job_manager.update_progress(
+                job_id, min(pct, 20),
+                f"Fase 2: {i+1}/{len(unique_convs)} validadas ({len(valid_convs)} OK)"
+            )
+
+    job_manager.update_progress(
+        job_id, 20,
+        f"Fase 2: {len(valid_convs)}/{after_dedup} pasaron validación"
+    )
+
+    logger.info(
+        "merge_eval_phase2",
+        valid=len(valid_convs),
+        rejected=after_dedup - len(valid_convs),
+        stats=validation_stats,
+    )
+
+    if not valid_convs:
+        job_manager.fail_job(job_id, "Ninguna conversación pasó la validación estructural")
+        return {"error": "No valid conversations"}
+
+    # ── Fase 3: Evaluación Gemini 3 Flash (20-70%) ──────
+    job_manager.update_progress(job_id, 21, "Fase 3: Evaluación con Gemini 3 Flash...")
+
+    eval_client = GeminiClient(
+        api_key=gemini_api_key,
+        model="gemini-3-flash-preview",
+    )
+
+    eval_approved = []
+    eval_rejected = 0
+    batch_size = 5
+
+    for lote_idx in range(0, len(valid_convs), batch_size):
+        if job_manager.is_cancelled(job_id):
+            return {}
+
+        lote = valid_convs[lote_idx:lote_idx + batch_size]
+
+        # Formatear batch para evaluación
+        convs_texto = ""
+        for j, conv in enumerate(lote):
+            convs_texto += f"\n--- Conversación {j} ---\n{_formatear_conv_para_eval(conv)}\n"
+
+        prompt = PROMPT_GEMINI3_MERGE_EVAL.format(
+            conversaciones=convs_texto,
+            umbral=threshold_eval,
+        )
+
+        try:
+            texto = await eval_client.generate(prompt, temperature=0.2)
+            evaluaciones = parsear_json_respuesta(texto)
+
+            if evaluaciones and isinstance(evaluaciones, list):
+                for j_ev, ev in enumerate(evaluaciones):
+                    idx_in_lote = ev.get("indice", j_ev)
+                    if idx_in_lote < len(lote):
+                        conv = lote[idx_in_lote]
+                    else:
+                        conv = lote[min(j_ev, len(lote) - 1)]
+
+                    puntaje = ev.get("puntaje_total", 0)
+                    if ev.get("veredicto") == "conservar" and puntaje >= threshold_eval:
+                        eval_approved.append(conv)
+                    else:
+                        eval_rejected += 1
+            else:
+                # Si falla el parseo, conservar el lote (fail-open)
+                eval_approved.extend(lote)
+        except Exception as e:
+            logger.warning("merge_eval_gemini3_error", lote=lote_idx, error=str(e))
+            eval_approved.extend(lote)
+
+        pct = 20 + int((lote_idx + batch_size) / len(valid_convs) * 50)
+        job_manager.update_progress(
+            job_id, min(pct, 70),
+            f"Fase 3 Gemini 3 Flash: {lote_idx + len(lote)}/{len(valid_convs)} evaluadas ({len(eval_approved)} aprobadas)"
+        )
+        await asyncio.sleep(0.5)
+
+    job_manager.update_progress(
+        job_id, 70,
+        f"Fase 3: {len(eval_approved)} aprobadas por Gemini 3 Flash"
+    )
+
+    logger.info(
+        "merge_eval_phase3",
+        approved=len(eval_approved),
+        rejected=eval_rejected,
+    )
+
+    if not eval_approved:
+        job_manager.fail_job(job_id, "Ninguna conversación fue aprobada por Gemini 3 Flash")
+        return {"error": "No conversations approved by Gemini 3 Flash"}
+
+    # ── Fase 4: Verificación Gemini 2.5 Flash (70-90%) ───
+    job_manager.update_progress(job_id, 71, "Fase 4: Verificación con Gemini 2.5 Flash...")
+
+    verify_client = GeminiClient(
+        api_key=gemini_api_key,
+        model="gemini-2.5-flash",
+    )
+
+    final_approved = []
+    verify_failed = 0
+
+    for lote_idx in range(0, len(eval_approved), batch_size):
+        if job_manager.is_cancelled(job_id):
+            return {}
+
+        lote = eval_approved[lote_idx:lote_idx + batch_size]
+
+        convs_texto = ""
+        for j, conv in enumerate(lote):
+            convs_texto += f"\n--- Conversación {j} ---\n{_formatear_conv_para_eval(conv)}\n"
+
+        prompt = PROMPT_GEMINI_FINAL_CHECK.format(conversaciones=convs_texto)
+
+        try:
+            texto = await verify_client.generate(prompt, temperature=0.2)
+            checks = parsear_json_respuesta(texto)
+
+            if checks and isinstance(checks, list):
+                for j_ch, ch in enumerate(checks):
+                    idx_in_lote = ch.get("indice", j_ch)
+                    if idx_in_lote < len(lote):
+                        conv = lote[idx_in_lote]
+                    else:
+                        conv = lote[min(j_ch, len(lote) - 1)]
+
+                    if ch.get("veredicto") == "PASS":
+                        final_approved.append(conv)
+                    else:
+                        verify_failed += 1
+            else:
+                # Fail-open: si no parsea, conservar
+                final_approved.extend(lote)
+        except Exception as e:
+            logger.warning("merge_eval_verify_error", lote=lote_idx, error=str(e))
+            final_approved.extend(lote)
+
+        pct = 70 + int((lote_idx + batch_size) / len(eval_approved) * 20)
+        job_manager.update_progress(
+            job_id, min(pct, 90),
+            f"Fase 4 Gemini 2.5: {lote_idx + len(lote)}/{len(eval_approved)} verificadas ({len(final_approved)} PASS)"
+        )
+        await asyncio.sleep(0.5)
+
+    job_manager.update_progress(
+        job_id, 90,
+        f"Fase 4: {len(final_approved)} aprobadas por Gemini 2.5 Flash"
+    )
+
+    logger.info(
+        "merge_eval_phase4",
+        approved=len(final_approved),
+        failed=verify_failed,
+    )
+
+    if not final_approved:
+        job_manager.fail_job(job_id, "Ninguna conversación pasó la verificación Gemini 2.5 Flash")
+        return {"error": "No conversations passed Gemini 2.5 Flash check"}
+
+    # ── Fase 5: Train/Eval Split (90-100%) ───────────────
+    job_manager.update_progress(job_id, 91, "Fase 5: Generando train/eval split...")
+
+    random.shuffle(final_approved)
+
+    n_eval = max(1, int(len(final_approved) * eval_split))
+    eval_set = final_approved[:n_eval]
+    train_set = final_approved[n_eval:]
+
+    # Limpiar metadata interna antes de escribir
+    def _clean(conv):
+        cleaned = {"messages": conv["messages"]}
+        return cleaned
+
+    os.makedirs(os.path.dirname(output_train_path) or ".", exist_ok=True)
+    for datos, ruta in [(train_set, output_train_path), (eval_set, output_eval_path)]:
+        with open(ruta, "w", encoding="utf-8") as f:
+            for item in datos:
+                f.write(json.dumps(_clean(item), ensure_ascii=False) + "\n")
+
+    # Calcular costos — Gemini 3 Flash: $0.50/$3.00 per M, Gemini 2.5 Flash: $0.15/$0.60 per M
+    g3_cost_input = eval_client.usage.tokens_input / 1_000_000 * 0.50
+    g3_cost_output = eval_client.usage.tokens_output / 1_000_000 * 3.0
+    g3_cost = g3_cost_input + g3_cost_output
+
+    g25_cost_input = verify_client.usage.tokens_input / 1_000_000 * 0.15
+    g25_cost_output = verify_client.usage.tokens_output / 1_000_000 * 0.60
+    g25_cost = g25_cost_input + g25_cost_output
+
+    result = {
+        "discovered": discovered,
+        "after_dedup": after_dedup,
+        "valid": len(valid_convs),
+        "eval_approved": len(eval_approved),
+        "final_approved": len(final_approved),
+        "train_count": len(train_set),
+        "eval_count": len(eval_set),
+        "train_path": output_train_path,
+        "eval_path": output_eval_path,
+        "validation_stats": validation_stats,
+        "costs": {
+            "gemini3_flash_usd": round(g3_cost, 4),
+            "gemini25_flash_usd": round(g25_cost, 4),
+            "total_usd": round(g3_cost + g25_cost, 4),
+        },
+        "tokens": {
+            "gemini3_input": eval_client.usage.tokens_input,
+            "gemini3_output": eval_client.usage.tokens_output,
+            "gemini25_input": verify_client.usage.tokens_input,
+            "gemini25_output": verify_client.usage.tokens_output,
+        },
+    }
+
+    job_manager.update_progress(job_id, 100, "Completado")
     job_manager.complete_job(job_id, result)
     return result

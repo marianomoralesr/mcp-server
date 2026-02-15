@@ -61,6 +61,14 @@ class GoldAmplifierRequest(BaseModel):
     pause_seconds: float = Field(default=1.5, ge=0.5, le=10.0)
 
 
+class MergeEvaluateRequest(BaseModel):
+    threshold_sonnet: float = Field(default=7.5, ge=1.0, le=10.0, description="Umbral Gemini 3 Flash (evaluación)")
+    threshold_gemini: float = Field(default=8.0, ge=1.0, le=10.0, description="Umbral Gemini 2.5 Flash (verificación)")
+    eval_split: float = Field(default=0.10, ge=0.01, le=0.5)
+    exclude_patterns: Optional[list[str]] = None
+    only_tc: bool = False
+
+
 class AnalyzeToolsRequest(BaseModel):
     filepaths: list[str]
 
@@ -253,6 +261,49 @@ async def gold_amplifier(body: GoldAmplifierRequest, request: Request):
     ))
 
     return {"job_id": job_id, "output_path": output_path}
+
+
+@router.post("/generate/merge-evaluate")
+async def merge_evaluate(body: MergeEvaluateRequest, request: Request):
+    """Merge & Evaluate: fusiona todos los datasets, evalúa con Gemini 3 Flash + Gemini 2.5 Flash."""
+    from app.generators import merge_and_evaluate
+
+    jm = _get_job_manager(request)
+    gemini_key = _get_api_key(request, "X-Gemini-Key", "TREFA_GEMINI_API_KEY")
+    output_dir = _get_output_dir(request)
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Resolver dataset_dirs: output_dir + datasets hermano
+    dataset_dirs = [output_dir]
+    datasets_sibling = os.path.join(os.path.dirname(output_dir), "datasets")
+    if os.path.isdir(datasets_sibling):
+        dataset_dirs.append(datasets_sibling)
+
+    ts = datetime.now().strftime('%Y%m%d_%H%M%S')
+    train_path = os.path.join(output_dir, f"train_{ts}.jsonl")
+    eval_path = os.path.join(output_dir, f"eval_{ts}.jsonl")
+
+    job_id = jm.create_job("merge_evaluate", {
+        "threshold_eval": body.threshold_sonnet,
+        "threshold_verify": body.threshold_gemini,
+        "eval_split": body.eval_split,
+        "only_tc": body.only_tc,
+        "dataset_dirs": [os.path.basename(d) for d in dataset_dirs],
+    })
+    jm.start_job(job_id, lambda: merge_and_evaluate(
+        jm, job_id,
+        gemini_api_key=gemini_key,
+        output_train_path=train_path,
+        output_eval_path=eval_path,
+        dataset_dirs=dataset_dirs,
+        threshold_eval=body.threshold_sonnet,
+        threshold_verify=body.threshold_gemini,
+        eval_split=body.eval_split,
+        exclude_patterns=body.exclude_patterns,
+        only_tc=body.only_tc,
+    ))
+
+    return {"job_id": job_id, "train_path": train_path, "eval_path": eval_path}
 
 
 # ── Endpoints análisis ────────────────────────────────

@@ -1330,6 +1330,71 @@ RESPONDE SOLO EL JSON, SIN MARKDOWN NI EXPLICACIONES."""
 
 
 # ============================================================
+# PROMPTS MERGE & EVALUATE (Gemini 3 Flash + Gemini 2.5 Flash)
+# ============================================================
+
+PROMPT_GEMINI3_MERGE_EVAL = """Eres un evaluador experto de datasets de fine-tuning para un chatbot de autos seminuevos (Autos TREFA, México).
+
+Evalúa CADA conversación del batch en 4 criterios (1-10):
+
+1. **naturalidad** — ¿Suena como una conversación real mexicana? Tuteo, coloquialismos, flujo natural.
+2. **coherencia** — ¿Las respuestas son coherentes con las preguntas? ¿El contexto se mantiene?
+3. **calidad_tc** — Si tiene tool calling: ¿formato correcto (<tool_call>/<tool_response>)? ¿role:tool (no role:user)? ¿Datos MCP coherentes? Si NO tiene TC, puntuar 7 por defecto.
+4. **valor_finetuning** — ¿Esta conversación enseñará algo útil al modelo? ¿Cubre un escenario real? ¿Evita repeticiones triviales?
+
+## REGLAS
+- Tool calls SIEMPRE en su propio mensaje assistant, SIN texto extra mezclado
+- tool_response SIEMPRE con role:"tool" (NUNCA role:"user")
+- Precios como strings formateados: "$359,900" (NO números)
+- Kilometraje como string: "28,000 km" (NO número)
+- System prompt debe estar presente como primer mensaje
+- Mínimo 3 mensajes (system + user + assistant)
+
+## BATCH DE CONVERSACIONES
+{conversaciones}
+
+## INSTRUCCIONES
+Para CADA conversación, retorna un objeto con:
+- "indice": número de la conversación (empezando en 0)
+- "naturalidad": int 1-10
+- "coherencia": int 1-10
+- "calidad_tc": int 1-10
+- "valor_finetuning": int 1-10
+- "puntaje_total": promedio de los 4 criterios (float, 1 decimal)
+- "veredicto": "conservar" si puntaje_total >= {umbral}, "descartar" si no
+- "motivo": breve explicación (1 línea)
+
+Responde EXCLUSIVAMENTE con un JSON array. Sin markdown, sin explicaciones.
+Ejemplo: [{{"indice":0,"naturalidad":8,"coherencia":9,"calidad_tc":7,"valor_finetuning":8,"puntaje_total":8.0,"veredicto":"conservar","motivo":"Conversación natural con buen flujo TC"}}]"""
+
+
+PROMPT_GEMINI_FINAL_CHECK = """Eres un verificador técnico de calidad de producción para datasets de fine-tuning.
+
+Realiza 4 checks PASS/FAIL por cada conversación:
+
+1. **format_ok** — Roles válidos (system/user/assistant/tool), content presente y no vacío, mínimo 3 mensajes.
+2. **mcp_ok** — Si tiene tool calling: cada <tool_call> en mensaje assistant separado (sin texto extra), seguido de role:tool con <tool_response> que contiene JSON válido. Precios y kilometraje como strings. Si NO tiene TC: PASS automático.
+3. **system_ok** — Primer mensaje es role:system con contenido sustancial (>100 chars).
+4. **business_ok** — Datos del negocio coherentes: sucursales (Monterrey, Guadalupe, Saltillo, Reynosa), enganche mínimo 20%, garantía mencionada correctamente, no inventa datos falsos.
+
+## BATCH DE CONVERSACIONES
+{conversaciones}
+
+## INSTRUCCIONES
+Para CADA conversación, retorna:
+- "indice": número (empezando en 0)
+- "format_ok": "PASS" o "FAIL"
+- "mcp_ok": "PASS" o "FAIL"
+- "system_ok": "PASS" o "FAIL"
+- "business_ok": "PASS" o "FAIL"
+- "veredicto": "PASS" si los 4 son PASS, "FAIL" si cualquiera falla
+- "issues": lista de strings con problemas encontrados (vacía si todo PASS)
+
+Responde EXCLUSIVAMENTE con un JSON array. Sin markdown, sin explicaciones.
+Ejemplo: [{{"indice":0,"format_ok":"PASS","mcp_ok":"PASS","system_ok":"PASS","business_ok":"PASS","veredicto":"PASS","issues":[]}}]"""
+
+
+# ============================================================
 # SYSTEM PROMPT TREFA BOT (generar-datos-sinteticos.py)
 # ============================================================
 
