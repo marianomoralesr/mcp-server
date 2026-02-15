@@ -12,15 +12,16 @@ ENV PYTHONUNBUFFERED=1
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
-    git \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-# MCP Server — clonar desde repo (está en .gitignore del repo principal)
-RUN git clone -b main https://github.com/marianomoralesr/mcp-server.git /app/mcp-server
+# MCP Server
 WORKDIR /app/mcp-server
-RUN npm install && npm run build && npm prune --production
+COPY mcp-server/package*.json ./
+RUN npm install
+COPY mcp-server/ .
+RUN npm run build && npm prune --production
 
 # FastAPI - requirements primero (cache)
 WORKDIR /app

@@ -27,8 +27,8 @@ env/
 *.bin
 *.safetensors
 
-# mcp-server (tiene su propio repo)
-mcp-server/
+# mcp-server: incluido para deploy (Railway/Docker)
+# mcp-server/
 
 # Node
 node_modules/
