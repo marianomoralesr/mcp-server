@@ -1051,6 +1051,40 @@ def _cargar_preguntas_reales(datasets_dir: str) -> list[str]:
     return preguntas
 
 
+class _CheckpointWriter:
+    """Escritor incremental con checkpoint a disco.
+
+    Escribe cada conversación a un archivo .partial.jsonl con flush inmediato.
+    Si el job termina bien, renombra .partial → .jsonl (atómico).
+    Si falla, el .partial queda en disco para recovery manual.
+    """
+
+    def __init__(self, output_path: str):
+        self.output_path = output_path
+        self.partial_path = output_path + ".partial"
+        self._f = open(self.partial_path, "w", encoding="utf-8")
+        self.count = 0
+
+    def write(self, conv: dict):
+        self._f.write(json.dumps(conv, ensure_ascii=False) + "\n")
+        self._f.flush()
+        self.count += 1
+
+    def finalize(self):
+        """Cierra y renombra .partial → final."""
+        self._f.close()
+        os.replace(self.partial_path, self.output_path)
+
+    def abort(self):
+        """Cierra pero deja el .partial para recovery."""
+        self._f.close()
+        logger.warning(
+            "checkpoint_aborted",
+            partial_path=self.partial_path,
+            saved_count=self.count,
+        )
+
+
 async def generate_gold_amplified(
     job_manager,
     job_id: str,
@@ -1115,7 +1149,8 @@ async def generate_gold_amplified(
 
     os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
 
-    with open(output_path, "w", encoding="utf-8") as f_out:
+    writer = _CheckpointWriter(output_path)
+    try:
         for i, item in enumerate(plan):
             if job_manager.is_cancelled(job_id):
                 break
@@ -1175,7 +1210,7 @@ async def generate_gold_amplified(
                         # Validar: formato MCP + mínimo 6 mensajes sin system
                         msgs_sin_system = [m for m in mensajes if m["role"] != "system"]
                         if _validar_conv_tc(mensajes) and len(msgs_sin_system) >= 6:
-                            f_out.write(json.dumps({"messages": mensajes}, ensure_ascii=False) + "\n")
+                            writer.write({"messages": mensajes})
                             generadas += 1
                             conv_ok = True
                             break
@@ -1194,9 +1229,14 @@ async def generate_gold_amplified(
             pct = int((i + 1) / count * 100)
             job_manager.update_progress(
                 job_id, pct,
-                f"{generadas} generadas, {fallidas} fallidas ({i+1}/{count})"
+                f"{generadas} generadas, {fallidas} fallidas ({i+1}/{count}) [checkpoint: {writer.count}]"
             )
             await asyncio.sleep(pause_seconds)
+
+        writer.finalize()
+    except Exception:
+        writer.abort()
+        raise
 
     # Estimar costo
     cost_input = client.usage.tokens_input / 1_000_000 * 0.15
@@ -1410,65 +1450,86 @@ async def merge_and_evaluate(
     eval_rejected = 0
     batch_size = 5
 
-    for lote_idx in range(0, len(valid_convs), batch_size):
-        if job_manager.is_cancelled(job_id):
-            return {}
+    # Checkpoint: guardar aprobadas de Fase 3 incrementalmente
+    output_dir = os.path.dirname(output_train_path) or "."
+    os.makedirs(output_dir, exist_ok=True)
+    checkpoint_path = os.path.join(output_dir, f"checkpoint_{job_id}.jsonl")
+    phase3_ckpt = _CheckpointWriter(checkpoint_path)
 
-        lote = valid_convs[lote_idx:lote_idx + batch_size]
+    def _clean_for_ckpt(conv):
+        return {"messages": conv["messages"]}
 
-        # Formatear batch para evaluación
-        convs_texto = ""
-        for j, conv in enumerate(lote):
-            convs_texto += f"\n--- Conversación {j} ---\n{_formatear_conv_para_eval(conv)}\n"
+    try:
+        for lote_idx in range(0, len(valid_convs), batch_size):
+            if job_manager.is_cancelled(job_id):
+                phase3_ckpt.abort()
+                return {}
 
-        prompt = PROMPT_GEMINI3_MERGE_EVAL.format(
-            conversaciones=convs_texto,
-            umbral=threshold_eval,
-        )
+            lote = valid_convs[lote_idx:lote_idx + batch_size]
 
-        try:
-            texto = await eval_client.generate(prompt, temperature=0.2)
-            evaluaciones = parsear_json_respuesta(texto)
+            # Formatear batch para evaluación
+            convs_texto = ""
+            for j, conv in enumerate(lote):
+                convs_texto += f"\n--- Conversación {j} ---\n{_formatear_conv_para_eval(conv)}\n"
 
-            if evaluaciones and isinstance(evaluaciones, list):
-                for j_ev, ev in enumerate(evaluaciones):
-                    idx_in_lote = ev.get("indice", j_ev)
-                    if idx_in_lote < len(lote):
-                        conv = lote[idx_in_lote]
-                    else:
-                        conv = lote[min(j_ev, len(lote) - 1)]
+            prompt = PROMPT_GEMINI3_MERGE_EVAL.format(
+                conversaciones=convs_texto,
+                umbral=threshold_eval,
+            )
 
-                    puntaje = ev.get("puntaje_total", 0)
-                    if ev.get("veredicto") == "conservar" and puntaje >= threshold_eval:
-                        eval_approved.append(conv)
-                    else:
-                        eval_rejected += 1
-            else:
-                # Si falla el parseo, conservar el lote (fail-open)
+            try:
+                texto = await eval_client.generate(prompt, temperature=0.2)
+                evaluaciones = parsear_json_respuesta(texto)
+
+                if evaluaciones and isinstance(evaluaciones, list):
+                    for j_ev, ev in enumerate(evaluaciones):
+                        idx_in_lote = ev.get("indice", j_ev)
+                        if idx_in_lote < len(lote):
+                            conv = lote[idx_in_lote]
+                        else:
+                            conv = lote[min(j_ev, len(lote) - 1)]
+
+                        puntaje = ev.get("puntaje_total", 0)
+                        if ev.get("veredicto") == "conservar" and puntaje >= threshold_eval:
+                            eval_approved.append(conv)
+                            phase3_ckpt.write(_clean_for_ckpt(conv))
+                        else:
+                            eval_rejected += 1
+                else:
+                    # Si falla el parseo, conservar el lote (fail-open)
+                    eval_approved.extend(lote)
+                    for conv in lote:
+                        phase3_ckpt.write(_clean_for_ckpt(conv))
+            except Exception as e:
+                logger.warning("merge_eval_gemini3_error", lote=lote_idx, error=str(e))
                 eval_approved.extend(lote)
-        except Exception as e:
-            logger.warning("merge_eval_gemini3_error", lote=lote_idx, error=str(e))
-            eval_approved.extend(lote)
+                for conv in lote:
+                    phase3_ckpt.write(_clean_for_ckpt(conv))
 
-        pct = 20 + int((lote_idx + batch_size) / len(valid_convs) * 50)
-        job_manager.update_progress(
-            job_id, min(pct, 70),
-            f"Fase 3 Gemini 3 Flash: {lote_idx + len(lote)}/{len(valid_convs)} evaluadas ({len(eval_approved)} aprobadas)"
-        )
-        await asyncio.sleep(0.5)
+            pct = 20 + int((lote_idx + batch_size) / len(valid_convs) * 50)
+            job_manager.update_progress(
+                job_id, min(pct, 70),
+                f"Fase 3 Gemini 3 Flash: {lote_idx + len(lote)}/{len(valid_convs)} evaluadas ({len(eval_approved)} aprobadas) [checkpoint: {phase3_ckpt.count}]"
+            )
+            await asyncio.sleep(0.5)
+    except Exception:
+        phase3_ckpt.abort()
+        raise
 
     job_manager.update_progress(
         job_id, 70,
-        f"Fase 3: {len(eval_approved)} aprobadas por Gemini 3 Flash"
+        f"Fase 3: {len(eval_approved)} aprobadas por Gemini 3 Flash (checkpoint: {phase3_ckpt.count})"
     )
 
     logger.info(
         "merge_eval_phase3",
         approved=len(eval_approved),
         rejected=eval_rejected,
+        checkpoint_path=checkpoint_path,
     )
 
     if not eval_approved:
+        phase3_ckpt.abort()
         job_manager.fail_job(job_id, "Ninguna conversación fue aprobada por Gemini 3 Flash")
         return {"error": "No conversations approved by Gemini 3 Flash"}
 
@@ -1483,47 +1544,52 @@ async def merge_and_evaluate(
     final_approved = []
     verify_failed = 0
 
-    for lote_idx in range(0, len(eval_approved), batch_size):
-        if job_manager.is_cancelled(job_id):
-            return {}
+    try:
+        for lote_idx in range(0, len(eval_approved), batch_size):
+            if job_manager.is_cancelled(job_id):
+                phase3_ckpt.abort()
+                return {}
 
-        lote = eval_approved[lote_idx:lote_idx + batch_size]
+            lote = eval_approved[lote_idx:lote_idx + batch_size]
 
-        convs_texto = ""
-        for j, conv in enumerate(lote):
-            convs_texto += f"\n--- Conversación {j} ---\n{_formatear_conv_para_eval(conv)}\n"
+            convs_texto = ""
+            for j, conv in enumerate(lote):
+                convs_texto += f"\n--- Conversación {j} ---\n{_formatear_conv_para_eval(conv)}\n"
 
-        prompt = PROMPT_GEMINI_FINAL_CHECK.format(conversaciones=convs_texto)
+            prompt = PROMPT_GEMINI_FINAL_CHECK.format(conversaciones=convs_texto)
 
-        try:
-            texto = await verify_client.generate(prompt, temperature=0.2)
-            checks = parsear_json_respuesta(texto)
+            try:
+                texto = await verify_client.generate(prompt, temperature=0.2)
+                checks = parsear_json_respuesta(texto)
 
-            if checks and isinstance(checks, list):
-                for j_ch, ch in enumerate(checks):
-                    idx_in_lote = ch.get("indice", j_ch)
-                    if idx_in_lote < len(lote):
-                        conv = lote[idx_in_lote]
-                    else:
-                        conv = lote[min(j_ch, len(lote) - 1)]
+                if checks and isinstance(checks, list):
+                    for j_ch, ch in enumerate(checks):
+                        idx_in_lote = ch.get("indice", j_ch)
+                        if idx_in_lote < len(lote):
+                            conv = lote[idx_in_lote]
+                        else:
+                            conv = lote[min(j_ch, len(lote) - 1)]
 
-                    if ch.get("veredicto") == "PASS":
-                        final_approved.append(conv)
-                    else:
-                        verify_failed += 1
-            else:
-                # Fail-open: si no parsea, conservar
+                        if ch.get("veredicto") == "PASS":
+                            final_approved.append(conv)
+                        else:
+                            verify_failed += 1
+                else:
+                    # Fail-open: si no parsea, conservar
+                    final_approved.extend(lote)
+            except Exception as e:
+                logger.warning("merge_eval_verify_error", lote=lote_idx, error=str(e))
                 final_approved.extend(lote)
-        except Exception as e:
-            logger.warning("merge_eval_verify_error", lote=lote_idx, error=str(e))
-            final_approved.extend(lote)
 
-        pct = 70 + int((lote_idx + batch_size) / len(eval_approved) * 20)
-        job_manager.update_progress(
-            job_id, min(pct, 90),
-            f"Fase 4 Gemini 2.5: {lote_idx + len(lote)}/{len(eval_approved)} verificadas ({len(final_approved)} PASS)"
-        )
-        await asyncio.sleep(0.5)
+            pct = 70 + int((lote_idx + batch_size) / len(eval_approved) * 20)
+            job_manager.update_progress(
+                job_id, min(pct, 90),
+                f"Fase 4 Gemini 2.5: {lote_idx + len(lote)}/{len(eval_approved)} verificadas ({len(final_approved)} PASS)"
+            )
+            await asyncio.sleep(0.5)
+    except Exception:
+        phase3_ckpt.abort()
+        raise
 
     job_manager.update_progress(
         job_id, 90,
@@ -1537,6 +1603,7 @@ async def merge_and_evaluate(
     )
 
     if not final_approved:
+        phase3_ckpt.abort()
         job_manager.fail_job(job_id, "Ninguna conversación pasó la verificación Gemini 2.5 Flash")
         return {"error": "No conversations passed Gemini 2.5 Flash check"}
 
@@ -1559,6 +1626,13 @@ async def merge_and_evaluate(
         with open(ruta, "w", encoding="utf-8") as f:
             for item in datos:
                 f.write(json.dumps(_clean(item), ensure_ascii=False) + "\n")
+
+    # Checkpoint de Fase 3 ya no necesario: borrar
+    phase3_ckpt.finalize()
+    try:
+        os.remove(checkpoint_path)
+    except OSError:
+        pass
 
     # Calcular costos — Gemini 3 Flash: $0.50/$3.00 per M, Gemini 2.5 Flash: $0.15/$0.60 per M
     g3_cost_input = eval_client.usage.tokens_input / 1_000_000 * 0.50
