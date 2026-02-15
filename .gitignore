@@ -9,7 +9,9 @@ env/
 
 # Entorno
 .env
-.env.*
+.env.local
+.env.railway
+!.env.example
 
 # macOS
 .DS_Store

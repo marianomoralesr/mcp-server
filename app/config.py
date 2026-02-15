@@ -35,7 +35,7 @@ class Settings(BaseSettings):
 
     # Datasets
     dataset_dirs: str = Field(
-        default="/Users/marianomorales/Downloads/fine-tuning/training,/Users/marianomorales/Downloads/fine-tuning/Tool Calling",
+        default="/app/datasets",
         description="Directorios a escanear para datasets JSONL (separados por coma)"
     )
     supabase_url: Optional[str] = Field(default=None, description="URL del proyecto Supabase")
@@ -45,7 +45,7 @@ class Settings(BaseSettings):
     anthropic_api_key: Optional[str] = Field(default=None, description="Anthropic API key para generación sintética")
     gemini_api_key: Optional[str] = Field(default=None, description="Google Gemini API key para curación/pipeline")
     generation_output_dir: str = Field(
-        default="/Users/marianomorales/Downloads/fine-tuning/Tool Calling/generated",
+        default="/app/generated",
         description="Directorio de salida para datasets generados"
     )
 

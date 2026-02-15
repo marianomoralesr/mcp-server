@@ -58,6 +58,9 @@ HALLUCINATION_FLAGS = Counter('hallucination_flags_total', 'Potential hallucinat
 settings = Settings()
 security = HTTPBearer(auto_error=False)
 
+# Modo sin vLLM (Railway / testing)
+VLLM_DISABLED = os.environ.get("TREFA_VLLM_DISABLED", "").lower() in ("true", "1", "yes")
+
 
 # Pydantic models
 class ChatMessage(BaseModel):
@@ -143,12 +146,16 @@ async def lifespan(app: FastAPI):
 
     logger.info("Starting up Qwen3-14B Inference Server...")
 
-    # Initialize HTTP client for vLLM communication
-    http_client = httpx.AsyncClient(
-        base_url=f"http://localhost:{settings.vllm_port}",
-        timeout=300.0,
-        limits=httpx.Limits(max_keepalive_connections=20, max_connections=100)
-    )
+    # Initialize HTTP client for vLLM communication (skip if disabled)
+    if not VLLM_DISABLED:
+        http_client = httpx.AsyncClient(
+            base_url=f"http://localhost:{settings.vllm_port}",
+            timeout=300.0,
+            limits=httpx.Limits(max_keepalive_connections=20, max_connections=100)
+        )
+    else:
+        http_client = None
+        logger.info("vllm_disabled", reason="TREFA_VLLM_DISABLED=true")
 
     # Initialize model manager
     model_manager = ModelManager(settings)
@@ -186,15 +193,18 @@ async def lifespan(app: FastAPI):
     # Initialize feedback manager
     feedback_manager = FeedbackManager()
 
-    # Verify vLLM is accessible
-    try:
-        response = await http_client.get("/health")
-        if response.status_code == 200:
-            logger.info("vllm_connected")
-        else:
-            logger.warning("vllm_health_non_200")
-    except Exception as e:
-        logger.error("vllm_connect_failed", error=str(e))
+    # Verify vLLM is accessible (skip if disabled)
+    if not VLLM_DISABLED:
+        try:
+            response = await http_client.get("/health")
+            if response.status_code == 200:
+                logger.info("vllm_connected")
+            else:
+                logger.warning("vllm_health_non_200")
+        except Exception as e:
+            logger.error("vllm_connect_failed", error=str(e))
+    else:
+        logger.info("vllm_skipped", mode="no-inference")
 
     # Verify MCP is accessible
     try:
@@ -283,6 +293,7 @@ async def root():
     return {
         "name": "Qwen3-14B TRefA Inference API",
         "version": "2.0.0",
+        "mode": "no-inference" if VLLM_DISABLED else "full",
         "status": "healthy",
         "endpoints": {
             "ui": "/ui",
@@ -304,15 +315,18 @@ async def root():
 async def health_check():
     """Health check endpoint"""
     try:
-        vllm_status = "unknown"
         mcp_status = "unknown"
 
-        if http_client:
+        if VLLM_DISABLED:
+            vllm_status = "disabled"
+        elif http_client:
             try:
                 vllm_health = await http_client.get("/health")
                 vllm_status = "healthy" if vllm_health.status_code == 200 else "unhealthy"
             except Exception:
                 vllm_status = "unreachable"
+        else:
+            vllm_status = "not_configured"
 
         if mcp_client:
             try:
@@ -323,9 +337,10 @@ async def health_check():
 
         return {
             "status": "healthy",
+            "mode": "no-inference" if VLLM_DISABLED else "full",
             "vllm_backend": vllm_status,
             "mcp_server": mcp_status,
-            "model_loaded": model_manager is not None,
+            "model_loaded": model_manager is not None and not VLLM_DISABLED,
             "tools_loaded": len(tools_definitions),
             "active_sessions": session_manager.active_count if session_manager else 0,
         }
@@ -358,6 +373,13 @@ async def chat(
     Endpoint principal del chatbot TREFA.
     Recibe mensaje, orquesta tool calling, retorna respuesta.
     """
+    if VLLM_DISABLED:
+        raise HTTPException(
+            status_code=503,
+            detail="Inferencia no disponible: servidor en modo UI/tools (sin vLLM). "
+                   "Usa /v1/tools, /v1/datasets, o /ui."
+        )
+
     with REQUEST_LATENCY.labels(endpoint="chat").time():
         try:
             # Get or create session
@@ -576,6 +598,9 @@ async def chat_completions(
     Supports streaming and non-streaming responses.
     Can toggle LoRA adapter with use_lora parameter.
     """
+    if VLLM_DISABLED:
+        raise HTTPException(status_code=503, detail="Inferencia no disponible (modo sin vLLM)")
+
     with REQUEST_LATENCY.labels(endpoint="chat_completions").time():
         try:
             vllm_request = {
@@ -652,6 +677,9 @@ async def completions(
     token: HTTPAuthorizationCredentials = Depends(verify_token)
 ):
     """Legacy completions endpoint"""
+    if VLLM_DISABLED:
+        raise HTTPException(status_code=503, detail="Inferencia no disponible (modo sin vLLM)")
+
     with REQUEST_LATENCY.labels(endpoint="completions").time():
         try:
             vllm_request = {

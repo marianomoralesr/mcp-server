@@ -1,0 +1,43 @@
+# ============================================================
+# TREFA - Dockerfile para Railway (sin GPU / sin vLLM)
+# Solo FastAPI + MCP Server + UI
+# ============================================================
+
+FROM python:3.11-slim
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
+
+# Dependencias del sistema + Node.js
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    git \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# MCP Server — clonar desde repo (está en .gitignore del repo principal)
+RUN git clone -b main https://github.com/marianomoralesr/mcp-server.git /app/mcp-server
+WORKDIR /app/mcp-server
+RUN npm install && npm run build && npm prune --production
+
+# FastAPI - requirements primero (cache)
+WORKDIR /app
+COPY app/requirements.txt /app/app/requirements.txt
+RUN pip install --no-cache-dir -r /app/app/requirements.txt
+
+# Copiar app
+COPY app/ /app/app/
+
+# Directorios y entrypoint
+RUN mkdir -p /app/datasets /app/generated /var/log
+COPY railway-entrypoint.sh /app/railway-entrypoint.sh
+RUN chmod +x /app/railway-entrypoint.sh
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+  CMD curl -f http://localhost:8080/health || exit 1
+
+ENTRYPOINT ["/app/railway-entrypoint.sh"]
