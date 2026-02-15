@@ -69,6 +69,11 @@ class MergeEvaluateRequest(BaseModel):
     only_tc: bool = False
 
 
+class TrainingDatasetRequest(BaseModel):
+    output_filename: str = Field(default="", description="Nombre archivo salida (auto-generado si vacio)")
+    seed: int = Field(default=42, description="Semilla para reproducibilidad")
+
+
 class AnalyzeToolsRequest(BaseModel):
     filepaths: list[str]
 
@@ -304,6 +309,86 @@ async def merge_evaluate(body: MergeEvaluateRequest, request: Request):
     ))
 
     return {"job_id": job_id, "train_path": train_path, "eval_path": eval_path}
+
+
+# ── Endpoints training ─────────────────────────────────
+
+@router.post("/generate/training-dataset")
+async def generate_training_dataset(body: TrainingDatasetRequest, request: Request):
+    """Genera dataset de entrenamiento con conversaciones plantilla (25 escenarios, sin LLM)."""
+    from training.generar_conversaciones import (
+        gen_saludo_simple, gen_busqueda_exitosa, gen_sin_inventario,
+        gen_financiamiento, gen_info_financiamiento, gen_garantia,
+        gen_ubicaciones, gen_intercambio, gen_estadisticas, gen_comparacion,
+        gen_cotizacion_email, gen_fuera_de_tema, gen_eres_bot,
+        gen_no_negociar, gen_no_consejo_legal, gen_cliente_frustrado,
+        gen_documentos, gen_devoluciones, gen_proceso_compra,
+        gen_cita_prueba, gen_flujo_completo, gen_flujo_con_email,
+        gen_ambiguo, gen_detalle_vehiculo, gen_ortografia_real,
+    )
+    import random as _random
+    import json as _json
+
+    jm = _get_job_manager(request)
+    output_dir = _get_output_dir(request)
+    os.makedirs(output_dir, exist_ok=True)
+
+    filename = body.output_filename or f"training_dataset_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jsonl"
+    output_path = os.path.join(output_dir, filename)
+
+    async def _run():
+        _random.seed(body.seed)
+        generators = [
+            gen_saludo_simple, gen_busqueda_exitosa, gen_sin_inventario,
+            gen_financiamiento, gen_info_financiamiento, gen_garantia,
+            gen_ubicaciones, gen_intercambio, gen_estadisticas, gen_comparacion,
+            gen_cotizacion_email, gen_fuera_de_tema, gen_eres_bot,
+            gen_no_negociar, gen_no_consejo_legal, gen_cliente_frustrado,
+            gen_documentos, gen_devoluciones, gen_proceso_compra,
+            gen_cita_prueba, gen_flujo_completo, gen_flujo_con_email,
+            gen_ambiguo, gen_detalle_vehiculo, gen_ortografia_real,
+        ]
+        all_convos = []
+        for i, gen_func in enumerate(generators):
+            jm.update_progress(job_id, int((i / len(generators)) * 90), f"Generando: {gen_func.__name__}")
+            convos = gen_func()
+            all_convos.extend(convos)
+
+        _random.shuffle(all_convos)
+
+        with open(output_path, "w", encoding="utf-8") as f:
+            for c in all_convos:
+                f.write(_json.dumps(c, ensure_ascii=False) + "\n")
+
+        jm.update_progress(job_id, 100, f"Completado: {len(all_convos)} conversaciones")
+        return {"total": len(all_convos), "output": output_path}
+
+    job_id = jm.create_job("training_dataset", {"output": filename, "seed": body.seed})
+    jm.start_job(job_id, _run)
+
+    return {"job_id": job_id, "output_path": output_path}
+
+
+@router.get("/training/system-prompt")
+async def get_training_system_prompt():
+    """Obtiene el system prompt optimizado para fine-tuning."""
+    prompt_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "training", "system_prompt_finetuning.txt")
+    if not os.path.exists(prompt_path):
+        raise HTTPException(404, "system_prompt_finetuning.txt no encontrado")
+    with open(prompt_path, "r", encoding="utf-8") as f:
+        content = f.read()
+    return {"system_prompt": content, "length": len(content), "path": prompt_path}
+
+
+@router.get("/training/script")
+async def get_training_script():
+    """Obtiene el script de fine-tuning para vast.ai."""
+    script_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "training", "train_qwen3_vast.py")
+    if not os.path.exists(script_path):
+        raise HTTPException(404, "train_qwen3_vast.py no encontrado")
+    with open(script_path, "r", encoding="utf-8") as f:
+        content = f.read()
+    return {"script": content, "path": script_path, "lines": content.count("\n") + 1}
 
 
 # ── Endpoints análisis ────────────────────────────────
