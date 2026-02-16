@@ -167,12 +167,16 @@ async def lifespan(app: FastAPI):
     # Initialize HTTP client for LLM backend (local or remote, skip if disabled)
     if not VLLM_DISABLED:
         vllm_url = settings.vllm_base_url or f"http://{settings.vllm_host}:{settings.vllm_port}"
+        headers = {}
+        if settings.vllm_api_key:
+            headers["Authorization"] = f"Bearer {settings.vllm_api_key}"
         http_client = httpx.AsyncClient(
             base_url=vllm_url,
+            headers=headers,
             timeout=300.0,
             limits=httpx.Limits(max_keepalive_connections=20, max_connections=100)
         )
-        logger.info("vllm_client_configured", base_url=vllm_url)
+        logger.info("vllm_client_configured", base_url=vllm_url, has_api_key=bool(settings.vllm_api_key))
     else:
         http_client = None
         logger.info("vllm_disabled", reason="TREFA_VLLM_DISABLED=true")
