@@ -147,6 +147,81 @@ def validate_qwen_format(messages: list[dict]) -> dict:
     }
 
 
+def merge_jsonl_files(file_paths: list[str], output_path: str) -> dict:
+    """
+    Combina múltiples archivos JSONL en un solo archivo.
+    Retorna {total_lines, source_files, output_path}.
+    """
+    total_lines = 0
+    source_files = []
+
+    with open(output_path, "w", encoding="utf-8") as out:
+        for fp in file_paths:
+            p = Path(fp)
+            if not p.exists():
+                continue
+            count = 0
+            with open(p, "r", encoding="utf-8") as inp:
+                for line in inp:
+                    stripped = line.strip()
+                    if not stripped:
+                        continue
+                    out.write(stripped + "\n")
+                    count += 1
+                    total_lines += 1
+            source_files.append({"path": str(p), "lines": count})
+
+    return {
+        "total_lines": total_lines,
+        "source_files": source_files,
+        "output_path": output_path,
+    }
+
+
+def auto_tag_files(base_dirs: list[str]) -> dict:
+    """
+    Escanea todos los JSONL y cuenta conversaciones con/sin TC por archivo.
+    Reutiliza _has_tool_calling().
+    """
+    results = []
+    for base_dir in base_dirs:
+        base_path = Path(base_dir)
+        if not base_path.exists():
+            continue
+        for jsonl_file in sorted(base_path.rglob("*.jsonl")):
+            total = 0
+            with_tc = 0
+            without_tc = 0
+            try:
+                with open(jsonl_file, "r", encoding="utf-8") as f:
+                    for line in f:
+                        stripped = line.strip()
+                        if not stripped:
+                            continue
+                        total += 1
+                        try:
+                            data = json.loads(stripped)
+                            messages = data.get("messages", data.get("conversations", []))
+                            has_tc, _ = _has_tool_calling(messages)
+                            if has_tc:
+                                with_tc += 1
+                            else:
+                                without_tc += 1
+                        except json.JSONDecodeError:
+                            without_tc += 1
+            except OSError:
+                continue
+            results.append({
+                "path": str(jsonl_file),
+                "filename": jsonl_file.name,
+                "total": total,
+                "with_tc": with_tc,
+                "without_tc": without_tc,
+            })
+
+    return {"files": results}
+
+
 def scan_jsonl_files(base_dirs: list[str], force_rescan: bool = False) -> list[dict]:
     """
     Escanea directorios recursivamente buscando archivos .jsonl.

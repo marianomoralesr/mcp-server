@@ -626,31 +626,94 @@ body {
 
 .schema-content.open { display: block; }
 
-/* ===== GENERATION TOOLBAR ===== */
-.gen-toolbar {
+/* ===== WORKFLOW TOOLBAR ===== */
+.workflow-bar {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  align-items: flex-end;
+  gap: 10px;
   padding: 8px 14px;
-  background: #e8eaf6;
+  background: #f5f5f5;
   border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
   flex-shrink: 0;
 }
-.gen-toolbar .btn-gen {
-  padding: 5px 12px;
-  font-size: 12px;
+.workflow-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.workflow-group-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-left: 2px;
+}
+.workflow-group-buttons {
+  display: flex;
+  gap: 4px;
+  padding: 4px 6px;
+  border-left: 3px solid var(--border);
+  border-radius: 0 6px 6px 0;
+  background: var(--card);
+}
+/* Color por grupo */
+.workflow-group.wg-importar .workflow-group-label { color: #00897b; }
+.workflow-group.wg-importar .workflow-group-buttons { border-left-color: #00897b; }
+.workflow-group.wg-analizar .workflow-group-label { color: #3949ab; }
+.workflow-group.wg-analizar .workflow-group-buttons { border-left-color: #3949ab; }
+.workflow-group.wg-generar .workflow-group-label { color: #1565c0; }
+.workflow-group.wg-generar .workflow-group-buttons { border-left-color: #1565c0; }
+.workflow-group.wg-curar .workflow-group-label { color: #d97706; }
+.workflow-group.wg-curar .workflow-group-buttons { border-left-color: #d97706; }
+.workflow-group.wg-utilidades .workflow-group-label { color: #616161; }
+.workflow-group.wg-utilidades .workflow-group-buttons { border-left-color: #9e9e9e; }
+.workflow-bar .spacer { flex: 1; }
+
+.btn-wf {
+  padding: 5px 10px;
+  font-size: 11px;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--card);
   cursor: pointer;
   transition: all .15s;
   white-space: nowrap;
+  position: relative;
 }
-.gen-toolbar .btn-gen:hover { background: #c5cae9; border-color: var(--primary-light); }
-.gen-toolbar .btn-gen.active { background: var(--primary); color: white; }
-.gen-toolbar .spacer { flex: 1; }
-.gen-toolbar .jobs-badge {
+.btn-wf:hover { background: #e8eaf6; border-color: var(--primary-light); }
+.btn-wf.active { background: var(--primary); color: white; }
+.btn-wf.btn-wf-accent { background: #d97706; color: white; border-color: #d97706; }
+.btn-wf.btn-wf-accent:hover { background: #b45309; }
+.btn-wf.btn-wf-teal { background: #00897b; color: white; border-color: #00897b; }
+.btn-wf.btn-wf-teal:hover { background: #00695c; }
+.btn-wf.btn-wf-purple { background: #7b1fa2; color: white; border-color: #7b1fa2; }
+.btn-wf.btn-wf-purple:hover { background: #6a1b9a; }
+
+/* Tooltips CSS puro */
+.btn-wf[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: normal;
+  max-width: 200px;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 50;
+  line-height: 1.3;
+}
+.btn-wf[data-tooltip]:hover::after { opacity: 1; }
+
+.jobs-badge {
   display: inline-block;
   background: var(--accent);
   color: white;
@@ -788,6 +851,29 @@ body {
 .ds-file-item:hover { background: var(--bg); }
 .ds-file-item.active { background: #e8eaf6; border-left-color: var(--primary); }
 
+.ds-file-item-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ds-file-checkbox {
+  width: 14px; height: 14px;
+  accent-color: var(--primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.ds-file-checkbox:checked ~ .ds-file-name { font-weight: 600; }
+.ds-selected-bar {
+  padding: 4px 14px;
+  font-size: 11px;
+  color: var(--primary);
+  background: #e8eaf6;
+  border-top: 1px solid var(--border);
+  display: none;
+  flex-shrink: 0;
+}
+.ds-selected-bar.visible { display: block; }
+
 .ds-file-name {
   font-weight: 500;
   white-space: nowrap;
@@ -857,6 +943,8 @@ body {
 
 .ds-conv-card:hover { border-color: var(--primary); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
 .ds-conv-card.active { border-color: var(--primary); background: #e8eaf6; }
+.ds-conv-card.tc-yes { border-left: 3px solid #2e7d32; }
+.ds-conv-card.tc-no { border-left: 3px solid #bdbdbd; }
 
 .ds-conv-card-top {
   display: flex;
@@ -885,7 +973,7 @@ body {
   font-weight: 500;
 }
 
-.ds-badge-tc { background: #e8eaf6; color: var(--primary); }
+.ds-badge-tc { background: #c5cae9; color: var(--primary); font-weight: 600; }
 .ds-badge-valid { background: #e8f5e9; color: var(--success); }
 .ds-badge-invalid { background: #ffebee; color: var(--error); }
 .ds-badge-tag { background: #fff3e0; color: #e65100; }
@@ -1366,20 +1454,60 @@ body {
   <!-- Datasets View -->
   <div id="datasets-view" class="view datasets-view" style="flex-direction:column;">
 
-    <!-- Generation Toolbar -->
-    <div class="gen-toolbar">
-      <button class="btn-gen" onclick="genShowModal('analyze')">Analizar Tools</button>
-      <button class="btn-gen" onclick="genShowModal('template')">Generar Plantillas</button>
-      <button class="btn-gen" onclick="genShowModal('synthetic')">Generar Sintetico</button>
-      <button class="btn-gen" onclick="genShowModal('curate')">Curar Dataset</button>
-      <button class="btn-gen" onclick="genShowModal('pipeline')">Pipeline TC</button>
-      <button class="btn-gen" onclick="genShowModal('update-prompt')">Act. Prompt</button>
-      <button class="btn-gen" style="background:#d97706;color:white;" onclick="genShowModal('gold-amplifier')">Gold Amplifier</button>
-      <button class="btn-gen" style="background:#00897b;color:white;" onclick="genShowModal('merge-evaluate')">Merge &amp; Evaluate</button>
-      <button class="btn-gen" style="background:#7b1fa2;color:white;" onclick="genShowModal('training')">Training</button>
+    <!-- Workflow Toolbar -->
+    <div class="workflow-bar">
+
+      <!-- 1. IMPORTAR -->
+      <div class="workflow-group wg-importar">
+        <span class="workflow-group-label">1. Importar</span>
+        <div class="workflow-group-buttons">
+          <button class="btn-wf" data-tooltip="Sube archivos JSONL desde tu computadora" onclick="genShowModal('upload')">Subir JSONL</button>
+        </div>
+      </div>
+
+      <!-- 2. ANALIZAR -->
+      <div class="workflow-group wg-analizar">
+        <span class="workflow-group-label">2. Analizar</span>
+        <div class="workflow-group-buttons">
+          <button class="btn-wf" data-tooltip="Detecta que herramientas usa cada conversacion" onclick="genShowModal('analyze')">Analizar Tools</button>
+        </div>
+      </div>
+
+      <!-- 3. GENERAR -->
+      <div class="workflow-group wg-generar">
+        <span class="workflow-group-label">3. Generar</span>
+        <div class="workflow-group-buttons">
+          <button class="btn-wf" data-tooltip="Genera conversaciones predefinidas sin LLM" onclick="genShowModal('template')">Plantillas</button>
+          <button class="btn-wf" data-tooltip="Genera conversaciones con Claude AI" onclick="genShowModal('synthetic')">Sintetico</button>
+          <button class="btn-wf btn-wf-accent" data-tooltip="Amplifica conversaciones gold con Gemini" onclick="genShowModal('gold-amplifier')">Gold Amplifier</button>
+          <button class="btn-wf btn-wf-purple" data-tooltip="Genera dataset de 25 escenarios para fine-tuning" onclick="genShowModal('training')">Training Dataset</button>
+        </div>
+      </div>
+
+      <!-- 4. CURAR & FUSIONAR -->
+      <div class="workflow-group wg-curar">
+        <span class="workflow-group-label">4. Curar &amp; Fusionar</span>
+        <div class="workflow-group-buttons">
+          <button class="btn-wf" data-tooltip="Evalua calidad con Gemini y filtra por umbral" onclick="genShowModal('curate')">Curar Dataset</button>
+          <button class="btn-wf" data-tooltip="Pipeline completo: generar + evaluar + filtrar" onclick="genShowModal('pipeline')">Pipeline TC</button>
+          <button class="btn-wf btn-wf-teal" data-tooltip="Fusiona todos los JSONL y evalua con Gemini" onclick="genShowModal('merge-evaluate')">Merge &amp; Evaluate</button>
+          <button class="btn-wf" data-tooltip="Combina archivos JSONL seleccionados en uno" onclick="genShowModal('merge')">Merge Archivos</button>
+          <button class="btn-wf" data-tooltip="Detecta Tool Calling automaticamente en todos los archivos" onclick="autoTagTC()">Auto-tag TC</button>
+        </div>
+      </div>
+
       <div class="spacer"></div>
-      <button class="btn-gen" onclick="genShowModal('jobs')" id="gen-jobs-btn">Jobs <span class="jobs-badge" id="gen-jobs-badge" style="display:none;">0</span></button>
-      <button class="btn-gen" onclick="genShowModal('settings')" title="API Keys">&#9881;</button>
+
+      <!-- 5. UTILIDADES -->
+      <div class="workflow-group wg-utilidades">
+        <span class="workflow-group-label">5. Utilidades</span>
+        <div class="workflow-group-buttons">
+          <button class="btn-wf" data-tooltip="Reemplaza el system prompt en archivos JSONL" onclick="genShowModal('update-prompt')">Act. Prompt</button>
+          <button class="btn-wf" data-tooltip="Ver estado de trabajos en ejecucion" onclick="genShowModal('jobs')" id="gen-jobs-btn">Jobs <span class="jobs-badge" id="gen-jobs-badge" style="display:none;">0</span></button>
+          <button class="btn-wf" data-tooltip="Configurar API keys de Anthropic y Gemini" onclick="genShowModal('settings')">&#9881;</button>
+        </div>
+      </div>
+
     </div>
 
     <!-- Datasets content wrapper -->
@@ -1394,6 +1522,7 @@ body {
       <div class="ds-file-list" id="ds-file-list">
         <div class="ds-empty-state">Cargando archivos...</div>
       </div>
+      <div class="ds-selected-bar" id="ds-selected-bar"></div>
       <div class="ds-file-stats" id="ds-file-stats"></div>
     </div>
 
@@ -1690,6 +1819,67 @@ body {
       <div class="modal-actions">
         <button class="btn-modal btn-cancel" onclick="genCloseModal('update-prompt')">Cancelar</button>
         <button class="btn-modal btn-submit" onclick="genLaunchUpdatePrompt()">Actualizar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload JSONL Modal -->
+  <div class="modal-overlay" id="modal-upload">
+    <div class="modal">
+      <h3>Subir Archivo JSONL</h3>
+      <div id="upload-drop-zone" style="border:2px dashed var(--border);border-radius:8px;padding:32px 16px;text-align:center;cursor:pointer;margin-bottom:12px;transition:border-color .2s;"
+           ondragover="event.preventDefault();this.style.borderColor='var(--primary)'"
+           ondragleave="this.style.borderColor='var(--border)'"
+           ondrop="event.preventDefault();this.style.borderColor='var(--border)';handleUploadDrop(event)"
+           onclick="document.getElementById('upload-file-input').click()">
+        <div style="font-size:32px;margin-bottom:8px;color:var(--text-light);">&#128194;</div>
+        <div style="font-size:13px;color:var(--text-light);">Arrastra un archivo .jsonl aqui o haz clic para seleccionar</div>
+      </div>
+      <input type="file" id="upload-file-input" accept=".jsonl" style="display:none;" onchange="handleUploadSelect(event)">
+      <div id="upload-file-info" style="font-size:12px;color:var(--text-light);margin-bottom:8px;display:none;">
+        <strong id="upload-file-name"></strong> — <span id="upload-file-size"></span>
+      </div>
+      <div id="upload-result" style="font-size:12px;margin-top:8px;"></div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('upload')">Cerrar</button>
+        <button class="btn-modal btn-submit" id="upload-submit-btn" onclick="uploadDataset()" disabled>Subir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Merge Archivos Modal -->
+  <div class="modal-overlay" id="modal-merge">
+    <div class="modal">
+      <h3>Merge Archivos JSONL</h3>
+      <p style="font-size:12px;color:var(--text-light);margin-bottom:12px;">
+        Selecciona archivos con los checkboxes del panel izquierdo y luego abre este modal.
+      </p>
+      <label>Archivos seleccionados:</label>
+      <div id="merge-file-list" style="max-height:150px;overflow-y:auto;background:#f5f5f5;border-radius:6px;padding:8px;font-size:12px;margin-bottom:8px;">
+        <em>Ninguno</em>
+      </div>
+      <label>Nombre del archivo de salida</label>
+      <input type="text" id="merge-output-name" placeholder="merged_output.jsonl">
+      <div id="merge-result" style="font-size:12px;margin-top:8px;"></div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('merge')">Cancelar</button>
+        <button class="btn-modal btn-submit" id="merge-submit-btn" onclick="mergeDatasets()">Merge</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auto-tag TC Modal -->
+  <div class="modal-overlay" id="modal-auto-tag">
+    <div class="modal" style="max-width:640px;">
+      <h3>Auto-tag Tool Calling</h3>
+      <p style="font-size:12px;color:var(--text-light);margin-bottom:12px;">
+        Analiza todos los archivos JSONL y detecta cuales conversaciones usan Tool Calling.
+      </p>
+      <div id="auto-tag-result">
+        <div class="ds-empty-state">Ejecutando analisis...</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('auto-tag')">Cerrar</button>
       </div>
     </div>
   </div>
@@ -2202,8 +2392,12 @@ async function dsLoadFiles(rescan) {
       html += `<div class="ds-dir-label">${escapeHtml(dir)}</div>`;
       files.forEach(f => {
         const sizeKB = (f.size_bytes / 1024).toFixed(0);
-        html += `<div class="ds-file-item" data-path="${escapeHtml(f.path)}" onclick="dsSelectFile(this, '${escapeHtml(f.path).replace(/'/g, "\\'")}')">
-          <span class="ds-file-name" title="${escapeHtml(f.path)}">${escapeHtml(f.filename)}</span>
+        const epath = escapeHtml(f.path);
+        html += `<div class="ds-file-item" data-path="${epath}" onclick="dsSelectFile(this, '${epath.replace(/'/g, "\\'")}')">
+          <div class="ds-file-item-row">
+            <input type="checkbox" class="ds-file-checkbox" data-path="${epath}" onclick="event.stopPropagation();dsUpdateSelectedCount()">
+            <span class="ds-file-name" title="${epath}">${escapeHtml(f.filename)}</span>
+          </div>
           <span class="ds-file-meta"><span>${sizeKB} KB</span><span>~${f.line_count} conv</span></span>
         </div>`;
       });
@@ -2211,6 +2405,7 @@ async function dsLoadFiles(rescan) {
     el.innerHTML = html;
 
     document.getElementById('ds-file-stats').textContent = `${dsFiles.length} archivos`;
+    dsUpdateSelectedCount();
   } catch (e) {
     el.innerHTML = `<div class="ds-empty-state" style="color:var(--error)">Error: ${e.message}</div>`;
   }
@@ -2309,8 +2504,9 @@ function dsRenderConvList() {
     tags.forEach(t => { badgesHtml += `<span class="ds-badge ds-badge-tag">#${escapeHtml(t)}</span>`; });
 
     const activeClass = dsSelectedIdx === idx ? 'active' : '';
+    const tcClass = c.has_tool_calling ? 'tc-yes' : 'tc-no';
 
-    return `<div class="ds-conv-card ${activeClass}" onclick="dsSelectConv(${idx})">
+    return `<div class="ds-conv-card ${activeClass} ${tcClass}" onclick="dsSelectConv(${idx})">
       <div class="ds-conv-card-top">
         <span class="ds-conv-line">#${c.line_number}</span>
         <div class="ds-conv-badges">${badgesHtml}</div>
@@ -2557,6 +2753,7 @@ function genShowModal(type) {
     modal.classList.add('open');
     if (type === 'settings') genLoadKeys();
     if (type === 'jobs') genRefreshJobs();
+    if (type === 'merge') populateMergeModal();
   }
 }
 
@@ -2569,6 +2766,180 @@ function genCloseModal(type) {
 document.querySelectorAll('.modal-overlay').forEach(ov => {
   ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('open'); });
 });
+
+// ===== FILE SELECTION HELPERS =====
+function dsGetSelectedPaths() {
+  return Array.from(document.querySelectorAll('.ds-file-checkbox:checked')).map(cb => cb.dataset.path);
+}
+
+function dsUpdateSelectedCount() {
+  const selected = dsGetSelectedPaths();
+  const bar = document.getElementById('ds-selected-bar');
+  if (selected.length > 0) {
+    bar.textContent = `${selected.length} archivo(s) seleccionado(s)`;
+    bar.classList.add('visible');
+  } else {
+    bar.classList.remove('visible');
+  }
+}
+
+// ===== UPLOAD DATASET =====
+let _uploadFile = null;
+
+function handleUploadDrop(e) {
+  const file = e.dataTransfer.files[0];
+  if (file) prepareUpload(file);
+}
+
+function handleUploadSelect(e) {
+  const file = e.target.files[0];
+  if (file) prepareUpload(file);
+}
+
+function prepareUpload(file) {
+  if (!file.name.endsWith('.jsonl')) {
+    document.getElementById('upload-result').innerHTML = '<span style="color:var(--error)">Solo se aceptan archivos .jsonl</span>';
+    return;
+  }
+  _uploadFile = file;
+  document.getElementById('upload-file-info').style.display = 'block';
+  document.getElementById('upload-file-name').textContent = file.name;
+  document.getElementById('upload-file-size').textContent = (file.size / 1024).toFixed(1) + ' KB';
+  document.getElementById('upload-submit-btn').disabled = false;
+  document.getElementById('upload-result').innerHTML = '';
+}
+
+async function uploadDataset() {
+  if (!_uploadFile) return;
+  const resultEl = document.getElementById('upload-result');
+  resultEl.innerHTML = '<span style="color:var(--text-light)">Subiendo...</span>';
+  document.getElementById('upload-submit-btn').disabled = true;
+
+  try {
+    const formData = new FormData();
+    formData.append('file', _uploadFile);
+    const res = await fetch(`${API}/v1/datasets/upload`, {
+      method: 'POST',
+      headers: { 'X-Auth-Token': getAuthToken() },
+      body: formData
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || `HTTP ${res.status}`);
+    }
+    const d = await res.json();
+    resultEl.innerHTML = `<span style="color:var(--success)">Subido: ${escapeHtml(d.filename)} — ${d.lines} conversaciones (${(d.size_bytes/1024).toFixed(1)} KB)</span>`;
+    _uploadFile = null;
+    dsLoadFiles(true);
+  } catch (e) {
+    resultEl.innerHTML = `<span style="color:var(--error)">Error: ${escapeHtml(e.message)}</span>`;
+    document.getElementById('upload-submit-btn').disabled = false;
+  }
+}
+
+// ===== MERGE DATASETS =====
+function populateMergeModal() {
+  const selected = dsGetSelectedPaths();
+  const listEl = document.getElementById('merge-file-list');
+  if (selected.length === 0) {
+    listEl.innerHTML = '<em style="color:var(--text-light);">Ninguno — selecciona archivos con los checkboxes del panel izquierdo</em>';
+    document.getElementById('merge-submit-btn').disabled = true;
+  } else {
+    listEl.innerHTML = selected.map(p => `<div style="padding:2px 0;">${escapeHtml(p.split('/').pop())}</div>`).join('');
+    document.getElementById('merge-submit-btn').disabled = selected.length < 2;
+  }
+  document.getElementById('merge-result').innerHTML = '';
+}
+
+async function mergeDatasets() {
+  const selected = dsGetSelectedPaths();
+  if (selected.length < 2) return;
+  const resultEl = document.getElementById('merge-result');
+  resultEl.innerHTML = '<span style="color:var(--text-light)">Combinando archivos...</span>';
+  document.getElementById('merge-submit-btn').disabled = true;
+
+  try {
+    const outputName = document.getElementById('merge-output-name').value.trim();
+    const res = await fetch(`${API}/v1/datasets/merge`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': getAuthToken() },
+      body: JSON.stringify({ file_paths: selected, output_filename: outputName })
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || `HTTP ${res.status}`);
+    }
+    const d = await res.json();
+    const srcInfo = d.source_files.map(s => `${s.path.split('/').pop()}: ${s.lines}`).join(', ');
+    resultEl.innerHTML = `<span style="color:var(--success)">Merge completado: ${d.total_lines} lineas totales<br><small>${escapeHtml(srcInfo)}</small></span>`;
+    dsLoadFiles(true);
+  } catch (e) {
+    resultEl.innerHTML = `<span style="color:var(--error)">Error: ${escapeHtml(e.message)}</span>`;
+    document.getElementById('merge-submit-btn').disabled = false;
+  }
+}
+
+// ===== AUTO-TAG TC =====
+async function autoTagTC() {
+  genShowModal('auto-tag');
+  const resultEl = document.getElementById('auto-tag-result');
+  resultEl.innerHTML = '<div class="ds-empty-state">Analizando archivos...</div>';
+
+  try {
+    const res = await fetch(`${API}/v1/datasets/auto-tag`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': getAuthToken() }
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || `HTTP ${res.status}`);
+    }
+    const d = await res.json();
+    const files = d.files || [];
+
+    if (files.length === 0) {
+      resultEl.innerHTML = '<div class="ds-empty-state">No se encontraron archivos JSONL</div>';
+      return;
+    }
+
+    let totalConv = 0, totalTC = 0, totalNoTC = 0;
+    let rows = files.map(f => {
+      totalConv += f.total;
+      totalTC += f.with_tc;
+      totalNoTC += f.without_tc;
+      const pct = f.total > 0 ? Math.round(f.with_tc / f.total * 100) : 0;
+      return `<tr>
+        <td style="font-size:12px;padding:4px 8px;">${escapeHtml(f.filename)}</td>
+        <td style="text-align:center;padding:4px 8px;">${f.total}</td>
+        <td style="text-align:center;padding:4px 8px;color:#2e7d32;font-weight:600;">${f.with_tc}</td>
+        <td style="text-align:center;padding:4px 8px;color:#757575;">${f.without_tc}</td>
+        <td style="text-align:center;padding:4px 8px;">${pct}%</td>
+      </tr>`;
+    }).join('');
+
+    const totalPct = totalConv > 0 ? Math.round(totalTC / totalConv * 100) : 0;
+    resultEl.innerHTML = `
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead><tr style="border-bottom:2px solid var(--border);font-weight:600;">
+          <th style="text-align:left;padding:6px 8px;">Archivo</th>
+          <th style="text-align:center;padding:6px 8px;">Total</th>
+          <th style="text-align:center;padding:6px 8px;">Con TC</th>
+          <th style="text-align:center;padding:6px 8px;">Sin TC</th>
+          <th style="text-align:center;padding:6px 8px;">% TC</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr style="border-top:2px solid var(--border);font-weight:600;">
+          <td style="padding:6px 8px;">TOTAL</td>
+          <td style="text-align:center;padding:6px 8px;">${totalConv}</td>
+          <td style="text-align:center;padding:6px 8px;color:#2e7d32;">${totalTC}</td>
+          <td style="text-align:center;padding:6px 8px;">${totalNoTC}</td>
+          <td style="text-align:center;padding:6px 8px;">${totalPct}%</td>
+        </tr></tfoot>
+      </table>`;
+  } catch (e) {
+    resultEl.innerHTML = `<div class="ds-empty-state" style="color:var(--error)">Error: ${escapeHtml(e.message)}</div>`;
+  }
+}
 
 // -- API Key helpers --
 function genGetHeaders() {

@@ -15,7 +15,7 @@ from typing import Optional, List, Dict, Any, AsyncGenerator
 from contextlib import asynccontextmanager
 
 import pathlib
-from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, Request
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, Request, UploadFile, File
 from fastapi.responses import StreamingResponse, JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -1008,6 +1008,91 @@ async def dataset_stats():
     if not settings.supabase_url or not settings.supabase_key:
         return {"total": 0, "reviewed": 0, "pending": 0, "review_rate": 0, "by_rating": {}, "by_tag": {}}
     return dataset_manager.get_review_stats(settings.supabase_url, settings.supabase_key)
+
+
+class MergeRequest(BaseModel):
+    file_paths: List[str]
+    output_filename: str = ""
+
+
+@app.post("/v1/datasets/upload")
+async def upload_dataset(file: UploadFile = File(...)):
+    """Sube un archivo JSONL al directorio de generación"""
+    if not file.filename or not file.filename.endswith(".jsonl"):
+        raise HTTPException(status_code=400, detail="Solo se aceptan archivos .jsonl")
+
+    output_dir = Path(settings.generation_output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    dest = output_dir / file.filename
+
+    content = await file.read()
+    # Validar que cada línea sea JSON válido
+    lines = content.decode("utf-8").splitlines()
+    valid_lines = 0
+    for i, line in enumerate(lines, 1):
+        stripped = line.strip()
+        if not stripped:
+            continue
+        try:
+            json.loads(stripped)
+            valid_lines += 1
+        except json.JSONDecodeError:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Linea {i} no es JSON valido"
+            )
+
+    dest.write_bytes(content)
+    # Invalidar cache de archivos
+    dataset_manager._file_cache.clear()
+
+    return {
+        "filename": file.filename,
+        "lines": valid_lines,
+        "size_bytes": len(content),
+        "path": str(dest),
+    }
+
+
+@app.post("/v1/datasets/merge")
+async def merge_datasets(body: MergeRequest):
+    """Combina múltiples archivos JSONL en uno"""
+    if len(body.file_paths) < 2:
+        raise HTTPException(status_code=400, detail="Se necesitan al menos 2 archivos para merge")
+
+    # Validar que los archivos existan
+    for fp in body.file_paths:
+        if not Path(fp).exists():
+            raise HTTPException(status_code=404, detail=f"Archivo no encontrado: {fp}")
+
+    output_dir = Path(settings.generation_output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    output_name = body.output_filename.strip()
+    if not output_name:
+        from datetime import datetime
+        output_name = f"merged_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jsonl"
+    if not output_name.endswith(".jsonl"):
+        output_name += ".jsonl"
+
+    output_path = output_dir / output_name
+    result = dataset_manager.merge_jsonl_files(body.file_paths, str(output_path))
+
+    # Invalidar cache
+    dataset_manager._file_cache.clear()
+
+    return result
+
+
+@app.post("/v1/datasets/auto-tag")
+async def auto_tag_datasets():
+    """Detecta Tool Calling en todos los archivos JSONL"""
+    dirs = [d.strip() for d in settings.dataset_dirs.split(",") if d.strip()]
+    # Incluir también el directorio de generación
+    gen_dir = settings.generation_output_dir
+    if gen_dir and gen_dir not in dirs:
+        dirs.append(gen_dir)
+    return dataset_manager.auto_tag_files(dirs)
 
 
 if __name__ == "__main__":
