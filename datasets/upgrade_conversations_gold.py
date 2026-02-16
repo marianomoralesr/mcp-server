@@ -71,7 +71,7 @@ OUTPUT_DIR = SCRIPT_DIR / "gold_upgraded"
 # CONFIGURACIÓN
 # ═══════════════════════════════════════════════════════════════
 
-DEFAULT_MODEL = "gemini-3-flash-preview"
+DEFAULT_MODEL = "gemini-3-flash"
 DEFAULT_BATCH = 50
 MAX_RETRIES = 3
 RETRY_DELAY = 8
