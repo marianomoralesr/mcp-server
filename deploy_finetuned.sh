@@ -1,0 +1,375 @@
+#!/bin/bash
+# ============================================================
+# TREFA - Deploy Fine-Tuned Qwen3-14B con vLLM
+# Descarga base + LoRA, mergea, y sirve con vLLM + FastAPI
+#
+# Asume que las dependencias ya están instaladas:
+#   torch, transformers, peft, accelerate, vllm, huggingface_hub
+#
+# Variables de entorno requeridas:
+#   HF_TOKEN                    (obligatoria)
+#   GITHUB_TOKEN                (obligatoria, para clonar repo privado)
+#   SUPABASE_URL                (opcional, para MCP Server)
+#   SUPABASE_SERVICE_ROLE_KEY   (opcional, para MCP Server)
+#
+# Puertos:
+#   vLLM    → 8001 (evita conflicto con Caddy de vast.ai en 8000)
+#   MCP     → 3001
+#   FastAPI → 8081 (evita conflicto con Jupyter de vast.ai en 8080)
+# ============================================================
+
+set -euo pipefail
+
+LOG_FILE="/tmp/trefa-finetuned.log"
+
+log() {
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
+}
+
+# ============================================================
+# Fase 1: Validar env vars + detectar GPU
+# ============================================================
+log "=== TREFA Fine-Tuned Deploy ==="
+
+if [ -z "${HF_TOKEN:-}" ]; then
+    log "ERROR: HF_TOKEN no está definido."
+    exit 1
+fi
+export HF_TOKEN
+export HF_HUB_ENABLE_HF_TRANSFER=1
+
+if [ -z "${GITHUB_TOKEN:-}" ]; then
+    log "ERROR: GITHUB_TOKEN no está definido. Necesario para clonar repo privado."
+    log "  export GITHUB_TOKEN=ghp_tu_token_aqui"
+    exit 1
+fi
+
+if [ -z "${SUPABASE_URL:-}" ] || [ -z "${SUPABASE_SERVICE_ROLE_KEY:-}" ]; then
+    log "WARN: SUPABASE_URL o SUPABASE_SERVICE_ROLE_KEY no definidos. MCP Server puede fallar."
+fi
+
+# --- Desactivar vLLM de vast.ai (si existe) ---
+if [ -f /opt/supervisor-scripts/vllm.sh ]; then
+    log "Desactivando vLLM de vast.ai..."
+    chmod -x /opt/supervisor-scripts/vllm.sh 2>/dev/null || true
+    supervisorctl stop vllm 2>/dev/null || true
+fi
+
+# --- Limpiar GPU de procesos huérfanos ---
+log "Limpiando GPU de procesos previos..."
+fuser -k /dev/nvidia* 2>/dev/null || true
+sleep 3
+
+# --- Fijar límites de threads/procesos ---
+ulimit -u unlimited 2>/dev/null || true
+ulimit -n 65535 2>/dev/null || true
+export OPENBLAS_NUM_THREADS=1
+
+# --- Auto-detección de GPU ---
+detect_gpu() {
+    if ! command -v nvidia-smi &>/dev/null; then
+        log "WARN: nvidia-smi no encontrado"
+        echo "unknown"
+        return
+    fi
+    local gpu_name
+    gpu_name=$(nvidia-smi --query-gpu=gpu_name --format=csv,noheader,nounits 2>/dev/null | head -1 | xargs)
+    if [ -z "$gpu_name" ]; then
+        echo "unknown"
+        return
+    fi
+    log "GPU detectada: $gpu_name"
+    echo "$gpu_name"
+}
+
+configure_gpu() {
+    local gpu_name="$1"
+    case "$gpu_name" in
+        *5090*)
+            log "Configurando para RTX 5090 (32GB VRAM)"
+            DEFAULT_MAX_MODEL_LEN=4096
+            DEFAULT_GPU_MEM=0.85
+            ;;
+        *A6000*|*a6000*)
+            log "Configurando para A6000 (48GB VRAM)"
+            DEFAULT_MAX_MODEL_LEN=8192
+            DEFAULT_GPU_MEM=0.85
+            ;;
+        *A100*|*a100*)
+            log "Configurando para A100 (40/80GB VRAM)"
+            DEFAULT_MAX_MODEL_LEN=16384
+            DEFAULT_GPU_MEM=0.90
+            ;;
+        *H100*|*h100*)
+            log "Configurando para H100 (80GB VRAM)"
+            DEFAULT_MAX_MODEL_LEN=32768
+            DEFAULT_GPU_MEM=0.90
+            ;;
+        *)
+            log "GPU no reconocida, usando defaults conservadores"
+            DEFAULT_MAX_MODEL_LEN=8192
+            DEFAULT_GPU_MEM=0.85
+            ;;
+    esac
+    MAX_MODEL_LEN=${MAX_MODEL_LEN:-$DEFAULT_MAX_MODEL_LEN}
+    GPU_MEMORY_UTILIZATION=${GPU_MEMORY_UTILIZATION:-$DEFAULT_GPU_MEM}
+    DTYPE=${DTYPE:-"bfloat16"}
+    log "  MAX_MODEL_LEN=$MAX_MODEL_LEN"
+    log "  GPU_MEMORY_UTILIZATION=$GPU_MEMORY_UTILIZATION"
+    log "  DTYPE=$DTYPE"
+}
+
+GPU_NAME=$(detect_gpu)
+configure_gpu "$GPU_NAME"
+
+# ============================================================
+# Fase 2: Descargar modelos
+# ============================================================
+BASE_MODEL_ID="Qwen/Qwen3-14B"
+LORA_REPO_ID="mmoralesf/qwen3-14B-fine-tuned"
+
+BASE_DIR="/app/modelos/qwen3-14b-base"
+LORA_DIR="/app/modelos/qwen3-14b-lora"
+MERGED_DIR="/app/modelos/qwen3-14b-merged"
+
+mkdir -p /app/modelos
+
+if [ ! -f "$BASE_DIR/config.json" ]; then
+    log "Descargando modelo base: $BASE_MODEL_ID..."
+    huggingface-cli download "$BASE_MODEL_ID" \
+        --local-dir "$BASE_DIR" \
+        --local-dir-use-symlinks False
+    log "Modelo base descargado en $BASE_DIR"
+else
+    log "Modelo base encontrado en $BASE_DIR"
+fi
+
+if [ ! -f "$LORA_DIR/adapter_config.json" ]; then
+    log "Descargando LoRA adapter: $LORA_REPO_ID..."
+    huggingface-cli download "$LORA_REPO_ID" \
+        --local-dir "$LORA_DIR" \
+        --local-dir-use-symlinks False
+    log "LoRA adapter descargado en $LORA_DIR"
+else
+    log "LoRA adapter encontrado en $LORA_DIR"
+fi
+
+# ============================================================
+# Fase 3: Merge LoRA → modelo completo
+# ============================================================
+if [ -f "$MERGED_DIR/config.json" ]; then
+    log "Modelo mergeado encontrado en $MERGED_DIR, saltando merge."
+else
+    log "Mergeando LoRA con modelo base..."
+    log "  Base: $BASE_DIR"
+    log "  LoRA: $LORA_DIR"
+    log "  Output: $MERGED_DIR"
+
+    python3 << 'MERGE_SCRIPT'
+import torch
+import os
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from peft import PeftModel
+
+BASE_DIR = "/app/modelos/qwen3-14b-base"
+LORA_DIR = "/app/modelos/qwen3-14b-lora"
+MERGED_DIR = "/app/modelos/qwen3-14b-merged"
+
+print("[merge] Cargando tokenizer...")
+tokenizer = AutoTokenizer.from_pretrained(BASE_DIR, trust_remote_code=True)
+
+print("[merge] Cargando modelo base (bf16)...")
+base_model = AutoModelForCausalLM.from_pretrained(
+    BASE_DIR,
+    torch_dtype=torch.bfloat16,
+    device_map="cpu",
+    trust_remote_code=True,
+)
+
+print("[merge] Cargando LoRA adapter...")
+model = PeftModel.from_pretrained(base_model, LORA_DIR)
+
+print("[merge] Mergeando pesos...")
+model = model.merge_and_unload()
+
+print(f"[merge] Guardando modelo mergeado en {MERGED_DIR}...")
+os.makedirs(MERGED_DIR, exist_ok=True)
+model.save_pretrained(MERGED_DIR, safe_serialization=True)
+tokenizer.save_pretrained(MERGED_DIR)
+
+print("[merge] Merge completado.")
+MERGE_SCRIPT
+
+    if [ ! -f "$MERGED_DIR/config.json" ]; then
+        log "ERROR: Merge falló - config.json no encontrado en $MERGED_DIR"
+        exit 1
+    fi
+    log "Merge completado exitosamente."
+fi
+
+# ============================================================
+# Fase 4: Clonar repositorios
+# ============================================================
+log "Preparando repositorios..."
+mkdir -p /app
+
+GIT_REPO_URL="https://${GITHUB_TOKEN}@github.com/marianomoralesr/mcp-server.git"
+
+if [ ! -d "/app/app" ]; then
+    log "Clonando inference-server..."
+    git clone -b inference-server "$GIT_REPO_URL" /tmp/inference-repo
+    cp -r /tmp/inference-repo/* /app/
+    rm -rf /tmp/inference-repo
+fi
+
+if [ ! -d "/app/mcp-server/.git" ]; then
+    log "Clonando mcp-server..."
+    rm -rf /app/mcp-server
+    git clone -b main "$GIT_REPO_URL" /app/mcp-server
+fi
+
+# ============================================================
+# Fase 5: Setup MCP Server
+# ============================================================
+log "Configurando MCP Server..."
+cd /app/mcp-server
+npm install
+npm run build
+
+if [ -n "${SUPABASE_URL:-}" ] && [ -n "${SUPABASE_SERVICE_ROLE_KEY:-}" ]; then
+    cat > /app/mcp-server/.env <<EOF
+SUPABASE_URL=${SUPABASE_URL}
+SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+PORT=${MCP_PORT:-3001}
+EOF
+    if [ -n "${MCP_API_KEY:-}" ]; then
+        echo "API_KEY=${MCP_API_KEY}" >> /app/mcp-server/.env
+    fi
+    log ".env de MCP generado."
+else
+    log "WARN: Credenciales Supabase no definidas, MCP .env no generado."
+fi
+
+# --- Dependencias de FastAPI ---
+log "Instalando dependencias de FastAPI..."
+pip install -r /app/app/requirements.txt
+
+mkdir -p /app/datasets /app/generated
+
+# ============================================================
+# Fase 6: Health check + Cleanup
+# ============================================================
+wait_for_service() {
+    local name="$1" url="$2" max_retries="$3" interval="$4"
+    log "Esperando a $name..."
+    for i in $(seq 1 "$max_retries"); do
+        if curl -sf "$url" > /dev/null 2>&1; then
+            log "$name listo."
+            return 0
+        fi
+        if [ "$((i % 10))" -eq 0 ]; then
+            log "  $name: intento $i/$max_retries..."
+        fi
+        sleep "$interval"
+    done
+    log "ERROR: $name no respondió después de $max_retries intentos."
+    return 1
+}
+
+MCP_PID=""
+VLLM_PID=""
+FASTAPI_PID=""
+
+cleanup() {
+    log "Deteniendo servicios..."
+    [ -n "$FASTAPI_PID" ] && kill "$FASTAPI_PID" 2>/dev/null || true
+    [ -n "$VLLM_PID" ] && kill "$VLLM_PID" 2>/dev/null || true
+    [ -n "$MCP_PID" ] && kill "$MCP_PID" 2>/dev/null || true
+    wait 2>/dev/null || true
+    log "Todos los servicios detenidos."
+}
+
+trap cleanup EXIT INT TERM
+
+# ============================================================
+# Fase 7: Iniciar servicios
+# ============================================================
+
+VLLM_PORT=${VLLM_PORT:-8001}
+FASTAPI_PORT=${TREFA_FASTAPI_PORT:-8081}
+
+# --- MCP Server (puerto 3001) ---
+log "Iniciando MCP Server en puerto ${MCP_PORT:-3001}..."
+cd /app/mcp-server
+nohup npm run start:http > /tmp/mcp-server.log 2>&1 &
+MCP_PID=$!
+cd /app
+
+if ! wait_for_service "MCP Server" "http://localhost:${MCP_PORT:-3001}/health" 30 2; then
+    log "WARN: MCP Server no respondió, continuando..."
+fi
+
+# --- vLLM (puerto 8001, evita Caddy en 8000) ---
+# VLLM_USE_V1=0: engine legacy, más estable con torch 2.9+
+# --enforce-eager: desactiva CUDA graphs (evita segfault)
+export VLLM_USE_V1=0
+log "Arrancando vLLM en puerto $VLLM_PORT (modelo mergeado, MAX_MODEL_LEN=$MAX_MODEL_LEN, GPU_MEM=$GPU_MEMORY_UTILIZATION)..."
+python3 -m vllm.entrypoints.openai.api_server \
+    --model "$MERGED_DIR" \
+    --served-model-name trefa-lora \
+    --max-model-len "$MAX_MODEL_LEN" \
+    --dtype "$DTYPE" \
+    --gpu-memory-utilization "$GPU_MEMORY_UTILIZATION" \
+    --enforce-eager \
+    --host 0.0.0.0 \
+    --port "$VLLM_PORT" > /tmp/vllm.log 2>&1 &
+VLLM_PID=$!
+
+if ! wait_for_service "vLLM" "http://localhost:${VLLM_PORT}/v1/models" 180 5; then
+    log "ERROR: vLLM no arrancó. Últimas líneas del log:"
+    tail -50 /tmp/vllm.log 2>/dev/null || true
+    exit 1
+fi
+
+# --- FastAPI (puerto 8081, evita Jupyter en 8080) ---
+log "Iniciando FastAPI en puerto $FASTAPI_PORT..."
+cd /app
+TREFA_VLLM_PORT=$VLLM_PORT python3 -m uvicorn app.main:app \
+    --host 0.0.0.0 \
+    --port "$FASTAPI_PORT" > /tmp/fastapi.log 2>&1 &
+FASTAPI_PID=$!
+
+if ! wait_for_service "FastAPI" "http://localhost:${FASTAPI_PORT}/health" 30 2; then
+    log "ERROR: FastAPI no arrancó. Últimas líneas del log:"
+    tail -30 /tmp/fastapi.log 2>/dev/null || true
+    exit 1
+fi
+
+# ============================================================
+# Fase 8: Monitor
+# ============================================================
+log "============================================"
+log "Todos los servicios activos."
+log "  MCP Server  PID=$MCP_PID  (puerto ${MCP_PORT:-3001})"
+log "  vLLM        PID=$VLLM_PID  (puerto $VLLM_PORT) → modelo: trefa-lora"
+log "  FastAPI     PID=$FASTAPI_PID  (puerto $FASTAPI_PORT)"
+log "============================================"
+log "Verificación rápida:"
+log "  curl http://localhost:${VLLM_PORT}/v1/models"
+log "  curl http://localhost:${FASTAPI_PORT}/health"
+log "============================================"
+log "Monitoreando procesos..."
+
+wait -n "$VLLM_PID" "$MCP_PID" "$FASTAPI_PID" 2>/dev/null
+EXIT_CODE=$?
+
+for proc_info in "VLLM:$VLLM_PID" "MCP:$MCP_PID" "FastAPI:$FASTAPI_PID"; do
+    name="${proc_info%%:*}"
+    pid="${proc_info##*:}"
+    if [ -n "$pid" ] && ! kill -0 "$pid" 2>/dev/null; then
+        log "ALERTA: $name (PID $pid) terminó inesperadamente."
+    fi
+done
+
+log "Proceso terminó con código $EXIT_CODE. Saliendo..."
+exit "$EXIT_CODE"

@@ -22,6 +22,13 @@ TOOL_CALL_PATTERN = re.compile(
     re.DOTALL,
 )
 
+THINK_PATTERN = re.compile(r"<think>.*?</think>\s*", re.DOTALL)
+
+
+def strip_thinking(text: str) -> str:
+    """Elimina bloques <think>...</think> de la respuesta."""
+    return THINK_PATTERN.sub("", text).strip()
+
 
 def extract_tool_calls(text: str) -> List[Dict[str, Any]]:
     """Extrae tool calls del texto de respuesta del LLM.
@@ -109,7 +116,7 @@ class ToolOrchestrator:
 
             if not tool_calls:
                 return {
-                    "response": content,
+                    "response": strip_thinking(content),
                     "tool_calls_executed": tool_calls_executed,
                     "iterations": iteration,
                     "usage": total_usage,
@@ -162,7 +169,7 @@ class ToolOrchestrator:
         total_usage = usage
 
         return {
-            "response": content,
+            "response": strip_thinking(content),
             "tool_calls_executed": tool_calls_executed,
             "iterations": self.max_iterations,
             "usage": total_usage,

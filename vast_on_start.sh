@@ -134,15 +134,23 @@ pip install huggingface_hub hf_transfer datasets accelerate
 log "Clonando repositorios..."
 mkdir -p /app
 
+# Construir URL con token si está disponible
+if [ -n "${GITHUB_TOKEN:-}" ]; then
+    GIT_REPO_URL="https://${GITHUB_TOKEN}@github.com/marianomoralesr/mcp-server.git"
+    log "Usando GITHUB_TOKEN para autenticación Git."
+else
+    GIT_REPO_URL="https://github.com/marianomoralesr/mcp-server.git"
+fi
+
 if [ ! -d "/app/app" ]; then
-    git clone -b inference-server https://github.com/marianomoralesr/mcp-server.git /tmp/inference-repo
+    git clone -b inference-server "$GIT_REPO_URL" /tmp/inference-repo
     cp -r /tmp/inference-repo/* /app/
     rm -rf /tmp/inference-repo
 fi
 
 if [ ! -d "/app/mcp-server/.git" ]; then
     rm -rf /app/mcp-server
-    git clone -b main https://github.com/marianomoralesr/mcp-server.git /app/mcp-server
+    git clone -b main "$GIT_REPO_URL" /app/mcp-server
 fi
 
 # ============================================================
