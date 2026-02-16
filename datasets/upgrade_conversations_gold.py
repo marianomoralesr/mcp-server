@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
 upgrade_conversations_gold.py — Toma conversaciones de entrenamiento existentes
-y las mejora una por una con Gemini 2.5 Flash para producir conversaciones gold
+y las mejora una por una con Gemini 3 Flash para producir conversaciones gold
 con la personalidad actualizada de Mariana, uso correcto de tools, y patrones
 de conversación realistas.
 
 Lee:
-  - dataset_mariana_train_v4.jsonl (conversaciones a mejorar)
+  - v3golden_qwen_mariana_train.jsonl (archivo combinado: 28 gold + 1368 originales)
+  - golden_qwen_mariana.jsonl (28 conversaciones gold como referencia)
   - conversaciones_chatml_pares.jsonl (referencia de la Mariana real en WhatsApp)
-  - trefa_gold_tool_calling-v3.jsonl (gold standard con tool calling)
   - estilo_conversacional_mariana.jsonl (ejemplos de estilo nuevo)
   - saludos_mariana.jsonl (ejemplos de saludos)
 
@@ -56,12 +56,13 @@ except ImportError:
 SCRIPT_DIR = Path(__file__).parent
 TRAINING_DIR = Path("/Users/marianomorales/Downloads/fine-tuning/training")
 
-# Archivo principal a mejorar
-INPUT_FILE = TRAINING_DIR / "quality-conversations" / "dataset_mariana_train_v4.jsonl"
+# Archivo principal a mejorar (las primeras 28 líneas son gold, se saltan)
+INPUT_FILE = Path("/Users/marianomorales/Downloads/v3golden_qwen_mariana_train.jsonl")
+GOLD_SKIP = 28  # Primeras 28 líneas son gold standard, no se procesan
 
 # Referencias de estilo
 CONVERSACIONES_REALES = TRAINING_DIR / "synthetic-datasets" / "conversaciones_chatml_pares.jsonl"
-GOLD_V3 = TRAINING_DIR / "synthetic-datasets" / "trefa_gold_tool_calling-v3.jsonl"
+GOLD_REF = SCRIPT_DIR / "golden_qwen_mariana.jsonl"  # 28 conversaciones gold
 ESTILO_NUEVO = SCRIPT_DIR / "estilo_conversacional_mariana.jsonl"
 SALUDOS = SCRIPT_DIR / "saludos_mariana.jsonl"
 
@@ -333,13 +334,21 @@ def load_reference_examples() -> str:
     """Carga y formatea ejemplos de referencia para el prompt."""
     sections = []
 
-    # 1. Gold v3 (nuestro estándar de tool calling)
-    gold_v3 = load_jsonl(GOLD_V3)
-    if gold_v3:
-        sections.append("=== EJEMPLOS GOLD V3 (estándar de tool calling) ===")
-        for i, conv in enumerate(gold_v3[:5]):
-            cat = conv.get("metadata", {}).get("categoria", "general")
-            sections.append(f"\n--- Gold V3 #{i+1} (categoria: {cat}) ---")
+    # 1. Gold reference (28 conversaciones gold — EL ESTÁNDAR A SEGUIR)
+    gold_ref = load_jsonl(GOLD_REF)
+    if gold_ref:
+        sections.append("=== 28 CONVERSACIONES GOLD (ESTÁNDAR ABSOLUTO — SEGUIR ESTA CALIDAD) ===")
+        sections.append("Las siguientes 28 conversaciones son el ESTÁNDAR DE CALIDAD.")
+        sections.append("CADA conversación que mejores debe seguir EXACTAMENTE este nivel de calidad,")
+        sections.append("formato, tono y patrones. Presta especial atención a:")
+        sections.append("- Cómo Mariana se presenta (nunca 'asesora virtual', siempre 'Soy Mariana de Autos TREFA')")
+        sections.append("- Formato de precios: SIEMPRE $XXX,XXX MXN")
+        sections.append("- Interpretación de montos abreviados del cliente: '100 de enganche' = $100,000 MXN, '5 de enganche' = $5,000 MXN")
+        sections.append("- Años abreviados: 'Fiesta 24' = Fiesta 2024, 'Corolla 22' = Corolla 2022")
+        sections.append("- Presentación de autos: 'Opción 1 — **Marca Modelo Año**' (sin bullets)")
+        sections.append("- liga_web solo cuando el cliente muestra interés específico\n")
+        for i, conv in enumerate(gold_ref):
+            sections.append(f"\n--- Gold #{i+1} ---")
             msgs = conv["messages"]
             formatted = []
             for m in msgs:
@@ -541,6 +550,11 @@ CAMBIOS OBLIGATORIOS:
 14. Los IDs de vehículos deben ser números realistas (100000-2000000, como en la DB real)
 15. Los precios deben ser realistas para el mercado mexicano de seminuevos (150K-900K)
 16. Los slugs deben seguir el patrón real: marca-modelo-año (ej: kia-forte-l-2020-1)
+17. FORMATO DE PRECIOS: Mariana SIEMPRE presenta precios como $XXX,XXX MXN (con $ al inicio, comas de miles, MXN al final, sin centavos)
+18. MONTOS ABREVIADOS: Cuando el cliente dice "traigo 100 de enganche" → interpreta como $100,000 MXN.
+    "5 de enganche" → $5,000 MXN. "350 de presupuesto" → $350,000 MXN. NUNCA preguntes si se refiere a miles.
+19. AÑOS ABREVIADOS: "Corolla 22" → Corolla 2022. "Fiesta 24" → Fiesta 2024. Inferir sin preguntar.
+20. UBICACIONES: Si Mariana menciona sucursales, incluir liga de Google Maps (viene de obtener_info_negocio tema "ubicaciones")
 
 NO HAGAS:
 - No inventes URLs de financiamiento (solo autostrefa.mx/registro y autostrefa.mx/escritorio/aplicacion)
@@ -764,10 +778,18 @@ def main():
     # Cargar conversaciones a mejorar
     input_path = Path(args.input)
     print(f"\nCargando conversaciones de {input_path}...")
-    conversations = load_jsonl(input_path)
-    print(f"  {len(conversations)} conversaciones cargadas")
+    all_conversations = load_jsonl(input_path)
+    print(f"  {len(all_conversations)} conversaciones cargadas")
 
-    # Aplicar rango
+    # Saltar las primeras GOLD_SKIP líneas (son gold standard, no se procesan)
+    if len(all_conversations) > GOLD_SKIP:
+        print(f"  Saltando las primeras {GOLD_SKIP} conversaciones (gold standard)")
+        conversations = all_conversations[GOLD_SKIP:]
+    else:
+        conversations = all_conversations
+    print(f"  {len(conversations)} conversaciones a procesar")
+
+    # Aplicar rango (relativo a las conversaciones procesables, después de las gold)
     start = args.start
     end = args.end if args.end > 0 else len(conversations)
     conversations = conversations[start:end]
