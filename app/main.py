@@ -309,6 +309,14 @@ async def auth_middleware(request: Request, call_next):
     # Rutas publicas exactas
     if path in PUBLIC_PATHS:
         return await call_next(request)
+    # OpenAI-compatible API (para proxies como LiteLLM)
+    if path in ("/v1/chat/completions", "/v1/completions", "/v1/models", "/v1/embeddings"):
+        return await call_next(request)
+    # Bearer token (LiteLLM master key u otros proxies)
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer ") and auth_header.split(" ", 1)[1] == os.environ.get("LITELLM_MASTER_KEY", ""):
+        if os.environ.get("LITELLM_MASTER_KEY"):
+            return await call_next(request)
     # Static files
     if path.startswith("/static"):
         return await call_next(request)
