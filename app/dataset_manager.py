@@ -222,6 +222,32 @@ def auto_tag_files(base_dirs: list[str]) -> dict:
     return {"files": results}
 
 
+def _meta_path(filepath: str) -> Path:
+    """Retorna la ruta del sidecar .meta.json para un archivo JSONL."""
+    return Path(filepath + ".meta.json")
+
+
+def get_file_metadata(filepath: str) -> dict:
+    """Lee metadatos de un sidecar .meta.json. Retorna dict vacío si no existe."""
+    mp = _meta_path(filepath)
+    if mp.exists():
+        try:
+            return json.loads(mp.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            return {}
+    return {}
+
+
+def save_file_metadata(filepath: str, data: dict) -> dict:
+    """Guarda metadatos en sidecar .meta.json. Hace merge con datos existentes."""
+    existing = get_file_metadata(filepath)
+    existing.update(data)
+    existing["updated_at"] = datetime.now(timezone.utc).isoformat()
+    mp = _meta_path(filepath)
+    mp.write_text(json.dumps(existing, ensure_ascii=False, indent=2), encoding="utf-8")
+    return existing
+
+
 def scan_jsonl_files(base_dirs: list[str], force_rescan: bool = False) -> list[dict]:
     """
     Escanea directorios recursivamente buscando archivos .jsonl.
@@ -239,16 +265,22 @@ def scan_jsonl_files(base_dirs: list[str], force_rescan: bool = False) -> list[d
         if not base_path.exists():
             continue
         for jsonl_file in sorted(base_path.rglob("*.jsonl")):
+            # Saltar sidecars
+            if jsonl_file.name.endswith(".meta.json"):
+                continue
             try:
                 stat = jsonl_file.stat()
                 # Estimar líneas por tamaño (promedio ~2KB por conversación)
                 estimated_lines = max(1, int(stat.st_size / 2048))
+                meta = get_file_metadata(str(jsonl_file))
                 files.append({
                     "path": str(jsonl_file),
                     "filename": jsonl_file.name,
                     "size_bytes": stat.st_size,
                     "line_count": estimated_lines,
                     "directory": str(jsonl_file.parent.relative_to(base_path.parent)),
+                    "version": meta.get("version", ""),
+                    "file_tags": meta.get("file_tags", []),
                 })
             except OSError:
                 continue

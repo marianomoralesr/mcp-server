@@ -14,7 +14,10 @@ import hashlib
 from typing import Optional, List, Dict, Any
 from contextlib import asynccontextmanager
 
+import csv
+import io
 import pathlib
+from pathlib import Path
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, Request, UploadFile, File
 from fastapi.responses import StreamingResponse, JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -987,6 +990,18 @@ async def dataset_stats():
     return dataset_manager.get_review_stats(settings.supabase_url, settings.supabase_key)
 
 
+class RenameRequest(BaseModel):
+    old_path: str
+    new_name: str
+
+
+class FileMetadataRequest(BaseModel):
+    file_path: str
+    version: Optional[str] = None
+    file_tags: Optional[List[str]] = None
+    notes: Optional[str] = None
+
+
 class MergeRequest(BaseModel):
     file_paths: List[str]
     output_filename: str = ""
@@ -994,17 +1009,40 @@ class MergeRequest(BaseModel):
 
 @app.post("/v1/datasets/upload")
 async def upload_dataset(file: UploadFile = File(...)):
-    """Sube un archivo JSONL al directorio de generación"""
-    if not file.filename or not file.filename.endswith(".jsonl"):
-        raise HTTPException(status_code=400, detail="Solo se aceptan archivos .jsonl")
+    """Sube un archivo JSONL (o CSV que se convierte) al directorio de generación"""
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="Nombre de archivo requerido")
+
+    is_csv = file.filename.lower().endswith(".csv")
+    is_jsonl = file.filename.lower().endswith(".jsonl")
+
+    if not is_csv and not is_jsonl:
+        raise HTTPException(status_code=400, detail="Solo se aceptan archivos .jsonl o .csv")
 
     output_dir = Path(settings.generation_output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
-    dest = output_dir / file.filename
 
     content = await file.read()
-    # Validar que cada línea sea JSON válido
-    lines = content.decode("utf-8").splitlines()
+    text = content.decode("utf-8")
+
+    if is_csv:
+        # Convertir CSV a JSONL
+        jsonl_lines = _convert_csv_to_jsonl(text)
+        dest_name = file.filename.rsplit(".", 1)[0] + ".jsonl"
+        dest = output_dir / dest_name
+        out_content = "\n".join(jsonl_lines) + "\n"
+        dest.write_text(out_content, encoding="utf-8")
+        dataset_manager._file_cache.clear()
+        return {
+            "filename": dest_name,
+            "lines": len(jsonl_lines),
+            "size_bytes": len(out_content.encode("utf-8")),
+            "path": str(dest),
+            "converted_from": "csv",
+        }
+
+    # JSONL directo
+    lines = text.splitlines()
     valid_lines = 0
     for i, line in enumerate(lines, 1):
         stripped = line.strip()
@@ -1019,8 +1057,8 @@ async def upload_dataset(file: UploadFile = File(...)):
                 detail=f"Linea {i} no es JSON valido"
             )
 
+    dest = output_dir / file.filename
     dest.write_bytes(content)
-    # Invalidar cache de archivos
     dataset_manager._file_cache.clear()
 
     return {
@@ -1029,6 +1067,64 @@ async def upload_dataset(file: UploadFile = File(...)):
         "size_bytes": len(content),
         "path": str(dest),
     }
+
+
+def _convert_csv_to_jsonl(csv_text: str) -> list:
+    """Convierte CSV a líneas JSONL. Auto-detecta formato."""
+    reader = csv.DictReader(io.StringIO(csv_text))
+    cols = [c.lower().strip() for c in (reader.fieldnames or [])]
+
+    jsonl_lines = []
+
+    # Formato 1: columnas system, user, assistant
+    if "system" in cols and "user" in cols and "assistant" in cols:
+        for row in reader:
+            messages = []
+            sys_val = (row.get("system") or row.get("System") or "").strip()
+            usr_val = (row.get("user") or row.get("User") or "").strip()
+            ast_val = (row.get("assistant") or row.get("Assistant") or "").strip()
+            if sys_val:
+                messages.append({"role": "system", "content": sys_val})
+            if usr_val:
+                messages.append({"role": "user", "content": usr_val})
+            if ast_val:
+                messages.append({"role": "assistant", "content": ast_val})
+            if messages:
+                jsonl_lines.append(json.dumps({"messages": messages}, ensure_ascii=False))
+        return jsonl_lines
+
+    # Formato 2: columna messages con JSON string
+    if "messages" in cols:
+        for row in reader:
+            msgs_raw = (row.get("messages") or row.get("Messages") or "").strip()
+            if not msgs_raw:
+                continue
+            try:
+                msgs = json.loads(msgs_raw)
+                jsonl_lines.append(json.dumps({"messages": msgs}, ensure_ascii=False))
+            except json.JSONDecodeError:
+                continue
+        return jsonl_lines
+
+    # Formato 3: columnas role + content (+ opcional conversation_id)
+    if "role" in cols and "content" in cols:
+        convs = {}
+        for row in reader:
+            cid = (row.get("conversation_id") or row.get("Conversation_id") or "default").strip()
+            role = (row.get("role") or row.get("Role") or "").strip()
+            content_val = (row.get("content") or row.get("Content") or "").strip()
+            if not role or not content_val:
+                continue
+            convs.setdefault(cid, []).append({"role": role, "content": content_val})
+        for msgs in convs.values():
+            if msgs:
+                jsonl_lines.append(json.dumps({"messages": msgs}, ensure_ascii=False))
+        return jsonl_lines
+
+    raise HTTPException(
+        status_code=400,
+        detail="Formato CSV no reconocido. Se esperan columnas: (role,content), (system,user,assistant), o (messages)"
+    )
 
 
 @app.post("/v1/datasets/merge")
@@ -1070,6 +1166,135 @@ async def auto_tag_datasets():
     if gen_dir and gen_dir not in dirs:
         dirs.append(gen_dir)
     return dataset_manager.auto_tag_files(dirs)
+
+
+@app.delete("/v1/datasets/files/{file_path:path}")
+async def dataset_delete_file(file_path: str):
+    """Elimina un archivo JSONL y su sidecar .meta.json"""
+    dirs = [d.strip() for d in settings.dataset_dirs.split(",") if d.strip()]
+    gen_dir = settings.generation_output_dir
+    if gen_dir:
+        dirs.append(gen_dir)
+    allowed = any(file_path.startswith(d) for d in dirs)
+    if not allowed:
+        raise HTTPException(status_code=403, detail="Ruta fuera de directorios permitidos")
+
+    fp = Path(file_path)
+    if not fp.exists():
+        raise HTTPException(status_code=404, detail="Archivo no encontrado")
+
+    fp.unlink()
+    # Borrar sidecar si existe
+    meta_fp = dataset_manager._meta_path(file_path)
+    if meta_fp.exists():
+        meta_fp.unlink()
+
+    dataset_manager._file_cache.clear()
+    return {"status": "deleted", "path": file_path}
+
+
+@app.post("/v1/datasets/files/rename")
+async def dataset_rename_file(body: RenameRequest):
+    """Renombra un archivo JSONL y su sidecar .meta.json"""
+    dirs = [d.strip() for d in settings.dataset_dirs.split(",") if d.strip()]
+    gen_dir = settings.generation_output_dir
+    if gen_dir:
+        dirs.append(gen_dir)
+    allowed = any(body.old_path.startswith(d) for d in dirs)
+    if not allowed:
+        raise HTTPException(status_code=403, detail="Ruta fuera de directorios permitidos")
+
+    old_fp = Path(body.old_path)
+    if not old_fp.exists():
+        raise HTTPException(status_code=404, detail="Archivo no encontrado")
+
+    new_name = body.new_name.strip()
+    if not new_name.endswith(".jsonl"):
+        new_name += ".jsonl"
+
+    new_fp = old_fp.parent / new_name
+    if new_fp.exists():
+        raise HTTPException(status_code=409, detail=f"Ya existe un archivo con ese nombre: {new_name}")
+
+    old_fp.rename(new_fp)
+
+    # Renombrar sidecar si existe
+    old_meta = dataset_manager._meta_path(body.old_path)
+    if old_meta.exists():
+        new_meta = dataset_manager._meta_path(str(new_fp))
+        old_meta.rename(new_meta)
+
+    dataset_manager._file_cache.clear()
+    return {"status": "renamed", "old_path": body.old_path, "new_path": str(new_fp)}
+
+
+@app.get("/v1/datasets/files/{file_path:path}/metadata")
+async def dataset_get_metadata(file_path: str):
+    """Obtiene metadatos de un archivo JSONL desde su sidecar"""
+    dirs = [d.strip() for d in settings.dataset_dirs.split(",") if d.strip()]
+    gen_dir = settings.generation_output_dir
+    if gen_dir:
+        dirs.append(gen_dir)
+    allowed = any(file_path.startswith(d) for d in dirs)
+    if not allowed:
+        raise HTTPException(status_code=403, detail="Ruta fuera de directorios permitidos")
+
+    return dataset_manager.get_file_metadata(file_path)
+
+
+@app.post("/v1/datasets/files/metadata")
+async def dataset_save_metadata(body: FileMetadataRequest):
+    """Guarda metadatos de un archivo JSONL en su sidecar"""
+    dirs = [d.strip() for d in settings.dataset_dirs.split(",") if d.strip()]
+    gen_dir = settings.generation_output_dir
+    if gen_dir:
+        dirs.append(gen_dir)
+    allowed = any(body.file_path.startswith(d) for d in dirs)
+    if not allowed:
+        raise HTTPException(status_code=403, detail="Ruta fuera de directorios permitidos")
+
+    if not Path(body.file_path).exists():
+        raise HTTPException(status_code=404, detail="Archivo no encontrado")
+
+    data = {}
+    if body.version is not None:
+        data["version"] = body.version
+    if body.file_tags is not None:
+        data["file_tags"] = body.file_tags
+    if body.notes is not None:
+        data["notes"] = body.notes
+
+    result = dataset_manager.save_file_metadata(body.file_path, data)
+    dataset_manager._file_cache.clear()
+    return result
+
+
+@app.post("/v1/datasets/convert-csv")
+async def convert_csv_dataset(file: UploadFile = File(...)):
+    """Convierte un archivo CSV a JSONL y lo guarda"""
+    if not file.filename or not file.filename.lower().endswith(".csv"):
+        raise HTTPException(status_code=400, detail="Solo se aceptan archivos .csv")
+
+    output_dir = Path(settings.generation_output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    content = await file.read()
+    text = content.decode("utf-8")
+    jsonl_lines = _convert_csv_to_jsonl(text)
+
+    dest_name = file.filename.rsplit(".", 1)[0] + ".jsonl"
+    dest = output_dir / dest_name
+    out_content = "\n".join(jsonl_lines) + "\n"
+    dest.write_text(out_content, encoding="utf-8")
+
+    dataset_manager._file_cache.clear()
+    return {
+        "filename": dest_name,
+        "lines": len(jsonl_lines),
+        "size_bytes": len(out_content.encode("utf-8")),
+        "path": str(dest),
+        "converted_from": "csv",
+    }
 
 
 if __name__ == "__main__":

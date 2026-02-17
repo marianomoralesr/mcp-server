@@ -1072,6 +1072,136 @@ body {
 .key-indicator.set { background: var(--success); }
 .key-indicator.unset { background: var(--error); }
 
+/* ===== DATASET SUB-TABS ===== */
+.ds-subtabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.ds-subtab {
+  padding: 6px 18px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  color: var(--text);
+}
+.ds-subtab:hover { background: #e8eaf6; border-color: var(--primary-light); }
+.ds-subtab.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(26,35,126,0.2);
+}
+.ds-subtabs .spacer { flex: 1; }
+
+/* ===== DS TAB PANELS ===== */
+.ds-tab-panel { display: none; flex: 1; overflow: hidden; }
+.ds-tab-panel.active { display: flex; }
+.ds-tab-panel-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+/* ===== ACTION GRID ===== */
+.ds-action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+  padding: 20px;
+}
+.ds-action-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  background: var(--card);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.ds-action-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  transform: translateY(-1px);
+  border-color: var(--primary-light);
+}
+.ds-action-card-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+.ds-action-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+.ds-action-card-desc {
+  font-size: 12px;
+  color: var(--text-light);
+  line-height: 1.4;
+}
+
+/* ===== ACTION BAR (Archivos tab) ===== */
+.ds-action-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #f5f5f5;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.ds-action-bar .btn-wf { font-size: 12px; }
+
+/* ===== FILE ACTIONS (hover) ===== */
+.ds-file-actions {
+  display: none;
+  gap: 2px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.ds-file-item:hover .ds-file-actions { display: flex; }
+.ds-file-action-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  opacity: 0.5;
+  transition: all 0.15s;
+  line-height: 1;
+}
+.ds-file-action-btn:hover { opacity: 1; background: rgba(0,0,0,0.06); }
+
+/* ===== FILE VERSION/TAG BADGES ===== */
+.ds-file-version {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: #e8eaf6;
+  color: var(--primary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.ds-file-tag-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: #fff3e0;
+  color: #e65100;
+  white-space: nowrap;
+}
+
 /* ===== DATASETS VIEW ===== */
 .datasets-view {
   flex-direction: row;
@@ -1740,147 +1870,197 @@ body {
   <!-- Datasets View -->
   <div id="datasets-view" class="view datasets-view" style="flex-direction:column;">
 
-    <!-- Workflow Toolbar -->
-    <div class="workflow-bar">
-
-      <!-- 1. IMPORTAR -->
-      <div class="workflow-group wg-importar">
-        <span class="workflow-group-label">1. Importar</span>
-        <div class="workflow-group-buttons">
-          <button class="btn-wf" data-tooltip="Sube archivos JSONL desde tu computadora" onclick="genShowModal('upload')">Subir JSONL</button>
-        </div>
-      </div>
-
-      <!-- 2. ANALIZAR -->
-      <div class="workflow-group wg-analizar">
-        <span class="workflow-group-label">2. Analizar</span>
-        <div class="workflow-group-buttons">
-          <button class="btn-wf" data-tooltip="Detecta que herramientas usa cada conversacion" onclick="genShowModal('analyze')">Analizar Tools</button>
-        </div>
-      </div>
-
-      <!-- 3. GENERAR -->
-      <div class="workflow-group wg-generar">
-        <span class="workflow-group-label">3. Generar</span>
-        <div class="workflow-group-buttons">
-          <button class="btn-wf" data-tooltip="Genera conversaciones predefinidas sin LLM" onclick="genShowModal('template')">Plantillas</button>
-          <button class="btn-wf" data-tooltip="Genera conversaciones con Claude AI" onclick="genShowModal('synthetic')">Sintetico</button>
-          <button class="btn-wf btn-wf-accent" data-tooltip="Amplifica conversaciones gold con Gemini" onclick="genShowModal('gold-amplifier')">Gold Amplifier</button>
-          <button class="btn-wf btn-wf-purple" data-tooltip="Genera dataset de 25 escenarios para fine-tuning" onclick="genShowModal('training')">Training Dataset</button>
-        </div>
-      </div>
-
-      <!-- 4. CURAR & FUSIONAR -->
-      <div class="workflow-group wg-curar">
-        <span class="workflow-group-label">4. Curar &amp; Fusionar</span>
-        <div class="workflow-group-buttons">
-          <button class="btn-wf" data-tooltip="Evalua calidad con Gemini y filtra por umbral" onclick="genShowModal('curate')">Curar Dataset</button>
-          <button class="btn-wf" data-tooltip="Pipeline completo: generar + evaluar + filtrar" onclick="genShowModal('pipeline')">Pipeline TC</button>
-          <button class="btn-wf btn-wf-teal" data-tooltip="Fusiona todos los JSONL y evalua con Gemini" onclick="genShowModal('merge-evaluate')">Merge &amp; Evaluate</button>
-          <button class="btn-wf" data-tooltip="Combina archivos JSONL seleccionados en uno" onclick="genShowModal('merge')">Merge Archivos</button>
-          <button class="btn-wf" data-tooltip="Detecta Tool Calling automaticamente en todos los archivos" onclick="autoTagTC()">Auto-tag TC</button>
-        </div>
-      </div>
-
+    <!-- Sub-tabs -->
+    <div class="ds-subtabs">
+      <button class="ds-subtab active" onclick="dsSwitchTab('archivos')">Archivos</button>
+      <button class="ds-subtab" onclick="dsSwitchTab('generar')">Generar</button>
+      <button class="ds-subtab" onclick="dsSwitchTab('curar')">Curar</button>
+      <button class="ds-subtab" onclick="dsSwitchTab('training')">Training</button>
       <div class="spacer"></div>
+      <button class="ds-subtab" onclick="genShowModal('settings')" style="font-size:12px;">&#9881; Settings</button>
+      <button class="ds-subtab" onclick="genShowModal('jobs')" style="font-size:12px;">Jobs <span class="jobs-badge" id="gen-jobs-badge" style="display:none;">0</span></button>
+    </div>
 
-      <!-- 5. UTILIDADES -->
-      <div class="workflow-group wg-utilidades">
-        <span class="workflow-group-label">5. Utilidades</span>
-        <div class="workflow-group-buttons">
-          <button class="btn-wf" data-tooltip="Reemplaza el system prompt en archivos JSONL" onclick="genShowModal('update-prompt')">Act. Prompt</button>
-          <button class="btn-wf" data-tooltip="Ver estado de trabajos en ejecucion" onclick="genShowModal('jobs')" id="gen-jobs-btn">Jobs <span class="jobs-badge" id="gen-jobs-badge" style="display:none;">0</span></button>
-          <button class="btn-wf" data-tooltip="Configurar API keys de Anthropic y Gemini" onclick="genShowModal('settings')">&#9881;</button>
+    <!-- TAB: Archivos -->
+    <div class="ds-tab-panel active" id="ds-panel-archivos" style="flex-direction:column;">
+
+      <!-- Action bar -->
+      <div class="ds-action-bar">
+        <button class="btn-wf" onclick="genShowModal('upload')">Subir</button>
+        <button class="btn-wf" onclick="genShowModal('merge')">Merge</button>
+        <button class="btn-wf" onclick="autoTagTC()">Auto-tag TC</button>
+        <button class="btn-wf" onclick="genShowModal('analyze')">Analizar</button>
+      </div>
+
+      <!-- 3-panel layout -->
+      <div style="flex:1;display:flex;flex-direction:row;overflow:hidden;">
+
+      <!-- Panel izquierdo: Archivos -->
+      <div class="ds-file-panel">
+        <div class="ds-file-panel-header">
+          Archivos JSONL
+          <button class="refresh-btn" onclick="dsLoadFiles(true)" title="Re-escanear">&#8635;</button>
+        </div>
+        <div class="ds-file-list" id="ds-file-list">
+          <div class="ds-empty-state">Cargando archivos...</div>
+        </div>
+        <div class="ds-selected-bar" id="ds-selected-bar"></div>
+        <div class="ds-file-stats" id="ds-file-stats"></div>
+      </div>
+
+      <!-- Panel central: Lista de conversaciones -->
+      <div class="ds-conv-panel">
+        <div class="ds-conv-header" id="ds-conv-header">
+          <span style="font-weight:600;font-size:13px;" id="ds-conv-title">Selecciona un archivo</span>
+          <div class="spacer"></div>
+          <select id="ds-filter-tc" onchange="dsApplyFilters()">
+            <option value="">Tool Calling: Todos</option>
+            <option value="yes">Con TC</option>
+            <option value="no">Sin TC</option>
+          </select>
+          <select id="ds-filter-rating" onchange="dsApplyFilters()">
+            <option value="">Rating: Todos</option>
+            <option value="0">Sin rating</option>
+            <option value="1">1 estrella</option>
+            <option value="2">2 estrellas</option>
+            <option value="3">3 estrellas</option>
+            <option value="4">4 estrellas</option>
+            <option value="5">5 estrellas</option>
+          </select>
+        </div>
+        <div class="ds-conv-list" id="ds-conv-list">
+          <div class="ds-empty-state">Selecciona un archivo JSONL del panel izquierdo para ver sus conversaciones</div>
+        </div>
+        <div class="ds-pagination" id="ds-pagination" style="display:none;">
+          <button onclick="dsPrevPage()" id="ds-prev-btn" disabled>&#9664; Anterior</button>
+          <span id="ds-page-info">-</span>
+          <button onclick="dsNextPage()" id="ds-next-btn">Siguiente &#9654;</button>
         </div>
       </div>
 
-    </div>
-
-    <!-- Datasets content wrapper -->
-    <div style="flex:1;display:flex;flex-direction:row;overflow:hidden;">
-
-    <!-- Panel izquierdo: Archivos -->
-    <div class="ds-file-panel">
-      <div class="ds-file-panel-header">
-        Archivos JSONL
-        <button class="refresh-btn" onclick="dsLoadFiles(true)" title="Re-escanear">&#8635;</button>
-      </div>
-      <div class="ds-file-list" id="ds-file-list">
-        <div class="ds-empty-state">Cargando archivos...</div>
-      </div>
-      <div class="ds-selected-bar" id="ds-selected-bar"></div>
-      <div class="ds-file-stats" id="ds-file-stats"></div>
-    </div>
-
-    <!-- Panel central: Lista de conversaciones -->
-    <div class="ds-conv-panel">
-      <div class="ds-conv-header" id="ds-conv-header">
-        <span style="font-weight:600;font-size:13px;" id="ds-conv-title">Selecciona un archivo</span>
-        <div class="spacer"></div>
-        <select id="ds-filter-tc" onchange="dsApplyFilters()">
-          <option value="">Tool Calling: Todos</option>
-          <option value="yes">Con TC</option>
-          <option value="no">Sin TC</option>
-        </select>
-        <select id="ds-filter-rating" onchange="dsApplyFilters()">
-          <option value="">Rating: Todos</option>
-          <option value="0">Sin rating</option>
-          <option value="1">1 estrella</option>
-          <option value="2">2 estrellas</option>
-          <option value="3">3 estrellas</option>
-          <option value="4">4 estrellas</option>
-          <option value="5">5 estrellas</option>
-        </select>
-      </div>
-      <div class="ds-conv-list" id="ds-conv-list">
-        <div class="ds-empty-state">Selecciona un archivo JSONL del panel izquierdo para ver sus conversaciones</div>
-      </div>
-      <div class="ds-pagination" id="ds-pagination" style="display:none;">
-        <button onclick="dsPrevPage()" id="ds-prev-btn" disabled>&#9664; Anterior</button>
-        <span id="ds-page-info">-</span>
-        <button onclick="dsNextPage()" id="ds-next-btn">Siguiente &#9654;</button>
-      </div>
-    </div>
-
-    <!-- Panel derecho: Detalle / Editor -->
-    <div class="ds-detail-panel">
-      <div class="ds-detail-header" id="ds-detail-header">Detalle</div>
-      <div class="ds-detail-messages" id="ds-detail-messages">
-        <div class="ds-empty-state">Selecciona una conversacion para ver sus mensajes</div>
-      </div>
-      <div class="ds-detail-controls" id="ds-detail-controls" style="display:none;">
-        <div class="ds-control-row">
-          <span class="ds-control-label">Tags</span>
-          <div class="ds-tags-area" id="ds-tags-area"></div>
-          <div style="position:relative;display:inline-block;">
-            <input class="ds-tag-input" id="ds-tag-input" placeholder="+ tag" onfocus="dsShowTagSuggestions()" oninput="dsFilterTagSuggestions()" onblur="setTimeout(()=>dsHideTagSuggestions(),200)">
-            <div class="ds-tag-suggestions" id="ds-tag-suggestions" style="display:none;"></div>
+      <!-- Panel derecho: Detalle / Editor -->
+      <div class="ds-detail-panel">
+        <div class="ds-detail-header" id="ds-detail-header">Detalle</div>
+        <div class="ds-detail-messages" id="ds-detail-messages">
+          <div class="ds-empty-state">Selecciona una conversacion para ver sus mensajes</div>
+        </div>
+        <div class="ds-detail-controls" id="ds-detail-controls" style="display:none;">
+          <div class="ds-control-row">
+            <span class="ds-control-label">Tags</span>
+            <div class="ds-tags-area" id="ds-tags-area"></div>
+            <div style="position:relative;display:inline-block;">
+              <input class="ds-tag-input" id="ds-tag-input" placeholder="+ tag" onfocus="dsShowTagSuggestions()" oninput="dsFilterTagSuggestions()" onblur="setTimeout(()=>dsHideTagSuggestions(),200)">
+              <div class="ds-tag-suggestions" id="ds-tag-suggestions" style="display:none;"></div>
+            </div>
+          </div>
+          <div class="ds-control-row">
+            <span class="ds-control-label">Rating</span>
+            <div class="ds-rating-stars" id="ds-rating-stars">
+              <span data-v="1" onclick="dsSetRating(1)">&#9733;</span>
+              <span data-v="2" onclick="dsSetRating(2)">&#9733;</span>
+              <span data-v="3" onclick="dsSetRating(3)">&#9733;</span>
+              <span data-v="4" onclick="dsSetRating(4)">&#9733;</span>
+              <span data-v="5" onclick="dsSetRating(5)">&#9733;</span>
+            </div>
+          </div>
+          <div class="ds-control-row">
+            <span class="ds-control-label">Notas</span>
+            <input class="ds-notes-input" id="ds-notes-input" placeholder="Notas de revision...">
+          </div>
+          <div id="ds-validation-box"></div>
+          <div class="ds-detail-actions">
+            <button class="btn btn-sm" onclick="dsValidate()">Validar</button>
+            <button class="btn btn-sm btn-primary" onclick="dsSave()">Guardar en Supabase</button>
+            <span id="ds-save-status" style="font-size:11px;color:var(--success);"></span>
           </div>
         </div>
-        <div class="ds-control-row">
-          <span class="ds-control-label">Rating</span>
-          <div class="ds-rating-stars" id="ds-rating-stars">
-            <span data-v="1" onclick="dsSetRating(1)">&#9733;</span>
-            <span data-v="2" onclick="dsSetRating(2)">&#9733;</span>
-            <span data-v="3" onclick="dsSetRating(3)">&#9733;</span>
-            <span data-v="4" onclick="dsSetRating(4)">&#9733;</span>
-            <span data-v="5" onclick="dsSetRating(5)">&#9733;</span>
-          </div>
+      </div>
+
+      </div><!-- end 3-panel layout -->
+    </div><!-- end TAB: Archivos -->
+
+    <!-- TAB: Generar -->
+    <div class="ds-tab-panel" id="ds-panel-generar">
+      <div class="ds-action-grid">
+        <div class="ds-action-card" onclick="genShowModal('template')">
+          <div class="ds-action-card-icon">&#128196;</div>
+          <div class="ds-action-card-title">Plantillas</div>
+          <div class="ds-action-card-desc">Genera conversaciones predefinidas sin LLM (~160 escenarios)</div>
         </div>
-        <div class="ds-control-row">
-          <span class="ds-control-label">Notas</span>
-          <input class="ds-notes-input" id="ds-notes-input" placeholder="Notas de revision...">
+        <div class="ds-action-card" onclick="genShowModal('synthetic')">
+          <div class="ds-action-card-icon">&#129302;</div>
+          <div class="ds-action-card-title">Sintetico (Claude)</div>
+          <div class="ds-action-card-desc">Genera conversaciones con Claude AI (Haiku o Sonnet)</div>
         </div>
-        <div id="ds-validation-box"></div>
-        <div class="ds-detail-actions">
-          <button class="btn btn-sm" onclick="dsValidate()">Validar</button>
-          <button class="btn btn-sm btn-primary" onclick="dsSave()">Guardar en Supabase</button>
-          <span id="ds-save-status" style="font-size:11px;color:var(--success);"></span>
+        <div class="ds-action-card" onclick="genShowModal('gold-amplifier')" style="border-color:#d97706;">
+          <div class="ds-action-card-icon">&#128171;</div>
+          <div class="ds-action-card-title" style="color:#d97706;">Gold Amplifier</div>
+          <div class="ds-action-card-desc">Amplifica conversaciones gold con Gemini Flash para producir combinaciones unicas</div>
+        </div>
+        <div class="ds-action-card" onclick="genShowModal('training')" style="border-color:#7b1fa2;">
+          <div class="ds-action-card-icon">&#127891;</div>
+          <div class="ds-action-card-title" style="color:#7b1fa2;">Training Dataset</div>
+          <div class="ds-action-card-desc">Genera dataset de 25 escenarios para fine-tuning Qwen3-14B</div>
         </div>
       </div>
     </div>
 
-    </div><!-- end datasets content wrapper -->
+    <!-- TAB: Curar -->
+    <div class="ds-tab-panel" id="ds-panel-curar">
+      <div class="ds-action-grid">
+        <div class="ds-action-card" onclick="genShowModal('curate')">
+          <div class="ds-action-card-icon">&#128270;</div>
+          <div class="ds-action-card-title">Curar Dataset</div>
+          <div class="ds-action-card-desc">Evalua calidad con Gemini y filtra por umbral minimo</div>
+        </div>
+        <div class="ds-action-card" onclick="genShowModal('pipeline')">
+          <div class="ds-action-card-icon">&#9881;</div>
+          <div class="ds-action-card-title">Pipeline TC</div>
+          <div class="ds-action-card-desc">Pipeline completo: generar + evaluar + filtrar en 3 etapas</div>
+        </div>
+        <div class="ds-action-card" onclick="genShowModal('merge-evaluate')" style="border-color:#00897b;">
+          <div class="ds-action-card-icon">&#128279;</div>
+          <div class="ds-action-card-title" style="color:#00897b;">Merge &amp; Evaluate</div>
+          <div class="ds-action-card-desc">Fusiona todos los JSONL y evalua con Gemini para train.jsonl + eval.jsonl</div>
+        </div>
+        <div class="ds-action-card" onclick="genShowModal('update-prompt')">
+          <div class="ds-action-card-icon">&#128221;</div>
+          <div class="ds-action-card-title">Actualizar Prompt</div>
+          <div class="ds-action-card-desc">Reemplaza el system prompt en archivos JSONL seleccionados</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Training -->
+    <div class="ds-tab-panel" id="ds-panel-training">
+      <div class="ds-action-grid">
+        <div class="ds-action-card" onclick="genLaunchTrainingDataset()" style="border-color:#7b1fa2;">
+          <div class="ds-action-card-icon">&#128640;</div>
+          <div class="ds-action-card-title" style="color:#7b1fa2;">Generar Dataset</div>
+          <div class="ds-action-card-desc">Genera dataset de 25 escenarios para fine-tuning (sin LLM)</div>
+        </div>
+        <div class="ds-action-card" onclick="genShowTrainingPromptTab()">
+          <div class="ds-action-card-icon">&#128220;</div>
+          <div class="ds-action-card-title">System Prompt</div>
+          <div class="ds-action-card-desc">Ver y copiar el system prompt de Mariana para fine-tuning</div>
+        </div>
+        <div class="ds-action-card" onclick="genShowTrainingScriptTab()">
+          <div class="ds-action-card-icon">&#128187;</div>
+          <div class="ds-action-card-title">Script vast.ai</div>
+          <div class="ds-action-card-desc">Ver script train_qwen3_vast.py para entrenar en vast.ai</div>
+        </div>
+      </div>
+      <div id="training-tab-content" style="padding:0 20px 20px;">
+        <div id="training-tab-area" style="display:none;max-height:400px;overflow:auto;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <strong id="training-tab-title" style="font-size:13px;"></strong>
+            <button class="btn btn-sm" onclick="genCopyTrainingTabContent()">Copiar</button>
+          </div>
+          <pre id="training-tab-pre" style="font-size:11px;background:#f5f5f5;padding:12px;border-radius:8px;white-space:pre-wrap;word-break:break-all;border:1px solid var(--border);"></pre>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- === MODALS === -->
@@ -2109,21 +2289,22 @@ body {
     </div>
   </div>
 
-  <!-- Upload JSONL Modal -->
+  <!-- Upload JSONL/CSV Modal -->
   <div class="modal-overlay" id="modal-upload">
     <div class="modal">
-      <h3>Subir Archivo JSONL</h3>
+      <h3>Subir Archivo JSONL / CSV</h3>
       <div id="upload-drop-zone" style="border:2px dashed var(--border);border-radius:8px;padding:32px 16px;text-align:center;cursor:pointer;margin-bottom:12px;transition:border-color .2s;"
            ondragover="event.preventDefault();this.style.borderColor='var(--primary)'"
            ondragleave="this.style.borderColor='var(--border)'"
            ondrop="event.preventDefault();this.style.borderColor='var(--border)';handleUploadDrop(event)"
            onclick="document.getElementById('upload-file-input').click()">
         <div style="font-size:32px;margin-bottom:8px;color:var(--text-light);">&#128194;</div>
-        <div style="font-size:13px;color:var(--text-light);">Arrastra un archivo .jsonl aqui o haz clic para seleccionar</div>
+        <div style="font-size:13px;color:var(--text-light);">Arrastra un archivo .jsonl o .csv aqui o haz clic para seleccionar</div>
       </div>
-      <input type="file" id="upload-file-input" accept=".jsonl" style="display:none;" onchange="handleUploadSelect(event)">
+      <input type="file" id="upload-file-input" accept=".jsonl,.csv" style="display:none;" onchange="handleUploadSelect(event)">
       <div id="upload-file-info" style="font-size:12px;color:var(--text-light);margin-bottom:8px;display:none;">
         <strong id="upload-file-name"></strong> — <span id="upload-file-size"></span>
+        <span id="upload-csv-hint" style="display:none;color:#d97706;"> (se convertira a JSONL)</span>
       </div>
       <div id="upload-result" style="font-size:12px;margin-top:8px;"></div>
       <div class="modal-actions">
@@ -2166,6 +2347,25 @@ body {
       </div>
       <div class="modal-actions">
         <button class="btn-modal btn-cancel" onclick="genCloseModal('auto-tag')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- File Metadata Modal -->
+  <div class="modal-overlay" id="modal-file-metadata">
+    <div class="modal">
+      <h3>Metadatos del Archivo</h3>
+      <p id="meta-file-name" style="font-size:12px;color:var(--text-light);margin-bottom:12px;word-break:break-all;"></p>
+      <label>Version</label>
+      <input type="text" id="meta-version" placeholder="ej: v5, v5.1, beta">
+      <label>Tags (separados por coma)</label>
+      <input type="text" id="meta-tags" placeholder="ej: gold, production, tc-only">
+      <label>Notas</label>
+      <textarea id="meta-notes" placeholder="Notas sobre este archivo..."></textarea>
+      <div id="meta-save-status" style="font-size:12px;margin-top:8px;"></div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('file-metadata')">Cancelar</button>
+        <button class="btn-modal btn-submit" onclick="dsSaveFileMetadata()">Guardar</button>
       </div>
     </div>
   </div>
@@ -2240,6 +2440,32 @@ window.fetch = function(url, opts = {}) {
 
 // Check auth on load
 checkAuth();
+
+// ===== SAFE FETCH (ngrok-compatible) =====
+const NGROK_HEADERS = { 'ngrok-skip-browser-warning': 'true' };
+
+async function safeFetch(url, opts = {}) {
+  opts.headers = opts.headers || {};
+  if (!(opts.headers instanceof Headers)) {
+    Object.assign(opts.headers, NGROK_HEADERS);
+  }
+  return fetch(url, opts);
+}
+
+async function safeJson(res) {
+  const text = await res.text();
+  if (!text || text.trim() === '') {
+    throw new Error('Respuesta vacia del servidor');
+  }
+  if (text.trim().startsWith('<!') || text.trim().startsWith('<html')) {
+    throw new Error('El servidor devolvio HTML en vez de JSON (posible interstitial de ngrok). Recarga la pagina.');
+  }
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    throw new Error('Respuesta no es JSON valido: ' + text.substring(0, 100));
+  }
+}
 
 const API = window.location.origin;
 let sessionId = null;
@@ -2794,8 +3020,8 @@ async function dsLoadFiles(rescan) {
   const el = document.getElementById('ds-file-list');
   try {
     const url = rescan ? `${API}/v1/datasets/files?rescan=true` : `${API}/v1/datasets/files`;
-    const res = await fetch(url);
-    const d = await res.json();
+    const res = await safeFetch(url);
+    const d = await safeJson(res);
     dsFiles = d.files || [];
 
     if (dsFiles.length === 0) {
@@ -2818,10 +3044,21 @@ async function dsLoadFiles(rescan) {
       files.forEach(f => {
         const sizeKB = (f.size_bytes / 1024).toFixed(0);
         const epath = escapeHtml(f.path);
+        // Version & file tags badges
+        let badgesHtml = '';
+        if (f.version) badgesHtml += `<span class="ds-file-version">${escapeHtml(f.version)}</span>`;
+        (f.file_tags || []).forEach(t => { badgesHtml += `<span class="ds-file-tag-badge">${escapeHtml(t)}</span>`; });
+
         html += `<div class="ds-file-item" data-path="${epath}" onclick="dsSelectFile(this, '${epath.replace(/'/g, "\\'")}')">
           <div class="ds-file-item-row">
             <input type="checkbox" class="ds-file-checkbox" data-path="${epath}" onclick="event.stopPropagation();dsUpdateSelectedCount()">
             <span class="ds-file-name" title="${epath}">${escapeHtml(f.filename)}</span>
+            ${badgesHtml}
+            <div class="ds-file-actions">
+              <button class="ds-file-action-btn" title="Metadatos" onclick="event.stopPropagation();dsOpenMetadata('${epath.replace(/'/g, "\\'")}')">&#127991;</button>
+              <button class="ds-file-action-btn" title="Renombrar" onclick="event.stopPropagation();dsRenameFile('${epath.replace(/'/g, "\\'")}')">&#9998;</button>
+              <button class="ds-file-action-btn" title="Eliminar" onclick="event.stopPropagation();dsDeleteFile('${epath.replace(/'/g, "\\'")}')">&#128465;</button>
+            </div>
           </div>
           <span class="ds-file-meta"><span>${sizeKB} KB</span><span>~${f.line_count} conv</span></span>
         </div>`;
@@ -2851,9 +3088,9 @@ async function dsSelectFile(el, path) {
   // Load saved data for this file
   dsSavedMap = {};
   try {
-    const sres = await fetch(`${API}/v1/datasets/conversations?source_file=${encodeURIComponent(path)}`);
+    const sres = await safeFetch(`${API}/v1/datasets/conversations?source_file=${encodeURIComponent(path)}`);
     if (sres.ok) {
-      const sd = await sres.json();
+      const sd = await safeJson(sres);
       (sd.conversations || []).forEach(c => {
         dsSavedMap[c.source_file + ':' + c.line_number] = c;
       });
@@ -2869,9 +3106,9 @@ async function dsLoadConversations() {
   listEl.innerHTML = '<div class="ds-empty-state">Cargando...</div>';
 
   try {
-    const res = await fetch(`${API}/v1/datasets/files/${encodeURIComponent(dsCurrentFile)}?offset=${dsOffset}&limit=${dsLimit}`);
+    const res = await safeFetch(`${API}/v1/datasets/files/${encodeURIComponent(dsCurrentFile)}?offset=${dsOffset}&limit=${dsLimit}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const d = await res.json();
+    const d = await safeJson(res);
     dsConversations = d.conversations || [];
     dsTotal = d.total || 0;
 
@@ -3104,12 +3341,12 @@ async function dsValidate() {
   const box = document.getElementById('ds-validation-box');
   box.innerHTML = '<span style="font-size:12px;color:var(--text-light);">Validando...</span>';
   try {
-    const res = await fetch(`${API}/v1/datasets/validate`, {
+    const res = await safeFetch(`${API}/v1/datasets/validate`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...NGROK_HEADERS },
       body: JSON.stringify({ messages: dsEditedMessages }),
     });
-    const d = await res.json();
+    const d = await safeJson(res);
     if (d.valid) {
       box.innerHTML = '<div class="ds-validation-result valid">Formato Qwen ChatML valido</div>';
     } else {
@@ -3141,18 +3378,16 @@ async function dsSave() {
       target_format: 'qwen',
     };
 
-    const res = await fetch(`${API}/v1/datasets/conversations`, {
+    const res = await safeFetch(`${API}/v1/datasets/conversations`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...NGROK_HEADERS },
       body: JSON.stringify(body),
     });
 
+    const d = await safeJson(res).catch(() => ({}));
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || `HTTP ${res.status}`);
+      throw new Error(d.detail || `HTTP ${res.status}`);
     }
-
-    const d = await res.json();
 
     // Update saved map
     if (d.data && d.data.length > 0) {
@@ -3222,15 +3457,20 @@ function handleUploadSelect(e) {
 }
 
 function prepareUpload(file) {
-  if (!file.name.endsWith('.jsonl')) {
-    document.getElementById('upload-result').innerHTML = '<span style="color:var(--error)">Solo se aceptan archivos .jsonl</span>';
+  const isJsonl = file.name.toLowerCase().endsWith('.jsonl');
+  const isCsv = file.name.toLowerCase().endsWith('.csv');
+  if (!isJsonl && !isCsv) {
+    document.getElementById('upload-result').innerHTML = '<span style="color:var(--error)">Solo se aceptan archivos .jsonl o .csv</span>';
     return;
   }
   _uploadFile = file;
   document.getElementById('upload-file-info').style.display = 'block';
   document.getElementById('upload-file-name').textContent = file.name;
   document.getElementById('upload-file-size').textContent = (file.size / 1024).toFixed(1) + ' KB';
-  document.getElementById('upload-submit-btn').disabled = false;
+  document.getElementById('upload-csv-hint').style.display = isCsv ? 'inline' : 'none';
+  const btn = document.getElementById('upload-submit-btn');
+  btn.disabled = false;
+  btn.textContent = isCsv ? 'Convertir y Subir' : 'Subir';
   document.getElementById('upload-result').innerHTML = '';
 }
 
@@ -3243,17 +3483,17 @@ async function uploadDataset() {
   try {
     const formData = new FormData();
     formData.append('file', _uploadFile);
-    const res = await fetch(`${API}/v1/datasets/upload`, {
+    const res = await safeFetch(`${API}/v1/datasets/upload`, {
       method: 'POST',
-      headers: { 'X-Auth-Token': getAuthToken() },
+      headers: { 'X-Auth-Token': getAuthToken(), ...NGROK_HEADERS },
       body: formData
     });
+    const d = await safeJson(res);
     if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.detail || `HTTP ${res.status}`);
+      throw new Error(d.detail || `HTTP ${res.status}`);
     }
-    const d = await res.json();
-    resultEl.innerHTML = `<span style="color:var(--success)">Subido: ${escapeHtml(d.filename)} — ${d.lines} conversaciones (${(d.size_bytes/1024).toFixed(1)} KB)</span>`;
+    const fromCsv = d.converted_from === 'csv' ? ' (convertido desde CSV)' : '';
+    resultEl.innerHTML = `<span style="color:var(--success)">Subido: ${escapeHtml(d.filename)} — ${d.lines} conversaciones (${(d.size_bytes/1024).toFixed(1)} KB)${fromCsv}</span>`;
     _uploadFile = null;
     dsLoadFiles(true);
   } catch (e) {
@@ -3285,16 +3525,15 @@ async function mergeDatasets() {
 
   try {
     const outputName = document.getElementById('merge-output-name').value.trim();
-    const res = await fetch(`${API}/v1/datasets/merge`, {
+    const res = await safeFetch(`${API}/v1/datasets/merge`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': getAuthToken() },
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': getAuthToken(), ...NGROK_HEADERS },
       body: JSON.stringify({ file_paths: selected, output_filename: outputName })
     });
+    const d = await safeJson(res);
     if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.detail || `HTTP ${res.status}`);
+      throw new Error(d.detail || `HTTP ${res.status}`);
     }
-    const d = await res.json();
     const srcInfo = d.source_files.map(s => `${s.path.split('/').pop()}: ${s.lines}`).join(', ');
     resultEl.innerHTML = `<span style="color:var(--success)">Merge completado: ${d.total_lines} lineas totales<br><small>${escapeHtml(srcInfo)}</small></span>`;
     dsLoadFiles(true);
@@ -3311,15 +3550,14 @@ async function autoTagTC() {
   resultEl.innerHTML = '<div class="ds-empty-state">Analizando archivos...</div>';
 
   try {
-    const res = await fetch(`${API}/v1/datasets/auto-tag`, {
+    const res = await safeFetch(`${API}/v1/datasets/auto-tag`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': getAuthToken() }
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': getAuthToken(), ...NGROK_HEADERS }
     });
+    const d = await safeJson(res);
     if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.detail || `HTTP ${res.status}`);
+      throw new Error(d.detail || `HTTP ${res.status}`);
     }
-    const d = await res.json();
     const files = d.files || [];
 
     if (files.length === 0) {
@@ -3366,9 +3604,140 @@ async function autoTagTC() {
   }
 }
 
+// ===== DS SUB-TAB SWITCHING =====
+function dsSwitchTab(tab) {
+  document.querySelectorAll('.ds-subtab').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.ds-tab-panel').forEach(p => p.classList.remove('active'));
+  // Activate clicked tab button
+  const btns = document.querySelectorAll('.ds-subtab');
+  btns.forEach(b => {
+    if (b.textContent.trim().toLowerCase().startsWith(tab.toLowerCase())) b.classList.add('active');
+  });
+  const panel = document.getElementById('ds-panel-' + tab);
+  if (panel) panel.classList.add('active');
+}
+
+// ===== DELETE FILE =====
+async function dsDeleteFile(path) {
+  if (!confirm('Eliminar este archivo?\n' + path.split('/').pop())) return;
+  try {
+    const res = await safeFetch(`${API}/v1/datasets/files/${encodeURIComponent(path)}`, {
+      method: 'DELETE',
+      headers: { ...NGROK_HEADERS }
+    });
+    const d = await safeJson(res);
+    if (!res.ok) throw new Error(d.detail || `HTTP ${res.status}`);
+    dsLoadFiles(true);
+  } catch (e) {
+    alert('Error al eliminar: ' + e.message);
+  }
+}
+
+// ===== RENAME FILE =====
+async function dsRenameFile(path) {
+  const oldName = path.split('/').pop();
+  const newName = prompt('Nuevo nombre:', oldName);
+  if (!newName || newName === oldName) return;
+  try {
+    const res = await safeFetch(`${API}/v1/datasets/files/rename`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...NGROK_HEADERS },
+      body: JSON.stringify({ old_path: path, new_name: newName })
+    });
+    const d = await safeJson(res);
+    if (!res.ok) throw new Error(d.detail || `HTTP ${res.status}`);
+    dsLoadFiles(true);
+  } catch (e) {
+    alert('Error al renombrar: ' + e.message);
+  }
+}
+
+// ===== FILE METADATA =====
+let _metadataFilePath = null;
+
+async function dsOpenMetadata(path) {
+  _metadataFilePath = path;
+  document.getElementById('meta-file-name').textContent = path.split('/').pop();
+  document.getElementById('meta-save-status').innerHTML = '';
+  try {
+    const res = await safeFetch(`${API}/v1/datasets/files/${encodeURIComponent(path)}/metadata`);
+    const meta = await safeJson(res);
+    document.getElementById('meta-version').value = meta.version || '';
+    document.getElementById('meta-tags').value = (meta.file_tags || []).join(', ');
+    document.getElementById('meta-notes').value = meta.notes || '';
+  } catch (e) {
+    document.getElementById('meta-version').value = '';
+    document.getElementById('meta-tags').value = '';
+    document.getElementById('meta-notes').value = '';
+  }
+  genShowModal('file-metadata');
+}
+
+async function dsSaveFileMetadata() {
+  if (!_metadataFilePath) return;
+  const statusEl = document.getElementById('meta-save-status');
+  statusEl.innerHTML = '<span style="color:var(--text-light)">Guardando...</span>';
+  try {
+    const tagsStr = document.getElementById('meta-tags').value.trim();
+    const file_tags = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(Boolean) : [];
+    const body = {
+      file_path: _metadataFilePath,
+      version: document.getElementById('meta-version').value.trim() || null,
+      file_tags: file_tags,
+      notes: document.getElementById('meta-notes').value.trim() || null,
+    };
+    const res = await safeFetch(`${API}/v1/datasets/files/metadata`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...NGROK_HEADERS },
+      body: JSON.stringify(body)
+    });
+    const result = await safeJson(res);
+    if (!res.ok) throw new Error(result.detail || `HTTP ${res.status}`);
+    statusEl.innerHTML = '<span style="color:var(--success)">Guardado!</span>';
+    dsLoadFiles(true);
+    setTimeout(() => genCloseModal('file-metadata'), 800);
+  } catch (e) {
+    statusEl.innerHTML = `<span style="color:var(--error)">Error: ${escapeHtml(e.message)}</span>`;
+  }
+}
+
+// ===== TRAINING TAB HELPERS =====
+function genShowTrainingPromptTab() {
+  const area = document.getElementById('training-tab-area');
+  const pre = document.getElementById('training-tab-pre');
+  const title = document.getElementById('training-tab-title');
+  area.style.display = 'block';
+  pre.textContent = 'Cargando...';
+  title.textContent = 'System Prompt para Fine-tuning';
+  fetch(`${API}/v1/datasets/training/system-prompt`).then(r => r.json()).then(data => {
+    pre.textContent = data.system_prompt || 'No disponible';
+  }).catch(e => { pre.textContent = 'Error: ' + e.message; });
+}
+
+function genShowTrainingScriptTab() {
+  const area = document.getElementById('training-tab-area');
+  const pre = document.getElementById('training-tab-pre');
+  const title = document.getElementById('training-tab-title');
+  area.style.display = 'block';
+  pre.textContent = 'Cargando...';
+  title.textContent = 'train_qwen3_vast.py';
+  fetch(`${API}/v1/datasets/training/script`).then(r => r.json()).then(data => {
+    pre.textContent = data.script || 'No disponible';
+  }).catch(e => { pre.textContent = 'Error: ' + e.message; });
+}
+
+function genCopyTrainingTabContent() {
+  const pre = document.getElementById('training-tab-pre');
+  navigator.clipboard.writeText(pre.textContent).then(() => {
+    const btn = event.target;
+    btn.textContent = 'Copiado!';
+    setTimeout(() => btn.textContent = 'Copiar', 2000);
+  });
+}
+
 // -- API Key helpers --
 function genGetHeaders() {
-  const h = { 'Content-Type': 'application/json' };
+  const h = { 'Content-Type': 'application/json', ...NGROK_HEADERS };
   const ak = localStorage.getItem('trefa_anthropic_key');
   const gk = localStorage.getItem('trefa_gemini_key');
   if (ak) h['X-Anthropic-Key'] = ak;
