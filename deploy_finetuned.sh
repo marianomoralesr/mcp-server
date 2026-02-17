@@ -380,6 +380,7 @@ fi
 # --- FastAPI (puerto 8081, evita Jupyter en 8080) ---
 log "Iniciando FastAPI en puerto $FASTAPI_PORT..."
 cd /app
+TREFA_VLLM_BASE_URL="http://localhost:${VLLM_PORT}" \
 TREFA_VLLM_PORT=$VLLM_PORT python3 -m uvicorn app.main:app \
     --host 0.0.0.0 \
     --port "$FASTAPI_PORT" > /tmp/fastapi.log 2>&1 &

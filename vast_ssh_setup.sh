@@ -441,6 +441,7 @@ done
 
 # 3. FastAPI
 log "Iniciando FastAPI (puerto ${FASTAPI_PORT})..."
+TREFA_VLLM_BASE_URL="http://localhost:${VLLM_PORT}" \
 TREFA_VLLM_PORT=${VLLM_PORT} \
 TREFA_MCP_SERVER_URL="http://localhost:${MCP_PORT}" \
 PYTHONPATH=/app \

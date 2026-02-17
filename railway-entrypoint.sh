@@ -1,7 +1,8 @@
 #!/bin/bash
 # ============================================================
-# TREFA - Railway Entrypoint (sin vLLM)
-# Inicia MCP Server + FastAPI solamente
+# TREFA - Railway Entrypoint
+# Inicia MCP Server + FastAPI
+# Backend LLM: usa api.trefa.mx (tunnel Cloudflare) por defecto
 # ============================================================
 
 set -euo pipefail
@@ -60,15 +61,11 @@ else
 fi
 
 # ============================================================
-# 2. Modo vLLM: habilitado si TREFA_VLLM_BASE_URL está definido
+# 2. Modo vLLM: siempre habilitado (default: api.trefa.mx tunnel)
 # ============================================================
-if [ -n "${TREFA_VLLM_BASE_URL:-}" ]; then
-    export TREFA_VLLM_DISABLED=false
-    log "Modo Railway: vLLM habilitado via ${TREFA_VLLM_BASE_URL}"
-else
-    export TREFA_VLLM_DISABLED=true
-    log "Modo Railway: vLLM deshabilitado, solo UI + tools + datasets"
-fi
+export TREFA_VLLM_DISABLED=false
+VLLM_URL="${TREFA_VLLM_BASE_URL:-https://api.trefa.mx}"
+log "Backend LLM: ${VLLM_URL}"
 
 # ============================================================
 # 3. Iniciar MCP Server

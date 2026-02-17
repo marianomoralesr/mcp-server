@@ -69,21 +69,26 @@ if os.environ.get("LANGFUSE_PUBLIC_KEY"):
 class LLMService:
     """Servicio centralizado para llamadas LLM via LiteLLM."""
 
+    # URL del tunnel Cloudflare fijo (fallback cuando no hay vLLM local)
+    TUNNEL_URL = "https://api.trefa.mx"
+
     def __init__(self, settings: Settings):
         self.settings = settings
+
+        # Determinar api_base: explícita > local > tunnel
+        self.api_base = settings.vllm_base_url or f"http://{settings.vllm_host}:{settings.vllm_port}"
+        self.is_tunnel = self.TUNNEL_URL in self.api_base
 
         # Detectar provider
         provider = settings.litellm_provider
         if not provider:
-            base_url = settings.vllm_base_url or ""
-            if "together" in base_url.lower():
+            if "together" in self.api_base.lower():
                 provider = "together_ai"
             else:
                 provider = "openai"
 
         self.provider = provider
         self.api_key = settings.vllm_api_key
-        self.api_base = settings.vllm_base_url or f"http://{settings.vllm_host}:{settings.vllm_port}"
 
         # LiteLLM: desactivar logs internos excesivos
         litellm.set_verbose = False
@@ -92,6 +97,7 @@ class LLMService:
             "llm_service_initialized",
             provider=self.provider,
             api_base=self.api_base,
+            is_tunnel=self.is_tunnel,
             has_api_key=bool(self.api_key),
         )
 

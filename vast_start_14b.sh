@@ -154,6 +154,7 @@ for i in $(seq 1 120); do
 done
 
 log "FastAPI (puerto $FASTAPI_PORT)..."
+TREFA_VLLM_BASE_URL="http://localhost:${VLLM_PORT}" \
 TREFA_VLLM_PORT=$VLLM_PORT PYTHONPATH=/app python3 -m uvicorn app.main:app \
     --host 0.0.0.0 --port "$FASTAPI_PORT" > /tmp/fastapi.log 2>&1 &
 FASTAPI_PID=$!
