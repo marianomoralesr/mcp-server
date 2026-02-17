@@ -143,7 +143,8 @@ AUTH_TOKEN = hashlib.sha256("admin:AutosTREFA2026!".encode()).hexdigest()
 
 # Rutas publicas (no requieren auth)
 PUBLIC_PATHS = {"/", "/ui", "/health", "/metrics", "/api/login", "/api/info",
-                "/docs", "/redoc", "/openapi.json"}
+                "/docs", "/redoc", "/openapi.json",
+                "/v1/chat/completions", "/v1/completions", "/v1/models"}
 
 
 # Global state
