@@ -60,10 +60,15 @@ else
 fi
 
 # ============================================================
-# 2. Indicar modo sin vLLM
+# 2. Modo vLLM: habilitado si TREFA_VLLM_BASE_URL está definido
 # ============================================================
-export TREFA_VLLM_DISABLED=true
-log "Modo Railway: vLLM deshabilitado, solo UI + tools + datasets"
+if [ -n "${TREFA_VLLM_BASE_URL:-}" ]; then
+    export TREFA_VLLM_DISABLED=false
+    log "Modo Railway: vLLM habilitado via ${TREFA_VLLM_BASE_URL}"
+else
+    export TREFA_VLLM_DISABLED=true
+    log "Modo Railway: vLLM deshabilitado, solo UI + tools + datasets"
+fi
 
 # ============================================================
 # 3. Iniciar MCP Server
