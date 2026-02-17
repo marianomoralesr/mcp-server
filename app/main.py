@@ -513,7 +513,12 @@ async def chat(
                 "session_id": session.id,
                 "response": result["response"],
                 "tool_calls_executed": [
-                    {"name": tc["name"], "arguments": tc["arguments"]}
+                    {
+                        "name": tc["name"],
+                        "arguments": tc["arguments"],
+                        "result": tc.get("result"),
+                        "duration_ms": tc.get("duration_ms"),
+                    }
                     for tc in result["tool_calls_executed"]
                 ],
                 "iterations": result["iterations"],

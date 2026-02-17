@@ -61,6 +61,13 @@ if os.environ.get("LANGFUSE_PUBLIC_KEY"):
     litellm.failure_callback.append("langfuse")
     logger.info("langfuse_callback_enabled")
 
+# Opik opcional: si OPIK_API_BASE está definida
+if os.environ.get("OPIK_API_BASE"):
+    from litellm.integrations.opik.opik import OpikLogger
+    opik_logger = OpikLogger()
+    litellm.callbacks.append(opik_logger)
+    logger.info("opik_callback_enabled", base=os.environ["OPIK_API_BASE"])
+
 
 # ---------------------------------------------------------------------------
 # LLMService

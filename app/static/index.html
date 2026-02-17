@@ -175,7 +175,7 @@
   background: #f0f0f0;
   border-top-color: #ddd;
 }
-.mode-whatsapp .tool-panel {
+.mode-whatsapp .actions-panel {
   border-left-color: #ddd;
 }
 
@@ -411,6 +411,8 @@ body {
 
 .messages-area {
   flex: 1;
+  min-width: 320px;
+  max-width: 600px;
   overflow-y: auto;
   padding: 20px;
   display: flex;
@@ -484,40 +486,219 @@ body {
 .tool-badge.error { background: #ffebee; color: var(--error); }
 
 /* Tool detail panel */
-.tool-panel {
-  width: 0;
-  overflow: hidden;
-  transition: width 0.3s ease;
+/* === Actions Panel (siempre visible) === */
+.actions-panel {
+  width: 420px;
   border-left: 1px solid var(--border);
   background: var(--card);
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.tool-panel.open { width: 340px; }
-
-.tool-panel-header {
+.actions-header {
   display: flex;
   align-items: center;
-  padding: 12px 16px;
+  padding: 10px 16px;
   border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+
+.actions-title {
   font-weight: 600;
   font-size: 14px;
+  white-space: nowrap;
 }
 
-.tool-panel-header .close-btn {
-  margin-left: auto;
-  background: none;
-  border: none;
-  font-size: 18px;
+.actions-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.actions-tab {
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  font-size: 12px;
   cursor: pointer;
   color: var(--text-light);
+  transition: all 0.15s;
 }
 
-.tool-panel-content {
-  padding: 16px;
-  overflow-y: auto;
-  height: calc(100% - 48px);
+.actions-tab:hover { background: var(--bg); }
+.actions-tab.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
 }
+
+.actions-tab-content {
+  display: none;
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+}
+
+.actions-tab-content.active { display: flex; flex-direction: column; gap: 8px; }
+
+/* Status indicator */
+.actions-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-light);
+  padding: 6px 0;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.idle { background: #bdbdbd; }
+.status-dot.processing { background: var(--warning); animation: pulse-dot 1s infinite; }
+.status-dot.done { background: var(--success); }
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Tool call cards */
+.tool-call-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 12px;
+}
+
+.tool-call-card-header {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+  gap: 8px;
+}
+
+.tool-call-card-header:hover { background: rgba(0,0,0,0.03); }
+
+.tool-call-name {
+  font-weight: 600;
+  color: var(--primary);
+  flex: 1;
+}
+
+.tool-call-duration {
+  color: var(--text-light);
+  font-family: monospace;
+  font-size: 11px;
+}
+
+.tool-call-expand {
+  color: var(--text-light);
+  transition: transform 0.2s;
+  font-size: 10px;
+}
+
+.tool-call-card.expanded .tool-call-expand { transform: rotate(90deg); }
+
+.tool-call-card-body {
+  display: none;
+  padding: 0 12px 10px;
+  border-top: 1px solid var(--border);
+}
+
+.tool-call-card.expanded .tool-call-card-body { display: block; }
+
+.tool-call-section { margin-top: 8px; }
+.tool-call-section h5 {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+.tool-call-section pre {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 11px;
+  overflow-x: auto;
+  max-height: 150px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0;
+}
+
+/* Request tab */
+.request-section {
+  margin-bottom: 12px;
+}
+.request-section h4 {
+  font-size: 12px;
+  color: var(--primary);
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+.request-section pre {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 11px;
+  overflow-x: auto;
+  max-height: 200px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0;
+}
+
+#req-metrics {
+  font-size: 12px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+#req-metrics .metric {
+  display: flex;
+  flex-direction: column;
+}
+#req-metrics .metric-label {
+  font-size: 10px;
+  color: var(--text-light);
+  text-transform: uppercase;
+}
+#req-metrics .metric-value {
+  font-weight: 600;
+  font-family: monospace;
+}
+
+/* Opik tab */
+.opik-header { margin-bottom: 12px; }
+.opik-link {
+  display: inline-block;
+  padding: 8px 16px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+}
+.opik-link:hover { background: var(--primary-light); }
+.opik-traces { font-size: 12px; }
+.muted { color: var(--text-light); font-size: 12px; }
+
+/* Legacy tool-panel compat (hidden, replaced by actions-panel) */
+.tool-panel { display: none; }
 
 .tool-detail { margin-bottom: 16px; }
 .tool-detail h4 { font-size: 13px; color: var(--primary); margin-bottom: 4px; }
@@ -1661,9 +1842,25 @@ body {
 }
 
 /* Responsive */
+@media (max-width: 900px) {
+  .actions-panel {
+    display: none;
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 100%;
+    z-index: 10;
+  }
+  .actions-panel.mobile-open { display: flex; }
+  .messages-area { max-width: none; }
+  #actions-toggle-mobile { display: inline-block !important; }
+  #actions-close-mobile { display: inline-block !important; }
+}
+@media (min-width: 901px) {
+  #actions-toggle-mobile { display: none !important; }
+  #actions-close-mobile { display: none !important; }
+}
 @media (max-width: 768px) {
   .message { max-width: 90%; }
-  .tool-panel.open { width: 100%; position: absolute; right: 0; top: 0; bottom: 0; z-index: 5; }
   .dashboard-view { padding: 12px; }
   .dash-grid { grid-template-columns: 1fr; }
   .header .subtitle { display: none; }
@@ -1746,7 +1943,7 @@ body {
         <option value="webapp">Web App</option>
       </select>
       <div class="spacer"></div>
-      <button class="btn btn-sm" onclick="toggleToolPanel()" id="tool-panel-toggle">Tools (0)</button>
+      <button class="btn btn-sm" id="actions-toggle-mobile" onclick="toggleActionsMobile()" style="display:none;">Inspector</button>
       <button class="btn btn-sm btn-primary" onclick="newSession()">+ Nueva</button>
     </div>
 
@@ -1760,14 +1957,50 @@ body {
         </div>
       </div>
 
-      <!-- Tool detail panel -->
-      <div class="tool-panel" id="tool-panel">
-        <div class="tool-panel-header">
-          Tool Calls
-          <button class="close-btn" onclick="toggleToolPanel()">&times;</button>
+      <!-- Actions Panel -->
+      <div class="actions-panel" id="actions-panel">
+        <div class="actions-header">
+          <span class="actions-title">Inspector</span>
+          <div class="actions-tabs">
+            <button class="actions-tab active" data-tab="tools" onclick="switchActionsTab('tools')">Tools</button>
+            <button class="actions-tab" data-tab="request" onclick="switchActionsTab('request')">Request</button>
+            <button class="actions-tab" data-tab="opik" onclick="switchActionsTab('opik')">Opik</button>
+          </div>
+          <button class="btn btn-sm" onclick="toggleActionsMobile()" style="display:none; margin-left:auto;" id="actions-close-mobile">&times;</button>
         </div>
-        <div class="tool-panel-content" id="tool-panel-content">
-          <p style="color:var(--text-light); font-size:13px;">Los tool calls apareceran aqui cuando Mariana consulte herramientas.</p>
+
+        <!-- Tab: Tools -->
+        <div class="actions-tab-content active" id="tab-tools">
+          <div class="actions-status" id="actions-status">
+            <span class="status-dot idle"></span> Esperando mensaje...
+          </div>
+          <div id="tool-calls-list"></div>
+        </div>
+
+        <!-- Tab: Request -->
+        <div class="actions-tab-content" id="tab-request">
+          <div class="request-section">
+            <h4>Solicitud</h4>
+            <pre id="req-details">Sin solicitud activa</pre>
+          </div>
+          <div class="request-section">
+            <h4>Respuesta</h4>
+            <pre id="res-details">Sin respuesta</pre>
+          </div>
+          <div class="request-section">
+            <h4>Metricas</h4>
+            <div id="req-metrics">--</div>
+          </div>
+        </div>
+
+        <!-- Tab: Opik -->
+        <div class="actions-tab-content" id="tab-opik">
+          <div class="opik-header">
+            <a href="https://opik.astrapp.lat" target="_blank" class="opik-link">Abrir Opik Dashboard</a>
+          </div>
+          <div class="opik-traces" id="opik-traces">
+            <p class="muted">Las trazas se actualizan al enviar mensajes.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -2497,14 +2730,14 @@ function switchChatMode(mode) {
 
 // Restore saved mode on load
 (function() {
-  const saved = localStorage.getItem('trefa_chat_mode') || 'widget';
+  const saved = localStorage.getItem('trefa_chat_mode') || 'whatsapp';
   const sel = document.getElementById('chat-mode-selector');
   if (sel) sel.value = saved;
   switchChatMode(saved);
 })();
 
 function getCurrentChatMode() {
-  return localStorage.getItem('trefa_chat_mode') || 'widget';
+  return localStorage.getItem('trefa_chat_mode') || 'whatsapp';
 }
 
 function formatWhatsApp(text) {
@@ -2672,21 +2905,29 @@ async function sendMessage() {
   showTyping(true);
   messageCount++;
 
-  try {
-    const body = { message: text };
-    if (sessionId) body.session_id = sessionId;
+  const body = { message: text };
+  if (sessionId) body.session_id = sessionId;
 
+  // Update actions panel: Request tab (pre-request)
+  updateRequestPanel(body, null);
+  setActionsStatus('processing', 'Procesando...');
+
+  const t0 = performance.now();
+
+  try {
     const res = await fetch(`${API}/v1/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
 
+    const latencyMs = Math.round(performance.now() - t0);
     showTyping(false);
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({ detail: res.statusText }));
       addMessage('assistant', `Error: ${err.detail || res.statusText}`);
+      setActionsStatus('idle', 'Error en solicitud');
       return;
     }
 
@@ -2694,11 +2935,18 @@ async function sendMessage() {
     sessionId = data.session_id;
     document.getElementById('session-badge').textContent = sessionId.slice(0, 8) + '...';
 
-    // Log tool calls
+    // Update actions panel: Request tab (post-response)
+    updateRequestPanel(body, data, latencyMs);
+
+    // Log tool calls + render cards in actions panel
     if (data.tool_calls_executed && data.tool_calls_executed.length > 0) {
-      data.tool_calls_executed.forEach(tc => toolCallsLog.push(tc));
-      document.getElementById('tool-panel-toggle').textContent = `Tools (${toolCallsLog.length})`;
+      data.tool_calls_executed.forEach(tc => {
+        toolCallsLog.push(tc);
+        addToolCallCard(tc);
+      });
     }
+
+    setActionsStatus('done', `Completado (${latencyMs}ms)`);
 
     addMessage('assistant', data.response, data.tool_calls_executed);
 
@@ -2710,6 +2958,7 @@ async function sendMessage() {
   } catch (e) {
     showTyping(false);
     addMessage('assistant', `Error de conexion: ${e.message}`);
+    setActionsStatus('idle', 'Error de conexion');
   } finally {
     document.getElementById('send-btn').disabled = false;
     input.focus();
@@ -2728,36 +2977,98 @@ function newSession() {
       </div>
     </div>`;
   document.getElementById('session-badge').textContent = 'Sin sesion';
-  document.getElementById('tool-panel-toggle').textContent = 'Tools (0)';
-  document.getElementById('tool-panel-content').innerHTML =
-    '<p style="color:var(--text-light);font-size:13px;">Los tool calls apareceran aqui cuando Mariana consulte herramientas.</p>';
+  clearActionsPanel();
   document.getElementById('rating-bar').classList.remove('show');
   document.getElementById('rating-status').textContent = '';
   document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
 }
 
-// ===== TOOL PANEL =====
-function toggleToolPanel() {
-  document.getElementById('tool-panel').classList.toggle('open');
+// ===== ACTIONS PANEL =====
+function switchActionsTab(tab) {
+  document.querySelectorAll('.actions-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.actions-tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelector(`.actions-tab[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+function toggleActionsMobile() {
+  document.getElementById('actions-panel').classList.toggle('mobile-open');
+}
+
+function setActionsStatus(state, text) {
+  const el = document.getElementById('actions-status');
+  if (!el) return;
+  const dotClass = state === 'processing' ? 'processing' : state === 'done' ? 'done' : 'idle';
+  el.innerHTML = `<span class="status-dot ${dotClass}"></span> ${escapeHtml(text)}`;
+}
+
+function addToolCallCard(tc) {
+  const list = document.getElementById('tool-calls-list');
+  if (!list) return;
+  const idx = toolCallsLog.length - 1;
+  const card = document.createElement('div');
+  card.className = 'tool-call-card';
+  card.id = 'tc-card-' + idx;
+  const durationText = tc.duration_ms !== undefined ? `${tc.duration_ms}ms` : '';
+  card.innerHTML = `
+    <div class="tool-call-card-header" onclick="this.parentElement.classList.toggle('expanded')">
+      <span class="tool-call-name">${escapeHtml(tc.name)}</span>
+      <span class="tool-call-duration">${durationText}</span>
+      <span class="tool-call-expand">&#9654;</span>
+    </div>
+    <div class="tool-call-card-body">
+      <div class="tool-call-section">
+        <h5>Argumentos</h5>
+        <pre>${escapeHtml(JSON.stringify(tc.arguments, null, 2))}</pre>
+      </div>
+      ${tc.result ? `<div class="tool-call-section"><h5>Resultado</h5><pre>${escapeHtml(JSON.stringify(tc.result, null, 2).slice(0, 2000))}</pre></div>` : ''}
+    </div>
+  `;
+  list.appendChild(card);
+}
+
+function updateRequestPanel(request, response, latencyMs) {
+  const reqEl = document.getElementById('req-details');
+  const resEl = document.getElementById('res-details');
+  const metricsEl = document.getElementById('req-metrics');
+
+  if (reqEl) reqEl.textContent = JSON.stringify(request, null, 2);
+
+  if (response) {
+    if (resEl) resEl.textContent = JSON.stringify(response, null, 2).slice(0, 3000);
+    if (metricsEl) {
+      const usage = response.usage || {};
+      metricsEl.innerHTML = `
+        <span class="metric"><span class="metric-label">Latencia</span><span class="metric-value">${latencyMs || '--'}ms</span></span>
+        <span class="metric"><span class="metric-label">Iteraciones</span><span class="metric-value">${response.iterations || '--'}</span></span>
+        <span class="metric"><span class="metric-label">Tools</span><span class="metric-value">${(response.tool_calls_executed || []).length}</span></span>
+        <span class="metric"><span class="metric-label">Tokens</span><span class="metric-value">${usage.total_tokens || '--'}</span></span>
+      `;
+    }
+  } else {
+    if (resEl) resEl.textContent = 'Esperando respuesta...';
+    if (metricsEl) metricsEl.innerHTML = '--';
+  }
+}
+
+function clearActionsPanel() {
+  document.getElementById('tool-calls-list').innerHTML = '';
+  document.getElementById('req-details').textContent = 'Sin solicitud activa';
+  document.getElementById('res-details').textContent = 'Sin respuesta';
+  document.getElementById('req-metrics').innerHTML = '--';
+  setActionsStatus('idle', 'Esperando mensaje...');
 }
 
 function showToolDetail(idx) {
   const tc = toolCallsLog[idx];
   if (!tc) return;
-  const panel = document.getElementById('tool-panel');
-  panel.classList.add('open');
-  document.getElementById('tool-panel-content').innerHTML = `
-    <div class="tool-detail">
-      <h4>Herramienta</h4>
-      <pre>${tc.name}</pre>
-    </div>
-    <div class="tool-detail">
-      <h4>Argumentos</h4>
-      <pre>${JSON.stringify(tc.arguments, null, 2)}</pre>
-    </div>
-    ${tc.result ? `<div class="tool-detail"><h4>Resultado</h4><pre>${JSON.stringify(tc.result, null, 2).slice(0, 2000)}</pre></div>` : ''}
-    ${tc.duration_ms !== undefined ? `<div class="tool-detail"><h4>Latencia</h4><pre>${tc.duration_ms} ms</pre></div>` : ''}
-  `;
+  // Scroll to card in actions panel and expand it
+  switchActionsTab('tools');
+  const card = document.getElementById('tc-card-' + idx);
+  if (card) {
+    card.classList.add('expanded');
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 }
 
 // ===== RATING =====
