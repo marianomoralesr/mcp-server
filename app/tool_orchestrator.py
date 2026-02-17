@@ -10,9 +10,8 @@ import time
 import structlog
 from typing import Any, Dict, List, Optional, Tuple
 
-import httpx
-
 from app.mcp_client import MCPClient
+from app.llm_service import LLMService
 
 logger = structlog.get_logger()
 
@@ -54,33 +53,29 @@ class ToolOrchestrator:
     def __init__(
         self,
         mcp_client: MCPClient,
-        vllm_client: httpx.AsyncClient,
+        llm_service: LLMService,
         known_tools: List[str],
         max_iterations: int = 5,
     ):
         self.mcp = mcp_client
-        self.vllm = vllm_client
+        self.llm = llm_service
         self.known_tools = set(known_tools)
         self.max_iterations = max_iterations
 
-    async def _call_vllm(
+    async def _call_llm(
         self,
         messages: List[Dict[str, str]],
         model: str,
         temperature: float,
         max_tokens: int,
     ) -> Tuple[str, Dict[str, Any]]:
-        """Llama a vLLM y retorna (texto_respuesta, usage)."""
-        payload = {
-            "model": model,
-            "messages": messages,
-            "max_tokens": max_tokens,
-            "temperature": temperature,
-            "stream": False,
-        }
-        resp = await self.vllm.post("/v1/chat/completions", json=payload, timeout=300.0)
-        resp.raise_for_status()
-        data = resp.json()
+        """Llama al LLM via LiteLLM y retorna (texto_respuesta, usage)."""
+        data = await self.llm.chat_completion(
+            messages=messages,
+            model=model,
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
         content = data["choices"][0]["message"]["content"]
         usage = data.get("usage", {})
         return content, usage
@@ -107,7 +102,7 @@ class ToolOrchestrator:
         working_messages = list(messages)
 
         for iteration in range(1, self.max_iterations + 1):
-            content, usage = await self._call_vllm(
+            content, usage = await self._call_llm(
                 working_messages, model, temperature, max_tokens
             )
             total_usage = usage
@@ -163,7 +158,7 @@ class ToolOrchestrator:
             )
 
         # Si se agotaron las iteraciones, una última llamada sin esperar tools
-        content, usage = await self._call_vllm(
+        content, usage = await self._call_llm(
             working_messages, model, temperature, max_tokens
         )
         total_usage = usage

@@ -1,14 +1,17 @@
 #!/bin/bash
 # ============================================================
-# TREFA - Deploy Fine-Tuned Qwen3-14B con vLLM
+# TREFA - Deploy Fine-Tuned Qwen3-32B con vLLM (Tensor Parallel)
 # Descarga base + LoRA, mergea, y sirve con vLLM + FastAPI
+#
+# Optimizado para 2x A40 (45GB VRAM cada una, 90GB total)
+# Usa tensor parallelism para distribuir el modelo en ambas GPUs
 #
 # Asume que las dependencias ya están instaladas:
 #   torch, transformers, peft, accelerate, vllm, huggingface_hub
 #
 # Variables de entorno requeridas:
 #   HF_TOKEN                    (obligatoria)
-#   GITHUB_TOKEN                (obligatoria, para clonar repo privado)
+#   GITHUB_TOKEN                (opcional, repo es público)
 #   SUPABASE_URL                (opcional, para MCP Server)
 #   SUPABASE_SERVICE_ROLE_KEY   (opcional, para MCP Server)
 #
@@ -29,7 +32,7 @@ log() {
 # ============================================================
 # Fase 1: Validar env vars + detectar GPU
 # ============================================================
-log "=== TREFA Fine-Tuned Deploy ==="
+log "=== TREFA Fine-Tuned Deploy (Qwen3-32B + Tensor Parallel) ==="
 
 if [ -z "${HF_TOKEN:-}" ]; then
     log "ERROR: HF_TOKEN no está definido."
@@ -38,11 +41,6 @@ fi
 export HF_TOKEN
 export HF_HUB_ENABLE_HF_TRANSFER=1
 
-if [ -z "${GITHUB_TOKEN:-}" ]; then
-    log "ERROR: GITHUB_TOKEN no está definido. Necesario para clonar repo privado."
-    log "  export GITHUB_TOKEN=ghp_tu_token_aqui"
-    exit 1
-fi
 
 if [ -z "${SUPABASE_URL:-}" ] || [ -z "${SUPABASE_SERVICE_ROLE_KEY:-}" ]; then
     log "WARN: SUPABASE_URL o SUPABASE_SERVICE_ROLE_KEY no definidos. MCP Server puede fallar."
@@ -82,26 +80,46 @@ detect_gpu() {
     echo "$gpu_name"
 }
 
+detect_gpu_count() {
+    if ! command -v nvidia-smi &>/dev/null; then
+        echo "1"
+        return
+    fi
+    local count
+    count=$(nvidia-smi --query-gpu=gpu_name --format=csv,noheader,nounits 2>/dev/null | wc -l | xargs)
+    if [ -z "$count" ] || [ "$count" -eq 0 ]; then
+        echo "1"
+        return
+    fi
+    echo "$count"
+}
+
 configure_gpu() {
     local gpu_name="$1"
+    local gpu_count="$2"
     case "$gpu_name" in
+        *A40*|*a40*)
+            log "Configurando para A40 (45GB VRAM) x${gpu_count}"
+            DEFAULT_MAX_MODEL_LEN=8192
+            DEFAULT_GPU_MEM=0.90
+            ;;
         *5090*)
-            log "Configurando para RTX 5090 (32GB VRAM)"
+            log "Configurando para RTX 5090 (32GB VRAM) x${gpu_count}"
             DEFAULT_MAX_MODEL_LEN=4096
             DEFAULT_GPU_MEM=0.85
             ;;
         *A6000*|*a6000*)
-            log "Configurando para A6000 (48GB VRAM)"
+            log "Configurando para A6000 (48GB VRAM) x${gpu_count}"
             DEFAULT_MAX_MODEL_LEN=8192
             DEFAULT_GPU_MEM=0.85
             ;;
         *A100*|*a100*)
-            log "Configurando para A100 (40/80GB VRAM)"
+            log "Configurando para A100 (40/80GB VRAM) x${gpu_count}"
             DEFAULT_MAX_MODEL_LEN=16384
             DEFAULT_GPU_MEM=0.90
             ;;
         *H100*|*h100*)
-            log "Configurando para H100 (80GB VRAM)"
+            log "Configurando para H100 (80GB VRAM) x${gpu_count}"
             DEFAULT_MAX_MODEL_LEN=32768
             DEFAULT_GPU_MEM=0.90
             ;;
@@ -114,28 +132,35 @@ configure_gpu() {
     MAX_MODEL_LEN=${MAX_MODEL_LEN:-$DEFAULT_MAX_MODEL_LEN}
     GPU_MEMORY_UTILIZATION=${GPU_MEMORY_UTILIZATION:-$DEFAULT_GPU_MEM}
     DTYPE=${DTYPE:-"bfloat16"}
+    TENSOR_PARALLEL=${TENSOR_PARALLEL:-$gpu_count}
     log "  MAX_MODEL_LEN=$MAX_MODEL_LEN"
     log "  GPU_MEMORY_UTILIZATION=$GPU_MEMORY_UTILIZATION"
     log "  DTYPE=$DTYPE"
+    log "  TENSOR_PARALLEL=$TENSOR_PARALLEL (GPUs: $gpu_count)"
 }
 
 GPU_NAME=$(detect_gpu)
-configure_gpu "$GPU_NAME"
+GPU_COUNT=$(detect_gpu_count)
+configure_gpu "$GPU_NAME" "$GPU_COUNT"
+
+# --- Instalar dependencias Python ---
+log "Instalando dependencias Python..."
+pip install --upgrade peft accelerate transformers huggingface_hub hf_transfer vllm 2>&1 | tail -5
 
 # ============================================================
-# Fase 2: Descargar modelos
+# Fase 2: Descargar modelos (base + LoRA adapter)
 # ============================================================
-BASE_MODEL_ID="Qwen/Qwen3-14B"
-LORA_REPO_ID="mmoralesf/qwen3-14B-fine-tuned"
+BASE_MODEL_ID="Qwen/Qwen3-32B"
+LORA_REPO_ID="mmoralesf/qwen3-32B-mariana"
 
-BASE_DIR="/app/modelos/qwen3-14b-base"
-LORA_DIR="/app/modelos/qwen3-14b-lora"
-MERGED_DIR="/app/modelos/qwen3-14b-merged"
+BASE_DIR="/app/modelos/qwen3-32b-base"
+LORA_DIR="/app/modelos/qwen3-32b-mariana"
+MERGED_DIR="/app/modelos/qwen3-32b-merged"
 
 mkdir -p /app/modelos
 
 if [ ! -f "$BASE_DIR/config.json" ]; then
-    log "Descargando modelo base: $BASE_MODEL_ID..."
+    log "Descargando modelo base: $BASE_MODEL_ID (~65GB)..."
     huggingface-cli download "$BASE_MODEL_ID" \
         --local-dir "$BASE_DIR" \
         --local-dir-use-symlinks False
@@ -144,7 +169,7 @@ else
     log "Modelo base encontrado en $BASE_DIR"
 fi
 
-if [ ! -f "$LORA_DIR/adapter_config.json" ]; then
+if [ ! -d "$LORA_DIR" ] || [ -z "$(ls -A $LORA_DIR 2>/dev/null)" ]; then
     log "Descargando LoRA adapter: $LORA_REPO_ID..."
     huggingface-cli download "$LORA_REPO_ID" \
         --local-dir "$LORA_DIR" \
@@ -164,21 +189,23 @@ else
     log "  Base: $BASE_DIR"
     log "  LoRA: $LORA_DIR"
     log "  Output: $MERGED_DIR"
+    log "  NOTA: Qwen3-32B requiere ~64GB RAM para merge en CPU"
 
     python3 << 'MERGE_SCRIPT'
 import torch
 import os
+import shutil
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 
-BASE_DIR = "/app/modelos/qwen3-14b-base"
-LORA_DIR = "/app/modelos/qwen3-14b-lora"
-MERGED_DIR = "/app/modelos/qwen3-14b-merged"
+BASE_DIR = "/app/modelos/qwen3-32b-base"
+LORA_DIR = "/app/modelos/qwen3-32b-mariana"
+MERGED_DIR = "/app/modelos/qwen3-32b-merged"
 
-print("[merge] Cargando tokenizer...")
-tokenizer = AutoTokenizer.from_pretrained(BASE_DIR, trust_remote_code=True)
+print("[merge] Cargando tokenizer (fast)...")
+tokenizer = AutoTokenizer.from_pretrained(BASE_DIR, trust_remote_code=True, use_fast=True)
 
-print("[merge] Cargando modelo base (bf16)...")
+print("[merge] Cargando modelo base Qwen3-32B (bf16, ~64GB RAM)...")
 base_model = AutoModelForCausalLM.from_pretrained(
     BASE_DIR,
     torch_dtype=torch.bfloat16,
@@ -213,7 +240,7 @@ fi
 log "Preparando repositorios..."
 mkdir -p /app
 
-GIT_REPO_URL="https://${GITHUB_TOKEN}@github.com/marianomoralesr/mcp-server.git"
+GIT_REPO_URL="https://github.com/marianomoralesr/mcp-server.git"
 
 if [ ! -d "/app/app" ]; then
     log "Clonando inference-server..."
@@ -226,6 +253,20 @@ if [ ! -d "/app/mcp-server/.git" ]; then
     log "Clonando mcp-server..."
     rm -rf /app/mcp-server
     git clone -b main "$GIT_REPO_URL" /app/mcp-server
+fi
+
+# --- Asegurar Node.js 20+ (TypeScript necesita nullish coalescing) ---
+NODE_VERSION=$(node -v 2>/dev/null | grep -oP '\d+' | head -1 || echo "0")
+if [ "$NODE_VERSION" -lt 18 ]; then
+    log "Node.js v${NODE_VERSION} es muy viejo, instalando Node 20..."
+    apt-get remove -y nodejs npm libnode-dev libnode72 2>/dev/null || true
+    dpkg --configure -a 2>/dev/null || true
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+    apt-get install -y nodejs
+    hash -r
+    log "Node.js $(node -v) / npm $(npm -v) instalados."
+else
+    log "Node.js $(node -v) OK."
 fi
 
 # ============================================================
@@ -312,20 +353,23 @@ fi
 # --- vLLM (puerto 8001, evita Caddy en 8000) ---
 # VLLM_USE_V1=0: engine legacy, más estable con torch 2.9+
 # --enforce-eager: desactiva CUDA graphs (evita segfault)
+# --tensor-parallel-size: distribuye modelo entre GPUs
 export VLLM_USE_V1=0
-log "Arrancando vLLM en puerto $VLLM_PORT (modelo mergeado, MAX_MODEL_LEN=$MAX_MODEL_LEN, GPU_MEM=$GPU_MEMORY_UTILIZATION)..."
+log "Arrancando vLLM en puerto $VLLM_PORT (Qwen3-32B merged, TP=$TENSOR_PARALLEL, MAX_MODEL_LEN=$MAX_MODEL_LEN, GPU_MEM=$GPU_MEMORY_UTILIZATION)..."
 python3 -m vllm.entrypoints.openai.api_server \
     --model "$MERGED_DIR" \
     --served-model-name trefa-lora \
     --max-model-len "$MAX_MODEL_LEN" \
     --dtype "$DTYPE" \
     --gpu-memory-utilization "$GPU_MEMORY_UTILIZATION" \
+    --tensor-parallel-size "$TENSOR_PARALLEL" \
     --enforce-eager \
     --host 0.0.0.0 \
     --port "$VLLM_PORT" > /tmp/vllm.log 2>&1 &
 VLLM_PID=$!
 
-if ! wait_for_service "vLLM" "http://localhost:${VLLM_PORT}/v1/models" 180 5; then
+# Qwen3-32B tarda más en cargar con TP, 300 intentos x 5s = 25 min max
+if ! wait_for_service "vLLM" "http://localhost:${VLLM_PORT}/v1/models" 300 5; then
     log "ERROR: vLLM no arrancó. Últimas líneas del log:"
     tail -50 /tmp/vllm.log 2>/dev/null || true
     exit 1
@@ -351,7 +395,7 @@ fi
 log "============================================"
 log "Todos los servicios activos."
 log "  MCP Server  PID=$MCP_PID  (puerto ${MCP_PORT:-3001})"
-log "  vLLM        PID=$VLLM_PID  (puerto $VLLM_PORT) → modelo: trefa-lora"
+log "  vLLM        PID=$VLLM_PID  (puerto $VLLM_PORT) → modelo: trefa-lora (Qwen3-32B, TP=$TENSOR_PARALLEL)"
 log "  FastAPI     PID=$FASTAPI_PID  (puerto $FASTAPI_PORT)"
 log "============================================"
 log "Verificación rápida:"

@@ -32,6 +32,12 @@ class Settings(BaseSettings):
     # Orquestación
     max_tool_iterations: int = Field(default=5, description="Máximo de ciclos tool calling")
 
+    # LiteLLM
+    litellm_provider: Optional[str] = Field(
+        default=None,
+        description="Provider LiteLLM (together_ai, openai, anthropic). Auto-detecta si no se define."
+    )
+
     # Logging
     log_level: str = Field(default="INFO", description="Nivel de logging")
 

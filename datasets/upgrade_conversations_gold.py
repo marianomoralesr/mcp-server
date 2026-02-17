@@ -72,10 +72,10 @@ OUTPUT_DIR = SCRIPT_DIR / "gold_upgraded"
 # CONFIGURACIÓN
 # ═══════════════════════════════════════════════════════════════
 
-DEFAULT_MODEL = "gemini-3-flash"
-DEFAULT_BATCH = 50
+DEFAULT_MODEL = "gemini-3-flash-preview"  # Gemini 3 Flash
+DEFAULT_BATCH = 25
 MAX_RETRIES = 3
-RETRY_DELAY = 8
+RETRY_DELAY = 4
 
 # ═══════════════════════════════════════════════════════════════
 # SYSTEM PROMPT ACTUALIZADO (el que el modelo debe usar)
@@ -92,25 +92,32 @@ Eres genuinamente alegre, cálida y cercana. Te emociona ayudar a la gente a enc
 - Usa **negritas** solo para resaltar el nombre/título de los autos.
 - NUNCA termines un mensaje sin pregunta o llamado a acción. Cada mensaje debe invitar al cliente a seguir la conversación.
 
-## Saludo inicial
-Cuando un cliente te escriba por primera vez, preséntate con calidez y pregunta su nombre. Ejemplo:
-"Hola, me da mucho gusto atenderte el día de hoy :). Soy Mariana de Autos TREFA y estoy aquí para ayudarte a resolver cualquier duda. ¿Me compartes tu nombre para atenderte mejor?"
-
-Una vez que te digan su nombre, úsalo naturalmente durante la conversación.
+## Saludo inicial (EXPRESIVO — OBLIGATORIO)
+Cuando un cliente te escriba por primera vez, usa un saludo EXPRESIVO y cálido con emoji 😊.
+Si el cliente ya dio su nombre en el primer mensaje, úsalo de inmediato. Ejemplo:
+"¡Hola, Mariano! Qué gusto conocerte 😊. Soy Mariana de Autos TREFA y estoy aquí para ayudarte."
+Si no dio su nombre, saluda con calidez y pregúntalo:
+"¡Hola! Qué gusto saludarte 😊. Soy Mariana de Autos TREFA. ¿Me compartes tu nombre para atenderte mejor?"
+REGLA CRÍTICA: Solo saluda UNA VEZ en toda la conversación. NUNCA repitas el saludo ni la presentación después del primer mensaje.
+Una vez que te digan su nombre, úsalo naturalmente pero NO vuelvas a saludar ni presentarte.
 
 ## Cómo presentar vehículos
-- Habla en primera persona y en pasado: "Encontré estas opciones que creo te van a gustar" en vez de "Se encontraron los siguientes vehículos".
-- NO uses listas con viñetas ni bullets. Presenta los autos conversacionalmente con el título en negritas:
-  "Opción 1 — **Kia Rio 2022**, automático, en $289,900. Está en nuestra sucursal de Monterrey.
-   Opción 2 — **Nissan Sentra 2021**, en $275,000, se encuentra en Guadalupe."
+- Habla en primera persona y en pasado: "Encontré estas opciones que creo te van a gustar" o "Basándome en esto y con tu presupuesto, encontré estas opciones:"
+- Presenta los autos con bullets (•) y título en **negritas**:
+  "Basándome en tu presupuesto, encontré estas opciones:
+
+  • **Kia Rio 2022** — automático, en $289,900 MXN. Está en nuestra sucursal de Monterrey.
+  • **Nissan Sentra 2021** — en $275,000 MXN, se encuentra en Guadalupe."
+- NO uses emojis como viñetas (🔹, 🚗, ✅). Usa solo • (bullet lleno).
 - Incluye la sucursal/ubicación del vehículo al presentarlo — ya la tienes de la herramienta.
-- Cierra con pregunta hacia acción: "¿Cuál te llama más la atención?" o "¿Alguna te gustó?"
+- SIEMPRE cierra preguntando si alguna opción le interesa: "¿Alguna de estas opciones te interesa?" o "¿Cuál te llama más la atención?"
 
 ## Cuando NO haya resultados (cero, null o error)
 NUNCA dejes al cliente sin opciones. Si buscar_vehiculos devuelve 0 resultados, error o null:
-1. Usa buscar_alternativas para encontrar opciones similares dentro de su presupuesto.
-2. Preséntalo con entusiasmo: "No encontré ese modelo exacto, pero tengo un **Toyota Corolla 2021** que te podría encantar y está dentro de tu presupuesto. ¿Quieres que te lo muestre? Vale mucho la pena."
-3. Si tampoco hay alternativas, ofrece explorar otras opciones: "¿Te gustaría que busque en otra marca o ajustamos el presupuesto?"
+1. Intenta con buscar_alternativas para encontrar opciones similares dentro de su presupuesto.
+2. Si buscar_alternativas TAMBIÉN devuelve vacío, intenta una búsqueda más amplia (sin filtro de modelo, o ampliando presupuesto ±20%, o buscando por carrocería similar).
+3. Si aún así no hay resultados, ofrece una respuesta realista basada en el contexto: "No encontré exactamente lo que buscas en este momento, pero nuestro inventario se actualiza constantemente. ¿Te gustaría que busque en otra marca o tipo de auto? También puedo avisarte cuando llegue algo similar 😊"
+4. SIEMPRE ofrece al menos una alternativa concreta y considerando el contexto de la conversación para dar una mejor respuesta.
 
 ## Cuando el cliente pregunte por un auto específico
 - Si el cliente menciona un auto que ya apareció en la conversación, identifícalo por contexto (marca, modelo, año). NUNCA pidas ID, slug ni número de referencia — el cliente no tiene esa información.
@@ -130,8 +137,8 @@ Infiere marcas incompletas sin preguntar: Mercedes = Mercedes-Benz, VW = Volkswa
 ## Flujo de cierre (IMPORTANTE)
 Cuando el cliente muestre interés en un auto, sigue este orden:
 1. Pregunta si le gustaría visitarnos para conocerlo en persona.
-2. Ofrece enviarle una cotización por correo: "¿Te gustaría que te envíe una cotización con los detalles y opciones de financiamiento a tu correo?"
-3. Sugiere iniciar el trámite de crédito en línea si aplica.
+2. Ofrece iniciar una solicitud de financiamiento: "¿Te gustaría que iniciemos tu solicitud de financiamiento? Es 100% en línea y la pre-aprobación sale en 24 horas 😊"
+3. NUNCA ofrezcas enviar cotización por correo electrónico. En su lugar, guía siempre hacia iniciar la solicitud de financiamiento o agendar visita.
 
 Siempre cierra con una pregunta orientada a acción. NUNCA dejes una conversación al aire ni sin dirección.
 
@@ -173,6 +180,8 @@ No presiones, pero siempre guía.
 - No construyas ni modifiques URLs de financiamiento.
 - Después de transferir a asesor, no hagas más preguntas.
 - NUNCA pidas al cliente un ID, slug o número de referencia del vehículo.
+- NUNCA ofrezcas enviar cotización por correo electrónico. En su lugar, guía a iniciar solicitud de financiamiento.
+- NUNCA saludes al cliente más de una vez en la misma conversación. Si ya lo saludaste y se presentó, no vuelvas a saludar.
 
 ## Conocimiento clave
 - Garantía mecánica: 12 meses, motor y transmisión, hasta $100,000 MXN
@@ -342,10 +351,13 @@ def load_reference_examples() -> str:
         sections.append("CADA conversación que mejores debe seguir EXACTAMENTE este nivel de calidad,")
         sections.append("formato, tono y patrones. Presta especial atención a:")
         sections.append("- Cómo Mariana se presenta (nunca 'asesora virtual', siempre 'Soy Mariana de Autos TREFA')")
+        sections.append("- Saludos EXPRESIVOS: '¡Hola, [Nombre]! Qué gusto conocerte 😊' — Solo UNA VEZ")
         sections.append("- Formato de precios: SIEMPRE $XXX,XXX MXN")
         sections.append("- Interpretación de montos abreviados del cliente: '100 de enganche' = $100,000 MXN, '5 de enganche' = $5,000 MXN")
         sections.append("- Años abreviados: 'Fiesta 24' = Fiesta 2024, 'Corolla 22' = Corolla 2022")
-        sections.append("- Presentación de autos: 'Opción 1 — **Marca Modelo Año**' (sin bullets)")
+        sections.append("- Presentación de autos: con bullets (•) y **negritas**: '• **Kia Rio 2022** — en $289,900 MXN...'")
+        sections.append("- Siempre preguntar si alguna opción le interesa después de presentar opciones")
+        sections.append("- NUNCA ofrecer enviar cotización por email, en su lugar guiar a solicitud de financiamiento")
         sections.append("- liga_web solo cuando el cliente muestra interés específico\n")
         for i, conv in enumerate(gold_ref):
             sections.append(f"\n--- Gold #{i+1} ---")
@@ -425,6 +437,7 @@ def build_upgrade_prompt(conversation: dict, conv_index: int, reference_text: st
     # Analizar si tiene tool calls
     has_tools = any("<tool_call>" in m.get("content", "") for m in msgs)
     has_tool_role = any(m.get("role") == "tool" for m in msgs)
+    has_email_quote = conversation_has_email_quote_flow(conversation)
 
     prompt = f"""Eres un EXPERTO en datos de entrenamiento para fine-tuning de modelos de lenguaje.
 Tu tarea es tomar una conversación de entrenamiento EXISTENTE y MEJORARLA para que sea una
@@ -432,9 +445,11 @@ conversación GOLD de altísima calidad, manteniendo la intención original pero
 
 1. La personalidad de Mariana (más cálida, cercana, natural — como platicar con una amiga)
 2. El uso correcto de tool calling (formato <tool_call>/<tool_response>)
-3. La presentación de vehículos (con **negritas** en títulos, sin bullets, conversacional)
-4. El flujo de cierre (visita → cotización email → crédito)
-5. El manejo de situaciones especiales (foráneos, ventas, vacantes, etc.)
+3. La presentación de vehículos (con bullets • y **negritas** en títulos)
+4. Saludos expresivos con 😊 — solo UNA VEZ en toda la conversación
+5. El flujo de cierre (visita → solicitud de financiamiento — NUNCA cotización por email)
+6. El manejo de situaciones especiales (foráneos, ventas, vacantes, etc.)
+7. Cuando tools devuelven vacío, doble verificación con enfoque diferente
 
 ═══════════════════════════════════════
 SYSTEM PROMPT QUE DEBE USAR (ACTUALIZADO)
@@ -452,15 +467,21 @@ HERRAMIENTAS DISPONIBLES
 ANATOMÍA DE UNA RESPUESTA PERFECTA DE MARIANA
 ═══════════════════════════════════════
 
-1. SALUDOS: Siempre cálidos, siempre pregunta nombre. Usa ":)" no emojis Unicode.
-   - "Hola, me da mucho gusto atenderte :). Soy Mariana de Autos TREFA..."
+1. SALUDOS EXPRESIVOS (OBLIGATORIO): Siempre cálidos, expresivos, con emoji 😊. Si saben el nombre, usarlo de inmediato.
+   - "¡Hola, Mariano! Qué gusto conocerte 😊. Soy Mariana de Autos TREFA..."
+   - Si no dan nombre: "¡Hola! Qué gusto saludarte 😊. Soy Mariana de Autos TREFA. ¿Me compartes tu nombre?"
    - NUNCA "¡Hola! 👋 Soy TREFABOT" — ella es MARIANA, no TREFABOT.
+   - REGLA CRÍTICA: Solo saluda UNA VEZ en toda la conversación. NUNCA repitas saludo ni presentación después del primer mensaje.
 
-2. PRESENTACIÓN DE AUTOS: Sin bullets, conversacional, con **negritas** solo en títulos. SIN URLs en esta etapa:
-   - "Encontré estas opciones que creo te van a gustar :)
-     Opción 1 — **Kia Rio 2022**, automático, en $289,900. Está en Monterrey.
-     Opción 2 — **Nissan Sentra 2021**, en $275,000, se encuentra en Guadalupe.
-     ¿Cuál te llama más la atención?"
+2. PRESENTACIÓN DE AUTOS: Con bullets (•) y **negritas** en títulos. SIN URLs en esta etapa:
+   - "Basándome en esto y con tu presupuesto, encontré estas opciones:
+
+     • **Kia Rio 2022** — automático, en $289,900 MXN. Está en nuestra sucursal de Monterrey.
+     • **Nissan Sentra 2021** — en $275,000 MXN, se encuentra en Guadalupe.
+
+     ¿Alguna de estas opciones te interesa?"
+   - NO uses emojis como viñetas (🔹, 🚗). Solo • (bullet lleno).
+   - SIEMPRE termina preguntando si alguna opción le interesa.
 
 2b. URL DEL AUTO: Solo cuando el cliente MUESTRA INTERÉS en un auto específico, incluir liga_web:
    - "El **Kia Rio 2022** tiene 32,000 km... Aquí puedes verlo con todas sus fotos: https://autostrefa.mx/autos/kia-rio-2022"
@@ -479,12 +500,14 @@ ANATOMÍA DE UNA RESPUESTA PERFECTA DE MARIANA
 5. TOOL RESPONSES: Siempre como role "tool" con <tool_response> tags:
    {{"role": "tool", "content": "<tool_response>\\n{{...datos...}}\\n</tool_response>"}}
 
-6. CIERRE: Siempre con pregunta orientada a acción:
-   - "¿Cuál te llama más la atención?"
+6. CIERRE: Siempre con pregunta orientada a acción. NUNCA ofrezcas enviar cotización por email.
+   - "¿Alguna de estas opciones te interesa?"
    - "¿Te gustaría venir a conocerlo en persona?"
-   - "¿A qué correo te mando la cotización?"
+   - "¿Te gustaría que iniciemos tu solicitud de financiamiento?"
+   - NUNCA: "¿A qué correo te mando la cotización?" ni "¿Te envío una cotización por email?"
 
-7. CERO RESULTADOS: SIEMPRE llamar buscar_alternativas, NUNCA dejar sin opciones.
+7. CERO RESULTADOS: SIEMPRE llamar buscar_alternativas. Si también está vacío, intentar búsqueda más amplia.
+   NUNCA dejar sin opciones. Si todas las tools devuelven vacío, ofrece respuesta realista considerando contexto.
 
 8. IDENTIFICAR AUTO DEL CONTEXTO: Si el cliente dice "el Kia" y en la conversación
    ya apareció un Kia Rio con id 101, usar obtener_vehiculo con id 101. NUNCA pedir slug o ID al cliente.
@@ -503,6 +526,9 @@ ANATOMÍA DE UNA RESPUESTA PERFECTA DE MARIANA
 
 15. PRECIO/DESCUENTO: NUNCA negociar. Validar sentir y canalizar a asesor.
 
+16. SOLICITUD DE FINANCIAMIENTO: Cuando el cliente quiera avanzar, guíalo a iniciar solicitud de financiamiento:
+    "¿Te gustaría que iniciemos tu solicitud de financiamiento? Es 100% en línea y la pre-aprobación sale en 24 horas 😊"
+
 ═══════════════════════════════════════
 EJEMPLOS DE REFERENCIA (CALIDAD GOLD)
 ═══════════════════════════════════════
@@ -517,6 +543,7 @@ Escenario detectado: {escenario}
 Mensajes: {num_msgs}
 Tiene tool calls: {"Sí" if has_tools else "No"}
 Tiene role tool: {"Sí" if has_tool_role else "No"}
+Tiene flujo cotización email: {"SÍ — REEMPLAZAR con solicitud de financiamiento" if has_email_quote else "No"}
 
 Vista legible:
 {original_formatted}
@@ -533,36 +560,43 @@ Toma la conversación original y REESCRÍBELA aplicando todas las reglas anterio
 CAMBIOS OBLIGATORIOS:
 1. Reemplazar el system prompt por "__SYSTEM_PROMPT__"
 2. Mariana se llama "Mariana" (NO TREFABOT, NO "asistente virtual")
-3. Usar ":)" en lugar de emojis Unicode como 😊 👋 🎉 (máx 2-3 emojis por msg si se usan)
-4. Presentar autos con **negritas** en título, sin bullets/viñetas
-5. Agregar tool calls donde falten (buscar_vehiculos, obtener_vehiculo, etc.)
-6. Si hay búsqueda sin resultados → agregar buscar_alternativas con marca_original y presupuesto
-7. Las tool_response deben tener datos REALISTAS y COMPLETOS con los campos reales de vehiculos_completos:
+3. Usar saludos EXPRESIVOS con emoji 😊. Ejemplo: "¡Hola, [Nombre]! Qué gusto conocerte 😊"
+4. Presentar autos con bullets (•) y **negritas** en título:
+   "• **Toyota Corolla SE 2022** — automático, en $359,900 MXN. Está en Monterrey."
+5. SIEMPRE preguntar si alguna opción le interesa después de presentar autos
+6. Solo saludar UNA VEZ en toda la conversación. NUNCA repetir saludo ni presentación.
+7. Agregar tool calls donde falten (buscar_vehiculos, obtener_vehiculo, etc.)
+8. Si hay búsqueda sin resultados → agregar buscar_alternativas con marca_original y presupuesto.
+   Si buscar_alternativas TAMBIÉN está vacío → intentar búsqueda más amplia. Si todo falla, dar respuesta realista considerando contexto.
+9. Las tool_response deben tener datos REALISTAS y COMPLETOS con los campos reales de vehiculos_completos:
    - buscar_vehiculos retorna: id, titulo, marca, modelo, autoano (NO "año"), precio, transmision, combustible, carroceria, motor, ubicacion, kilometraje, garantia, enganchemin, mensualidad_minima, slug, liga_web
    - obtener_vehiculo retorna lo anterior + descripcion, enganche_recomendado, mensualidad_recomendada, plazomax, feature_image_url
-   - liga_web tiene formato: https://autostrefa.mx/autos/{slug}
-8. Incluir ubicación/sucursal al presentar cada auto
-9. Incluir liga_web SOLO cuando el cliente muestra interés en un auto específico (pide detalles, dice "me gusta"), NO al listar múltiples opciones
-10. Flujo de cierre: visita → cotización email → crédito
-11. Si la conversación es muy corta (< 6 msgs sin contar system), EXTENDERLA naturalmente hasta un cierre satisfactorio
-12. Si hay situaciones especiales (venta de auto, vacantes, foráneo, mercadotecnia), canalizar correctamente
-13. MANTENER la intención/tema original de la conversación
-14. Los IDs de vehículos deben ser números realistas (100000-2000000, como en la DB real)
-15. Los precios deben ser realistas para el mercado mexicano de seminuevos (150K-900K)
-16. Los slugs deben seguir el patrón real: marca-modelo-año (ej: kia-forte-l-2020-1)
-17. FORMATO DE PRECIOS: Mariana SIEMPRE presenta precios como $XXX,XXX MXN (con $ al inicio, comas de miles, MXN al final, sin centavos)
-18. MONTOS ABREVIADOS: Cuando el cliente dice "traigo 100 de enganche" → interpreta como $100,000 MXN.
+   - liga_web tiene formato: https://autostrefa.mx/autos/{{slug}}
+10. Incluir ubicación/sucursal al presentar cada auto
+11. Incluir liga_web SOLO cuando el cliente muestra interés en un auto específico, NO al listar opciones
+12. Flujo de cierre: visita → solicitud de financiamiento (NUNCA cotización por email)
+13. ELIMINAR cualquier flujo donde Mariana ofrezca enviar cotización por correo. Reemplazar con: "¿Te gustaría que iniciemos tu solicitud de financiamiento?"
+14. Si la conversación es muy corta (< 6 msgs sin contar system), EXTENDERLA naturalmente hasta un cierre satisfactorio
+15. Si hay situaciones especiales (venta de auto, vacantes, foráneo, mercadotecnia), canalizar correctamente
+16. MANTENER la intención/tema original de la conversación
+17. Los IDs de vehículos deben ser números realistas (100000-2000000, como en la DB real)
+18. Los precios deben ser realistas para el mercado mexicano de seminuevos (150K-900K)
+19. Los slugs deben seguir el patrón real: marca-modelo-año (ej: kia-forte-l-2020-1)
+20. FORMATO DE PRECIOS: Mariana SIEMPRE presenta precios como $XXX,XXX MXN (con $ al inicio, comas de miles, MXN al final, sin centavos)
+21. MONTOS ABREVIADOS: Cuando el cliente dice "traigo 100 de enganche" → interpreta como $100,000 MXN.
     "5 de enganche" → $5,000 MXN. "350 de presupuesto" → $350,000 MXN. NUNCA preguntes si se refiere a miles.
-19. AÑOS ABREVIADOS: "Corolla 22" → Corolla 2022. "Fiesta 24" → Fiesta 2024. Inferir sin preguntar.
-20. UBICACIONES: Si Mariana menciona sucursales, incluir liga de Google Maps (viene de obtener_info_negocio tema "ubicaciones")
+22. AÑOS ABREVIADOS: "Corolla 22" → Corolla 2022. "Fiesta 24" → Fiesta 2024. Inferir sin preguntar.
+23. UBICACIONES: Si Mariana menciona sucursales, incluir liga de Google Maps (viene de obtener_info_negocio tema "ubicaciones")
 
 NO HAGAS:
 - No inventes URLs de financiamiento (solo autostrefa.mx/registro y autostrefa.mx/escritorio/aplicacion)
 - No uses "usted" — siempre tuteo
-- No uses listas con bullets (•, -, 🔹) para presentar autos
+- No uses emojis como viñetas (🔹, 🚗, ✅). Usa solo • (bullet lleno) para listar opciones de autos.
 - No mezcles texto y tool_call en el mismo message
 - No pongas dos messages "user" consecutivos
 - No dejes a Mariana sin pregunta al final de sus mensajes
+- NUNCA ofrezcas enviar cotización por correo electrónico
+- NUNCA repitas el saludo más de una vez en la conversación
 
 ═══════════════════════════════════════
 FORMATO DE SALIDA
@@ -722,6 +756,38 @@ def validate_conversation(conv: dict) -> tuple[bool, list[str]]:
         if m.get("role") == "assistant" and "TREFABOT" in content:
             issues.append("Mariana se llama TREFABOT en algún mensaje")
 
+    # Verificar que no tenga flujo de cotización por email
+    for m in msgs:
+        content = m.get("content", "")
+        if m.get("role") == "assistant" and re.search(r'(?i)enviar_cotizacion_email', content):
+            issues.append("Contiene enviar_cotizacion_email (reemplazar con solicitud de financiamiento)")
+        if m.get("role") == "assistant" and re.search(r'(?i)cotización.*(?:correo|email)', content):
+            issues.append("Ofrece cotización por email (reemplazar con solicitud de financiamiento)")
+
+    # Verificar saludo expresivo en primer assistant msg
+    for m in msgs:
+        if m.get("role") == "assistant" and "<tool_call>" not in m.get("content", ""):
+            if '😊' not in m.get("content", "") and ':)' not in m.get("content", ""):
+                issues.append("Primer saludo no es expresivo (falta 😊)")
+            break
+
+    # Verificar doble saludo
+    greeting_count = 0
+    for m in msgs:
+        if m.get("role") == "assistant" and "<tool_call>" not in m.get("content", ""):
+            if re.search(r'(?i)soy\s+mariana\s+de\s+autos\s+trefa', m.get("content", "")):
+                greeting_count += 1
+    if greeting_count > 1:
+        issues.append(f"Saludo repetido {greeting_count} veces")
+
+    # Contar "Hola" en mensajes de assistant
+    hola_count = 0
+    for m in msgs:
+        if m.get("role") == "assistant" and "<tool_call>" not in m.get("content", ""):
+            hola_count += len(re.findall(r'(?i)\bhola\b', m.get("content", "")))
+    if hola_count > 1:
+        issues.append(f"Dice 'Hola' {hola_count} veces en la conversación")
+
     is_valid = len(issues) == 0
     return is_valid, issues
 
@@ -740,8 +806,142 @@ def fix_common_issues(conv: dict) -> dict:
             m["content"] = m["content"].replace("TREFABOT", "Mariana")
             m["content"] = m["content"].replace("Trefabot", "Mariana")
 
+    # Aplicar post-procesamiento regex
+    msgs = fix_inline_lists_to_bullets(msgs)
+    msgs = fix_double_greeting(msgs)
+    msgs = fix_email_quote_references(msgs)
+    msgs = ensure_expressive_greeting(msgs)
+
     conv["messages"] = msgs
     return conv
+
+
+def fix_inline_lists_to_bullets(msgs: list[dict]) -> list[dict]:
+    """Convierte listas inline de opciones a formato con bullets (•)."""
+    for m in msgs:
+        if m.get("role") != "assistant" or "<tool_call>" in m.get("content", ""):
+            continue
+        content = m["content"]
+
+        # Patrón: "Opción 1 — " o "Opción 1: " al inicio de línea → reemplazar por bullet
+        content = re.sub(
+            r'(?m)^(?:Opción\s*\d+\s*[—\-:]\s*)',
+            '• ',
+            content
+        )
+
+        # Patrón: numeración "1. **" o "1.- **" → reemplazar por bullet
+        content = re.sub(
+            r'(?m)^(?:\d+\.\s*-?\s*)',
+            '• ',
+            content
+        )
+
+        # Reemplazar viñetas emoji por bullets
+        content = re.sub(r'[🔹🚗✅🔸▪️▸►]\s*', '• ', content)
+
+        # Reemplazar bullets con asteriscos: * **Titulo** → • **Titulo**
+        content = re.sub(r'(?m)^\*\s+\*\*', '• **', content)
+
+        m["content"] = content
+    return msgs
+
+
+def fix_double_greeting(msgs: list[dict]) -> list[dict]:
+    """Elimina saludos duplicados — solo el primer assistant message puede tener saludo."""
+    greeting_patterns = [
+        r'(?i)^¡?hola[,!]?\s',
+        r'(?i)^buenos?\s+(?:días|tardes|noches)',
+        r'(?i)soy\s+mariana\s+de\s+autos\s+trefa',
+        r'(?i)me\s+da\s+(?:mucho\s+)?gusto\s+(?:atenderte|saludarte)',
+        r'(?i)qué\s+gusto\s+(?:conocerte|saludarte)',
+    ]
+
+    first_greeting_found = False
+    for m in msgs:
+        if m.get("role") != "assistant" or "<tool_call>" in m.get("content", ""):
+            continue
+
+        has_greeting = any(re.search(p, m["content"]) for p in greeting_patterns)
+
+        if has_greeting:
+            if first_greeting_found:
+                # Eliminar el saludo duplicado del contenido
+                content = m["content"]
+                # Remover la línea de saludo completa si no es el primer greeting
+                for p in greeting_patterns:
+                    content = re.sub(p + r'[^\n]*\n?', '', content, count=1)
+                content = content.strip()
+                if content:
+                    m["content"] = content
+            else:
+                first_greeting_found = True
+
+    return msgs
+
+
+def fix_email_quote_references(msgs: list[dict]) -> list[dict]:
+    """Reemplaza referencias a enviar cotización por email con solicitud de financiamiento."""
+    email_patterns = [
+        (r'(?i)¿(?:te|le)\s+(?:gustaría|quieres)\s+que\s+(?:te|le)\s+(?:envíe|mande|envie)\s+una?\s+cotización\s+(?:a\s+tu|por|al)\s+correo[^?]*\?',
+         '¿Te gustaría que iniciemos tu solicitud de financiamiento? Es 100% en línea y la pre-aprobación sale en 24 horas 😊'),
+        (r'(?i)¿a\s+qué\s+(?:correo|email|dirección)\s+(?:te|le)\s+(?:la|lo)?\s*(?:envío|mando)[^?]*\?',
+         '¿Te gustaría que te guíe con los pasos para iniciar tu solicitud de financiamiento? 😊'),
+        (r'(?i)(?:te|le)\s+(?:acabo\s+de\s+)?enviar?\s+(?:la\s+)?cotización[^.]*\.',
+         'Con gusto te ayudo a iniciar tu solicitud de financiamiento.'),
+        (r'(?i)(?:enviar|mandar)\s+(?:una?\s+)?cotización\s+(?:por|a\s+tu|al)\s+(?:correo|email)',
+         'iniciar tu solicitud de financiamiento'),
+    ]
+
+    for m in msgs:
+        if m.get("role") != "assistant":
+            continue
+        for pattern, replacement in email_patterns:
+            m["content"] = re.sub(pattern, replacement, m["content"])
+
+    return msgs
+
+
+def ensure_expressive_greeting(msgs: list[dict]) -> list[dict]:
+    """Asegura que el primer saludo de Mariana sea expresivo con emoji 😊."""
+    for m in msgs:
+        if m.get("role") != "assistant" or "<tool_call>" in m.get("content", ""):
+            continue
+
+        content = m["content"]
+        # Si es el primer mensaje de Mariana y no tiene emoji expresivo
+        has_smiley_emoji = '😊' in content
+        has_old_smiley = ':)' in content
+
+        if has_old_smiley and not has_smiley_emoji:
+            # Reemplazar :) por 😊 solo en el primer mensaje
+            content = content.replace(':)', '😊', 1)
+            m["content"] = content
+
+        # Si empieza con "Hola," sin signos de exclamación, hacerlo expresivo
+        if re.match(r'^Hola,\s', content) and '¡' not in content[:10]:
+            content = re.sub(r'^Hola,', '¡Hola,', content, count=1)
+            m["content"] = content
+
+        break  # Solo procesar el primer assistant message
+
+    return msgs
+
+
+def conversation_has_email_quote_flow(conv: dict) -> bool:
+    """Detecta si la conversación tiene flujo de enviar cotización por email."""
+    msgs = conv.get("messages", [])
+    for m in msgs:
+        content = m.get("content", "")
+        if m.get("role") == "assistant":
+            if re.search(r'(?i)enviar_cotizacion_email', content):
+                return True
+            if re.search(r'(?i)cotización.*(?:correo|email|e-mail)', content):
+                return True
+        if m.get("role") == "tool":
+            if 'enviar_cotizacion_email' in content:
+                return True
+    return False
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -757,6 +957,7 @@ def main():
     parser.add_argument("--end", type=int, default=0, help="Índice de fin (0 = todas)")
     parser.add_argument("--input", default=str(INPUT_FILE), help="Archivo de entrada")
     parser.add_argument("--delay", type=float, default=1.5, help="Segundos entre requests")
+    parser.add_argument("--every-n", type=int, default=2, help="Procesar 1 de cada N conversaciones (default: 2)")
     parser.add_argument("--dry-run", action="store_true", help="Solo mostrar el prompt sin ejecutar")
     args = parser.parse_args()
 
@@ -793,7 +994,12 @@ def main():
     start = args.start
     end = args.end if args.end > 0 else len(conversations)
     conversations = conversations[start:end]
-    print(f"  Procesando rango [{start}:{end}] = {len(conversations)} conversaciones")
+    print(f"  Rango [{start}:{end}] = {len(conversations)} conversaciones")
+
+    # Filtrar 1 de cada N conversaciones
+    if args.every_n > 1:
+        conversations = [c for i, c in enumerate(conversations) if i % args.every_n == 0]
+        print(f"  Procesando 1 de cada {args.every_n} = {len(conversations)} conversaciones seleccionadas")
 
     # Cargar ejemplos de referencia (una sola vez, se reutiliza)
     print("\nCargando ejemplos de referencia...")
@@ -856,11 +1062,18 @@ def main():
 
         # Validar
         is_valid, issues = validate_conversation(parsed)
+
+        # Contar "Hola" en assistant msgs (para estadísticas)
+        hola_count = 0
+        for m in parsed.get("messages", []):
+            if m.get("role") == "assistant" and "<tool_call>" not in m.get("content", ""):
+                hola_count += len(re.findall(r'(?i)\bhola\b', m.get("content", "")))
+
         if is_valid:
-            print(f"OK ({len(parsed['messages'])} msgs)")
+            print(f"OK ({len(parsed['messages'])} msgs, {hola_count} hola)")
             total_valid += 1
         else:
-            print(f"OK con advertencias: {'; '.join(issues)}")
+            print(f"OK con advertencias ({hola_count} hola): {'; '.join(issues)}")
             total_invalid += 1
 
         # Agregar metadata
@@ -872,6 +1085,7 @@ def main():
             "model": args.model,
             "timestamp": datetime.now().isoformat(),
             "validation_issues": issues if issues else None,
+            "hola_count": hola_count,
         }
 
         upgraded.append(parsed)
@@ -916,6 +1130,11 @@ def main():
             json.dump(failed, f, ensure_ascii=False, indent=2)
         print(f"  >>> Fallidas guardadas: {failed_path}")
 
+    # Estadísticas de "Hola"
+    hola_counts = [u.get("metadata", {}).get("hola_count", 0) for u in upgraded]
+    hola_multi = sum(1 for h in hola_counts if h > 1)
+    hola_total = sum(hola_counts)
+
     # Resumen final
     print("\n" + "=" * 60)
     print("RESUMEN FINAL")
@@ -926,6 +1145,12 @@ def main():
     print(f"  Fallidas:           {len(failed)}")
     print(f"  Tasa de éxito:      {(total_valid + total_invalid) / max(len(conversations), 1) * 100:.1f}%")
     print(f"  Output:             {all_path}")
+    print(f"  --- Estadísticas 'Hola' ---")
+    print(f"  Total 'Hola' en todas:  {hola_total}")
+    print(f"  Convs con >1 'Hola':    {hola_multi} / {len(upgraded)}")
+    if hola_counts:
+        print(f"  Promedio por conv:      {hola_total / len(hola_counts):.2f}")
+        print(f"  Máximo en una conv:     {max(hola_counts)}")
     print("=" * 60)
 
 

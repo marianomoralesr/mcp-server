@@ -23,6 +23,282 @@
   --radius: 12px;
 }
 
+/* ===== CHAT MODE THEMES ===== */
+
+/* --- WhatsApp Mode --- */
+.mode-whatsapp .chat-header {
+  background: #075E54;
+  border-bottom: none;
+}
+.mode-whatsapp .chat-header span,
+.mode-whatsapp .chat-header .session-badge {
+  color: #fff;
+  background: rgba(255,255,255,0.15);
+}
+.mode-whatsapp .chat-header .btn {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border-color: rgba(255,255,255,0.3);
+}
+.mode-whatsapp .chat-header .btn:hover {
+  background: rgba(255,255,255,0.25);
+}
+.mode-whatsapp .chat-header .mode-selector {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border-color: rgba(255,255,255,0.3);
+}
+.mode-whatsapp .chat-header .mode-selector option {
+  color: #333;
+  background: #fff;
+}
+.mode-whatsapp .messages-area {
+  background: #e5ddd5;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c5bfb0' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.mode-whatsapp .message {
+  max-width: 80%;
+}
+.mode-whatsapp .message.user .bubble {
+  background: #DCF8C6;
+  color: #303030;
+  border: none;
+  border-radius: 8px 8px 0 8px;
+  position: relative;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+.mode-whatsapp .message.user .bubble::after {
+  content: '';
+  position: absolute;
+  right: -8px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 8px solid #DCF8C6;
+  border-top: 8px solid transparent;
+}
+.mode-whatsapp .message.assistant .bubble {
+  background: #FFFFFF;
+  color: #303030;
+  border: none;
+  border-radius: 8px 8px 8px 0;
+  position: relative;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+.mode-whatsapp .message.assistant .bubble::after {
+  content: '';
+  position: absolute;
+  left: -8px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-right: 8px solid #FFFFFF;
+  border-top: 8px solid transparent;
+}
+.mode-whatsapp .wa-avatar {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #075E54;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+.mode-whatsapp .message.assistant {
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 6px;
+}
+.mode-whatsapp .message.assistant .bubble-wrap {
+  display: flex;
+  flex-direction: column;
+  max-width: calc(100% - 40px);
+}
+.mode-whatsapp .wa-time {
+  display: inline-block;
+  font-size: 11px;
+  color: #999;
+  float: right;
+  margin-left: 10px;
+  margin-top: 4px;
+  line-height: 1;
+}
+.mode-whatsapp .wa-checks {
+  display: inline;
+  color: #53bdeb;
+  font-size: 12px;
+  margin-left: 2px;
+}
+.mode-whatsapp .message .meta {
+  display: none;
+}
+.mode-whatsapp .input-area {
+  background: #f0f0f0;
+  padding: 8px 12px;
+  gap: 6px;
+}
+.mode-whatsapp .input-area textarea {
+  border-radius: 20px;
+  padding: 8px 16px;
+  background: #fff;
+  border-color: #ddd;
+}
+.mode-whatsapp .send-btn {
+  background: #075E54;
+  width: 40px;
+  height: 40px;
+}
+.mode-whatsapp .send-btn:hover {
+  background: #128C7E;
+}
+.mode-whatsapp .wa-input-icons {
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  gap: 4px;
+  opacity: 0.6;
+  cursor: default;
+  user-select: none;
+}
+.mode-whatsapp .typing {
+  background: #fff;
+  border: none;
+  border-radius: 8px 8px 8px 0;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+.mode-whatsapp .rating-bar {
+  background: #f0f0f0;
+  border-top-color: #ddd;
+}
+.mode-whatsapp .tool-panel {
+  border-left-color: #ddd;
+}
+
+/* WhatsApp formatting */
+.wa-mono {
+  display: block;
+  background: rgba(0,0,0,0.05);
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: 13px;
+  margin: 4px 0;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+.wa-mono-inline {
+  background: rgba(0,0,0,0.05);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: 13px;
+}
+
+/* Hide WA elements by default */
+.wa-avatar { display: none; }
+.wa-input-icons { display: none; }
+.wa-time { display: none; }
+.wa-checks { display: none; }
+
+/* --- Web App Mode --- */
+.mode-webapp .chat-header {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+.mode-webapp .chat-header span {
+  color: #1f2937;
+}
+.mode-webapp .chat-header .session-badge {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+.mode-webapp .chat-header .mode-selector {
+  background: #f3f4f6;
+  color: #1f2937;
+  border-color: #e5e7eb;
+}
+.mode-webapp .messages-area {
+  background: #fafafa;
+}
+.mode-webapp .message.user .bubble {
+  background: #0066ff;
+  color: #fff;
+  border: none;
+  border-radius: 18px 18px 4px 18px;
+  box-shadow: 0 1px 3px rgba(0,102,255,0.2);
+}
+.mode-webapp .message.assistant .bubble {
+  background: #f0f0f0;
+  color: #1f2937;
+  border: none;
+  border-radius: 18px 18px 18px 4px;
+}
+.mode-webapp .input-area {
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+}
+.mode-webapp .send-btn {
+  background: #0066ff;
+}
+.mode-webapp .send-btn:hover {
+  background: #0052cc;
+}
+
+/* --- Widget Mode (default, no extra styles needed) --- */
+
+/* --- Tool Leak Banner --- */
+.tool-leak-banner {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  padding: 8px 14px;
+  margin: 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #856404;
+  animation: fadeIn 0.3s ease;
+}
+.tool-leak-banner .leak-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.tool-leak-banner .leak-text {
+  flex: 1;
+}
+.tool-leak-banner .leak-dismiss {
+  background: none;
+  border: 1px solid #c9a90a;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 12px;
+  color: #856404;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.tool-leak-banner .leak-dismiss:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+/* --- Mode Selector --- */
+.mode-selector {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  background: #fff;
+  color: var(--text);
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
@@ -1334,6 +1610,11 @@ body {
     <div class="chat-header">
       <span style="font-weight:600; font-size:14px;">Mariana</span>
       <span class="session-badge" id="session-badge">Sin sesion</span>
+      <select class="mode-selector" id="chat-mode-selector" onchange="switchChatMode(this.value)">
+        <option value="widget">Chat widget</option>
+        <option value="whatsapp">WhatsApp</option>
+        <option value="webapp">Web App</option>
+      </select>
       <div class="spacer"></div>
       <button class="btn btn-sm" onclick="toggleToolPanel()" id="tool-panel-toggle">Tools (0)</button>
       <button class="btn btn-sm btn-primary" onclick="newSession()">+ Nueva</button>
@@ -1342,7 +1623,10 @@ body {
     <div class="chat-body">
       <div class="messages-area" id="messages">
         <div class="message assistant">
-          <div class="bubble">Hola, soy Mariana del equipo TREFA. Con mucho gusto te apoyo a encontrar tu auto ideal. Que tipo de vehiculo buscas?</div>
+          <span class="wa-avatar">M</span>
+          <div class="bubble-wrap">
+            <div class="bubble">Hola, soy Mariana del equipo TREFA. Con mucho gusto te apoyo a encontrar tu auto ideal. Que tipo de vehiculo buscas?</div>
+          </div>
         </div>
       </div>
 
@@ -1373,9 +1657,11 @@ body {
 
     <!-- Input -->
     <div class="input-area">
+      <div class="wa-input-icons">😊 📎</div>
       <textarea id="msg-input" placeholder="Escribe tu mensaje..." rows="1"
         onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"
         oninput="autoResize(this)"></textarea>
+      <div class="wa-input-icons">🎤</div>
       <button class="send-btn" id="send-btn" onclick="sendMessage()">&#9654;</button>
     </div>
   </div>
@@ -1975,13 +2261,126 @@ function switchView(view) {
   }
 }
 
+// ===== CHAT MODE =====
+function switchChatMode(mode) {
+  const chatView = document.getElementById('chat-view');
+  chatView.classList.remove('mode-widget', 'mode-whatsapp', 'mode-webapp');
+  chatView.classList.add('mode-' + mode);
+  localStorage.setItem('trefa_chat_mode', mode);
+}
+
+// Restore saved mode on load
+(function() {
+  const saved = localStorage.getItem('trefa_chat_mode') || 'widget';
+  const sel = document.getElementById('chat-mode-selector');
+  if (sel) sel.value = saved;
+  switchChatMode(saved);
+})();
+
+function getCurrentChatMode() {
+  return localStorage.getItem('trefa_chat_mode') || 'widget';
+}
+
+function formatWhatsApp(text) {
+  // First escape HTML for XSS safety
+  let safe = escapeHtml(text);
+  // Code blocks: ```code```
+  safe = safe.replace(/```([\s\S]*?)```/g, '<code class="wa-mono">$1</code>');
+  // Inline code: `code`
+  safe = safe.replace(/`([^`]+)`/g, '<code class="wa-mono-inline">$1</code>');
+  // Bold: *text*
+  safe = safe.replace(/\*([^\*]+)\*/g, '<strong>$1</strong>');
+  // Italic: _text_
+  safe = safe.replace(/\b_([^_]+)_\b/g, '<em>$1</em>');
+  // Strikethrough: ~text~
+  safe = safe.replace(/~([^~]+)~/g, '<del>$1</del>');
+  // Newlines
+  safe = safe.replace(/\n/g, '<br>');
+  return safe;
+}
+
+function detectToolLeak(content) {
+  const patterns = [
+    /<tool_call>[\s\S]*?<\/tool_call>/gi,
+    /<tool_response>[\s\S]*?<\/tool_response>/gi,
+    /<tools>[\s\S]*?<\/tools>/gi,
+    /<function_call>[\s\S]*?<\/function_call>/gi,
+    /<\|tool_call\|>[\s\S]*?(<\|\/tool_call\|>|$)/gi,
+  ];
+  const singlePatterns = [
+    /<tool_call>/i, /<\/tool_call>/i,
+    /<tool_response>/i, /<\/tool_response>/i,
+    /<tools>/i, /<\/tools>/i,
+    /<function_call>/i, /<\/function_call>/i,
+    /<\|tool_call\|>/i,
+  ];
+  let hasLeak = false;
+  let cleanContent = content;
+  // Check for any pattern match
+  for (const p of singlePatterns) {
+    if (p.test(content)) { hasLeak = true; break; }
+  }
+  if (hasLeak) {
+    // Remove matched blocks
+    for (const p of patterns) {
+      cleanContent = cleanContent.replace(p, '');
+    }
+    // Remove orphan tags
+    cleanContent = cleanContent.replace(/<\/?tool_call>/gi, '');
+    cleanContent = cleanContent.replace(/<\/?tool_response>/gi, '');
+    cleanContent = cleanContent.replace(/<\/?tools>/gi, '');
+    cleanContent = cleanContent.replace(/<\/?function_call>/gi, '');
+    cleanContent = cleanContent.replace(/<\|\/? *tool_call\|>/gi, '');
+    cleanContent = cleanContent.trim();
+  }
+  return { hasLeak, cleanContent };
+}
+
+function getTimeString() {
+  const now = new Date();
+  return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+}
+
 // ===== CHAT =====
 function addMessage(role, content, tools) {
   const area = document.getElementById('messages');
   const div = document.createElement('div');
   div.className = `message ${role}`;
+  const mode = getCurrentChatMode();
 
-  let html = `<div class="bubble">${escapeHtml(content)}</div>`;
+  let displayContent = content;
+  let hasLeak = false;
+
+  // Detect tool leaks in assistant responses
+  if (role === 'assistant') {
+    const leak = detectToolLeak(content);
+    hasLeak = leak.hasLeak;
+    displayContent = leak.cleanContent || content;
+  }
+
+  // Format content based on mode
+  const formatted = (mode === 'whatsapp')
+    ? formatWhatsApp(displayContent)
+    : escapeHtml(displayContent);
+
+  const timeStr = getTimeString();
+  let html = '';
+
+  if (role === 'assistant') {
+    html += '<span class="wa-avatar">M</span>';
+    html += '<div class="bubble-wrap">';
+  }
+
+  if (mode === 'whatsapp') {
+    if (role === 'assistant') {
+      html += `<div class="bubble">${formatted}<span class="wa-time">${timeStr}</span></div>`;
+    } else {
+      html += `<div class="bubble">${formatted}<span class="wa-time">${timeStr}<span class="wa-checks"> ✓✓</span></span></div>`;
+    }
+  } else {
+    html += `<div class="bubble">${formatted}</div>`;
+    html += `<div class="meta">${timeStr}</div>`;
+  }
 
   if (tools && tools.length > 0) {
     html += '<div class="tool-badges">';
@@ -1992,18 +2391,41 @@ function addMessage(role, content, tools) {
     html += '</div>';
   }
 
+  if (role === 'assistant') {
+    html += '</div>'; // close bubble-wrap
+  }
+
   div.innerHTML = html;
   area.appendChild(div);
+
+  // Show tool leak banner
+  if (hasLeak) {
+    const banner = document.createElement('div');
+    banner.className = 'tool-leak-banner';
+    banner.innerHTML = `
+      <span class="leak-icon">⚠️</span>
+      <span class="leak-text">Se detecto contenido interno del modelo (tool_call/tools). Fue removido automaticamente.</span>
+      <button class="leak-dismiss" onclick="this.parentElement.remove()">OK</button>
+    `;
+    area.appendChild(banner);
+  }
+
   area.scrollTop = area.scrollHeight;
 }
 
 function showTyping(show) {
   let el = document.getElementById('typing-indicator');
   if (!el && show) {
+    const mode = getCurrentChatMode();
     el = document.createElement('div');
     el.id = 'typing-indicator';
-    el.className = 'typing show';
-    el.innerHTML = '<span class="typing-dots"><span></span><span></span><span></span></span> Mariana esta escribiendo...';
+    if (mode === 'whatsapp') {
+      el.className = 'message assistant';
+      el.innerHTML = '<span class="wa-avatar">M</span><div class="bubble-wrap"><div class="typing show"><span class="typing-dots"><span></span><span></span><span></span></span> Mariana esta escribiendo...</div></div>';
+    } else {
+      el.className = 'typing show';
+      el.innerHTML = '<span class="typing-dots"><span></span><span></span><span></span></span> Mariana esta escribiendo...';
+    }
     document.getElementById('messages').appendChild(el);
     el.parentElement.scrollTop = el.parentElement.scrollHeight;
   } else if (el && !show) {
@@ -2074,7 +2496,10 @@ function newSession() {
   messageCount = 0;
   document.getElementById('messages').innerHTML = `
     <div class="message assistant">
-      <div class="bubble">Hola, soy Mariana del equipo TREFA. Con mucho gusto te apoyo a encontrar tu auto ideal. Que tipo de vehiculo buscas?</div>
+      <span class="wa-avatar">M</span>
+      <div class="bubble-wrap">
+        <div class="bubble">Hola, soy Mariana del equipo TREFA. Con mucho gusto te apoyo a encontrar tu auto ideal. Que tipo de vehiculo buscas?</div>
+      </div>
     </div>`;
   document.getElementById('session-badge').textContent = 'Sin sesion';
   document.getElementById('tool-panel-toggle').textContent = 'Tools (0)';

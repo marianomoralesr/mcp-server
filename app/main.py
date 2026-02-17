@@ -11,7 +11,7 @@ import json
 import time
 import asyncio
 import hashlib
-from typing import Optional, List, Dict, Any, AsyncGenerator
+from typing import Optional, List, Dict, Any
 from contextlib import asynccontextmanager
 
 import pathlib
@@ -28,6 +28,7 @@ from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTEN
 from app.config import Settings
 from app.model_manager import ModelManager
 from app.mcp_client import MCPClient
+from app.llm_service import LLMService
 from app.tool_orchestrator import ToolOrchestrator
 from app.session_manager import InMemorySessionManager
 from app.system_prompts import build_system_prompt
@@ -148,6 +149,7 @@ PUBLIC_PATHS = {"/", "/ui", "/health", "/metrics", "/api/login", "/api/info",
 # Global state
 model_manager: Optional[ModelManager] = None
 http_client: Optional[httpx.AsyncClient] = None
+llm_service: Optional[LLMService] = None
 mcp_client: Optional[MCPClient] = None
 tool_orchestrator: Optional[ToolOrchestrator] = None
 session_manager: Optional[InMemorySessionManager] = None
@@ -159,7 +161,7 @@ tools_definitions: List[Dict] = []
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan manager"""
-    global model_manager, http_client, mcp_client, tool_orchestrator
+    global model_manager, http_client, llm_service, mcp_client, tool_orchestrator
     global session_manager, feedback_manager, system_prompt, tools_definitions
 
     logger.info("Starting up Qwen3-14B Inference Server...")
@@ -180,6 +182,13 @@ async def lifespan(app: FastAPI):
     else:
         http_client = None
         logger.info("vllm_disabled", reason="TREFA_VLLM_DISABLED=true")
+
+    # Initialize LLM service (LiteLLM wrapper con tracing)
+    if not VLLM_DISABLED:
+        llm_service = LLMService(settings)
+    else:
+        llm_service = None
+        logger.info("llm_service_disabled", reason="TREFA_VLLM_DISABLED=true")
 
     # Initialize model manager
     model_manager = ModelManager(settings)
@@ -206,7 +215,7 @@ async def lifespan(app: FastAPI):
     # Initialize tool orchestrator
     tool_orchestrator = ToolOrchestrator(
         mcp_client=mcp_client,
-        vllm_client=http_client,
+        llm_service=llm_service,
         known_tools=known_tools,
         max_iterations=settings.max_tool_iterations,
     )
@@ -718,72 +727,47 @@ async def chat_completions(
 
     with REQUEST_LATENCY.labels(endpoint="chat_completions").time():
         try:
-            vllm_request = {
-                "model": request.lora_name if request.use_lora else "qwen3-14b",
-                "messages": [{"role": m.role, "content": m.content} for m in request.messages],
-                "max_tokens": request.max_tokens,
-                "temperature": request.temperature,
+            model = request.lora_name if request.use_lora else "qwen3-14b"
+            messages = [{"role": m.role, "content": m.content} for m in request.messages]
+            extra = {
                 "top_p": request.top_p,
-                "stream": request.stream,
                 "extra_body": {
                     "top_k": request.top_k,
-                    "repetition_penalty": request.repetition_penalty
-                }
+                    "repetition_penalty": request.repetition_penalty,
+                },
             }
 
             if request.stream:
                 return StreamingResponse(
-                    stream_chat_completion(vllm_request),
-                    media_type="text/event-stream"
+                    llm_service.chat_completion_stream(
+                        messages=messages,
+                        model=model,
+                        temperature=request.temperature,
+                        max_tokens=request.max_tokens,
+                        **extra,
+                    ),
+                    media_type="text/event-stream",
                 )
 
-            response = await http_client.post(
-                "/v1/chat/completions",
-                json=vllm_request,
-                timeout=300.0
+            result = await llm_service.chat_completion(
+                messages=messages,
+                model=model,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens,
+                **extra,
             )
-
-            if response.status_code != 200:
-                raise HTTPException(
-                    status_code=response.status_code,
-                    detail=response.text
-                )
-
-            result = response.json()
             REQUEST_COUNT.labels(endpoint="chat_completions", status="success").inc()
 
-            if "usage" in result and "completion_tokens" in result["usage"]:
-                TOKENS_GENERATED.inc(result["usage"]["completion_tokens"])
+            usage = result.get("usage") or {}
+            if usage.get("completion_tokens"):
+                TOKENS_GENERATED.inc(usage["completion_tokens"])
 
             return result
 
-        except httpx.TimeoutException:
-            REQUEST_COUNT.labels(endpoint="chat_completions", status="timeout").inc()
-            raise HTTPException(status_code=504, detail="Request timeout")
         except Exception as e:
             REQUEST_COUNT.labels(endpoint="chat_completions", status="error").inc()
-            logger.error(f"Chat completion error: {e}")
+            logger.error("chat_completion_error", error=str(e))
             raise HTTPException(status_code=500, detail=str(e))
-
-
-async def stream_chat_completion(vllm_request: Dict) -> AsyncGenerator[str, None]:
-    """Stream chat completion from vLLM"""
-    try:
-        async with http_client.stream(
-            "POST",
-            "/v1/chat/completions",
-            json=vllm_request,
-            timeout=300.0
-        ) as response:
-            async for line in response.aiter_lines():
-                if line.startswith("data: "):
-                    yield f"{line}\n\n"
-                elif line == "data: [DONE]":
-                    yield "data: [DONE]\n\n"
-                    break
-    except Exception as e:
-        logger.error(f"Streaming error: {e}")
-        yield f"data: {{'error': '{str(e)}'}}\n\n"
 
 
 @app.post("/v1/completions")
@@ -797,46 +781,34 @@ async def completions(
 
     with REQUEST_LATENCY.labels(endpoint="completions").time():
         try:
-            vllm_request = {
-                "model": request.lora_name if request.use_lora else "qwen3-14b",
-                "prompt": request.prompt,
-                "max_tokens": request.max_tokens,
-                "temperature": request.temperature,
-                "top_p": request.top_p,
-                "stream": request.stream
-            }
+            model = request.lora_name if request.use_lora else "qwen3-14b"
+            extra = {"top_p": request.top_p}
 
             if request.stream:
                 return StreamingResponse(
-                    stream_completion(vllm_request),
-                    media_type="text/event-stream"
+                    llm_service.text_completion_stream(
+                        prompt=request.prompt,
+                        model=model,
+                        temperature=request.temperature,
+                        max_tokens=request.max_tokens,
+                        **extra,
+                    ),
+                    media_type="text/event-stream",
                 )
 
-            response = await http_client.post(
-                "/v1/completions",
-                json=vllm_request,
-                timeout=300.0
+            result = await llm_service.text_completion(
+                prompt=request.prompt,
+                model=model,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens,
+                **extra,
             )
-
             REQUEST_COUNT.labels(endpoint="completions", status="success").inc()
-            return response.json()
+            return result
 
         except Exception as e:
             REQUEST_COUNT.labels(endpoint="completions", status="error").inc()
             raise HTTPException(status_code=500, detail=str(e))
-
-
-async def stream_completion(vllm_request: Dict) -> AsyncGenerator[str, None]:
-    """Stream completion from vLLM"""
-    async with http_client.stream(
-        "POST",
-        "/v1/completions",
-        json=vllm_request,
-        timeout=300.0
-    ) as response:
-        async for line in response.aiter_lines():
-            if line:
-                yield f"{line}\n\n"
 
 
 @app.post("/v1/embeddings")
