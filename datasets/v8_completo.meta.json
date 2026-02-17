@@ -1,0 +1,17 @@
+{
+  "name": "v8_completo",
+  "description": "Dataset v8 opus 4.6 TREFA/Mariana — v8_completo",
+  "created": "2026-02-17T11:24:08.366545",
+  "conversations": 1947,
+  "sources": [
+    "v5_dataset",
+    "gold_upgraded"
+  ],
+  "pipeline": "audit_and_fix.py --full",
+  "version": "v8 opus 4.6",
+  "pass_rate": "94.2%",
+  "issues_fixed": {
+    "F3": 1662,
+    "F5": 221
+  }
+}
