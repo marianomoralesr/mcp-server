@@ -922,6 +922,9 @@ async def switch_quantization(
 async def dataset_list_files(rescan: bool = False):
     """Lista archivos JSONL escaneados en los directorios configurados"""
     dirs = [d.strip() for d in settings.dataset_dirs.split(",") if d.strip()]
+    gen_dir = settings.generation_output_dir
+    if gen_dir and gen_dir not in dirs:
+        dirs.append(gen_dir)
     files = dataset_manager.scan_jsonl_files(dirs, force_rescan=rescan)
     return {"files": files, "count": len(files), "directories": dirs}
 
@@ -931,6 +934,9 @@ async def dataset_read_file(file_path: str, offset: int = 0, limit: int = 50):
     """Lee conversaciones paginadas de un archivo JSONL"""
     # Validar que el path esté dentro de los directorios configurados
     dirs = [d.strip() for d in settings.dataset_dirs.split(",") if d.strip()]
+    gen_dir = settings.generation_output_dir
+    if gen_dir and gen_dir not in dirs:
+        dirs.append(gen_dir)
     allowed = any(file_path.startswith(d) for d in dirs)
     if not allowed:
         raise HTTPException(status_code=403, detail="Ruta fuera de directorios permitidos")
