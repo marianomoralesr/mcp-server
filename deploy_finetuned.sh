@@ -14,6 +14,7 @@
 #   GITHUB_TOKEN                (opcional, repo es público)
 #   SUPABASE_URL                (opcional, para MCP Server)
 #   SUPABASE_SERVICE_ROLE_KEY   (opcional, para MCP Server)
+#   CF_TUNNEL_CRED              (opcional, JSON credenciales Cloudflare Tunnel → api.trefa.mx)
 #
 # Puertos:
 #   vLLM    → 8001 (evita conflicto con Caddy de vast.ai en 8000)
@@ -326,6 +327,7 @@ cleanup() {
     [ -n "$FASTAPI_PID" ] && kill "$FASTAPI_PID" 2>/dev/null || true
     [ -n "$VLLM_PID" ] && kill "$VLLM_PID" 2>/dev/null || true
     [ -n "$MCP_PID" ] && kill "$MCP_PID" 2>/dev/null || true
+    pkill -f "cloudflared tunnel" 2>/dev/null || true
     wait 2>/dev/null || true
     log "Todos los servicios detenidos."
 }
@@ -402,6 +404,61 @@ log "Verificación rápida:"
 log "  curl http://localhost:${VLLM_PORT}/v1/models"
 log "  curl http://localhost:${FASTAPI_PORT}/health"
 log "============================================"
+
+# ============================================================
+# Fase 9: Cloudflare Tunnel (api.trefa.mx)
+# ============================================================
+CF_TUNNEL_ID="d15177d1-cb8c-4ed9-b8de-ff52c8f3d749"
+CF_TUNNEL_DOMAIN="api.trefa.mx"
+CF_CRED_FILE="/root/.cloudflared/${CF_TUNNEL_ID}.json"
+
+if [ -n "${CF_TUNNEL_CRED:-}" ]; then
+    log "Configurando Cloudflare Tunnel (${CF_TUNNEL_DOMAIN})..."
+
+    # Instalar cloudflared
+    if ! command -v cloudflared &>/dev/null; then
+        log "Instalando cloudflared..."
+        curl -sL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 \
+            -o /usr/local/bin/cloudflared
+        chmod +x /usr/local/bin/cloudflared
+    fi
+
+    # Limpiar config anterior
+    pkill -f "cloudflared tunnel" 2>/dev/null || true
+    sleep 1
+    rm -rf /root/.cloudflared
+    mkdir -p /root/.cloudflared
+
+    # Escribir credenciales y config
+    echo "$CF_TUNNEL_CRED" > "$CF_CRED_FILE"
+    chmod 600 "$CF_CRED_FILE"
+
+    cat > /root/.cloudflared/config.yml << CFEOF
+tunnel: ${CF_TUNNEL_ID}
+credentials-file: ${CF_CRED_FILE}
+ingress:
+  - hostname: ${CF_TUNNEL_DOMAIN}
+    service: http://localhost:${FASTAPI_PORT}
+    originRequest:
+      noTLSVerify: true
+  - service: http_status:404
+CFEOF
+
+    # Iniciar tunnel
+    nohup cloudflared tunnel run trefa-vllm > /tmp/cloudflared.log 2>&1 &
+    CF_PID=$!
+    sleep 3
+
+    if kill -0 "$CF_PID" 2>/dev/null; then
+        log "Cloudflare Tunnel activo (PID=$CF_PID)"
+        log "  https://${CF_TUNNEL_DOMAIN} → localhost:${FASTAPI_PORT}"
+    else
+        log "WARN: Cloudflare Tunnel no arrancó. Ver /tmp/cloudflared.log"
+    fi
+else
+    log "CF_TUNNEL_CRED no definido, tunnel desactivado."
+fi
+
 log "Monitoreando procesos..."
 
 wait -n "$VLLM_PID" "$MCP_PID" "$FASTAPI_PID" 2>/dev/null
