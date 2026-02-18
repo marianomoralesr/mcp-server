@@ -83,7 +83,12 @@ class LLMService:
         self.settings = settings
 
         # Determinar api_base: explícita > local > tunnel
-        self.api_base = settings.vllm_base_url or f"http://{settings.vllm_host}:{settings.vllm_port}"
+        raw_base = settings.vllm_base_url or f"http://{settings.vllm_host}:{settings.vllm_port}"
+        # Guardar URL base sin /v1 para health checks, agregar /v1 para LiteLLM
+        self.health_url = raw_base.rstrip("/")
+        self.api_base = raw_base.rstrip("/")
+        if not self.api_base.endswith("/v1"):
+            self.api_base += "/v1"
         self.is_tunnel = self.TUNNEL_URL in self.api_base
 
         # Detectar provider
