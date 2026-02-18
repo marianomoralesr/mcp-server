@@ -1415,13 +1415,48 @@ body {
   padding: 6px 0;
 }
 
+.ds-dir-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px 4px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.ds-dir-header:hover { background: var(--bg); }
+.ds-dir-toggle {
+  font-size: 10px;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+  width: 12px;
+  text-align: center;
+}
+.ds-dir-header.expanded .ds-dir-toggle { transform: rotate(90deg); }
 .ds-dir-label {
   font-size: 11px;
   font-weight: 600;
   color: var(--text-light);
-  padding: 8px 14px 4px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ds-dir-info {
+  font-size: 10px;
+  color: var(--text-light);
+  opacity: 0.7;
+  white-space: nowrap;
+}
+.ds-dir-files {
+  overflow: hidden;
+  max-height: 2000px;
+  transition: max-height 0.3s ease;
+}
+.ds-dir-files.collapsed {
+  max-height: 0;
 }
 
 .ds-file-item {
@@ -2203,7 +2238,7 @@ body {
           <div id="ds-validation-box"></div>
           <div class="ds-detail-actions">
             <button class="btn btn-sm" onclick="dsValidate()">Validar</button>
-            <button class="btn btn-sm btn-primary" onclick="dsSave()">Guardar en Supabase</button>
+            <button class="btn btn-sm btn-primary" onclick="dsSave()">Guardar</button>
             <span id="ds-save-status" style="font-size:11px;color:var(--success);"></span>
           </div>
         </div>
@@ -3349,10 +3384,27 @@ async function dsLoadFiles(rescan) {
       groups[dir].push(f);
     });
 
+    // Ordenar archivos dentro de cada grupo por fecha desc, y calcular fecha más reciente del grupo
+    const groupEntries = Object.entries(groups).map(([dir, files]) => {
+      files.sort((a, b) => (b.modified_at || 0) - (a.modified_at || 0));
+      const newestMtime = files.reduce((max, f) => Math.max(max, f.modified_at || 0), 0);
+      return { dir, files, newestMtime };
+    });
+    // Ordenar grupos por fecha más reciente desc
+    groupEntries.sort((a, b) => b.newestMtime - a.newestMtime);
+
     let html = '';
-    for (const [dir, files] of Object.entries(groups)) {
-      html += `<div class="ds-dir-label">${escapeHtml(dir)}</div>`;
-      files.forEach(f => {
+    groupEntries.forEach((group, gi) => {
+      const expanded = gi === 0; // primer grupo expandido por default
+      const dateStr = group.newestMtime ? new Date(group.newestMtime * 1000).toLocaleDateString('es-MX', {day:'numeric',month:'short'}) : '';
+      const dirId = 'ds-dir-' + gi;
+      html += `<div class="ds-dir-header ${expanded ? 'expanded' : ''}" onclick="dsToggleDir('${dirId}', this)">
+        <span class="ds-dir-toggle">&#9654;</span>
+        <span class="ds-dir-label">${escapeHtml(group.dir)}</span>
+        <span class="ds-dir-info">${group.files.length} &middot; ${dateStr}</span>
+      </div>`;
+      html += `<div class="ds-dir-files ${expanded ? '' : 'collapsed'}" id="${dirId}">`;
+      group.files.forEach(f => {
         const sizeKB = (f.size_bytes / 1024).toFixed(0);
         const epath = escapeHtml(f.path);
         // Version & file tags badges
@@ -3374,7 +3426,8 @@ async function dsLoadFiles(rescan) {
           <span class="ds-file-meta"><span>${sizeKB} KB</span><span>~${f.line_count} conv</span></span>
         </div>`;
       });
-    }
+      html += `</div>`;
+    });
     el.innerHTML = html;
 
     document.getElementById('ds-file-stats').textContent = `${dsFiles.length} archivos`;
@@ -3382,6 +3435,13 @@ async function dsLoadFiles(rescan) {
   } catch (e) {
     el.innerHTML = `<div class="ds-empty-state" style="color:var(--error)">Error: ${e.message}</div>`;
   }
+}
+
+function dsToggleDir(dirId, headerEl) {
+  const filesEl = document.getElementById(dirId);
+  if (!filesEl) return;
+  filesEl.classList.toggle('collapsed');
+  headerEl.classList.toggle('expanded');
 }
 
 async function dsSelectFile(el, path) {
@@ -3406,7 +3466,7 @@ async function dsSelectFile(el, path) {
         dsSavedMap[c.source_file + ':' + c.line_number] = c;
       });
     }
-  } catch(e) { /* supabase may not be configured */ }
+  } catch(e) { /* db may not be configured */ }
 
   await dsLoadConversations();
 }

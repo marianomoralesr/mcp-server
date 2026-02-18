@@ -970,16 +970,16 @@ async def dataset_validate(request: Request):
 
 @app.post("/v1/datasets/conversations")
 async def dataset_save_conversation(request: DatasetConversationSave):
-    """Guarda/actualiza conversación en Supabase"""
-    if not settings.supabase_url or not settings.supabase_key:
-        raise HTTPException(status_code=503, detail="Supabase no configurado (TREFA_SUPABASE_URL, TREFA_SUPABASE_KEY)")
+    """Guarda/actualiza conversacion en PostgreSQL"""
+    if not settings.database_url:
+        raise HTTPException(status_code=503, detail="PostgreSQL no configurado (TREFA_DATABASE_URL)")
     try:
         return dataset_manager.save_conversation(
-            settings.supabase_url, settings.supabase_key, request.model_dump()
+            settings.database_url, request.model_dump()
         )
     except Exception as e:
         logger.error("dataset_save_error", error=str(e), source_file=request.source_file, line=request.line_number)
-        raise HTTPException(status_code=502, detail=f"Error al guardar en Supabase: {str(e)}")
+        raise HTTPException(status_code=502, detail=f"Error al guardar en PostgreSQL: {str(e)}")
 
 
 @app.get("/v1/datasets/conversations")
@@ -989,25 +989,25 @@ async def dataset_get_conversations(
     tag: Optional[str] = None,
 ):
     """Obtiene conversaciones guardadas con filtros opcionales"""
-    if not settings.supabase_url or not settings.supabase_key:
-        raise HTTPException(status_code=503, detail="Supabase no configurado")
+    if not settings.database_url:
+        raise HTTPException(status_code=503, detail="PostgreSQL no configurado (TREFA_DATABASE_URL)")
     try:
         data = dataset_manager.get_saved_conversations(
-            settings.supabase_url, settings.supabase_key,
+            settings.database_url,
             source_file=source_file, rating=rating, tag=tag
         )
         return {"conversations": data, "count": len(data)}
     except Exception as e:
         logger.error("dataset_get_error", error=str(e))
-        raise HTTPException(status_code=502, detail=f"Error al consultar Supabase: {str(e)}")
+        raise HTTPException(status_code=502, detail=f"Error al consultar PostgreSQL: {str(e)}")
 
 
 @app.get("/v1/datasets/stats")
 async def dataset_stats():
     """Estadísticas de revisión de datasets"""
-    if not settings.supabase_url or not settings.supabase_key:
+    if not settings.database_url:
         return {"total": 0, "reviewed": 0, "pending": 0, "review_rate": 0, "by_rating": {}, "by_tag": {}}
-    return dataset_manager.get_review_stats(settings.supabase_url, settings.supabase_key)
+    return dataset_manager.get_review_stats(settings.database_url)
 
 
 class RenameRequest(BaseModel):

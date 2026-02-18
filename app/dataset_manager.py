@@ -16,6 +16,7 @@ TOOLS_CONOCIDAS = {
     "comparar_vehiculos", "estadisticas_inventario", "calcular_financiamiento",
     "buscar_informacion", "obtener_info_negocio", "obtener_faqs",
     "solicitar_datos_contacto", "enviar_cotizacion_email",
+    "agendar_cita", "evaluar_intercambio",
 }
 
 TOOLS_PATTERN = "|".join(map(re.escape, TOOLS_CONOCIDAS))
@@ -281,6 +282,7 @@ def scan_jsonl_files(base_dirs: list[str], force_rescan: bool = False) -> list[d
                     "directory": str(jsonl_file.parent.relative_to(base_path.parent)),
                     "version": meta.get("version", ""),
                     "file_tags": meta.get("file_tags", []),
+                    "modified_at": stat.st_mtime,
                 })
             except OSError:
                 continue
@@ -358,138 +360,224 @@ def read_jsonl_page(filepath: str, offset: int = 0, limit: int = 50) -> dict:
     }
 
 
-# ── Supabase client ──────────────────────────────────────────
+# ── PostgreSQL client ──────────────────────────────────────────
 
-_supabase_client = None
+_pg_pool = None
+
+CREATE_TABLE_SQL = """
+CREATE TABLE IF NOT EXISTS validated_conversations (
+    id SERIAL PRIMARY KEY,
+    source_file TEXT NOT NULL,
+    line_number INTEGER NOT NULL,
+    messages JSONB NOT NULL DEFAULT '[]',
+    metadata JSONB NOT NULL DEFAULT '{}',
+    tags TEXT[] NOT NULL DEFAULT '{}',
+    has_tool_calling BOOLEAN NOT NULL DEFAULT FALSE,
+    tools_used TEXT[] NOT NULL DEFAULT '{}',
+    format_valid BOOLEAN NOT NULL DEFAULT TRUE,
+    format_errors TEXT[] NOT NULL DEFAULT '{}',
+    target_format TEXT NOT NULL DEFAULT 'qwen',
+    quality_rating INTEGER,
+    review_notes TEXT,
+    reviewed_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(source_file, line_number)
+);
+"""
 
 
-def _get_supabase(url: str, key: str):
-    """Inicializa o retorna el cliente Supabase."""
-    global _supabase_client
-    if _supabase_client is None:
-        from supabase import create_client
-        _supabase_client = create_client(url, key)
-    return _supabase_client
+def _get_pg(database_url: str):
+    """Retorna conexion PostgreSQL. Crea tabla si no existe."""
+    global _pg_pool
+    if _pg_pool is None:
+        import psycopg2
+        _pg_pool = psycopg2.connect(database_url)
+        _pg_pool.autocommit = True
+        with _pg_pool.cursor() as cur:
+            cur.execute(CREATE_TABLE_SQL)
+    return _pg_pool
 
 
-def save_conversation(url: str, key: str, data: dict) -> dict:
-    """Upsert conversación en dataset_conversations."""
-    sb = _get_supabase(url, key)
+def _row_to_dict(cur, row) -> dict:
+    """Convierte una fila de cursor a dict."""
+    cols = [desc[0] for desc in cur.description]
+    d = {}
+    for col, val in zip(cols, row):
+        if col in ("created_at", "updated_at", "reviewed_at") and val is not None:
+            d[col] = val.isoformat()
+        else:
+            d[col] = val
+    return d
+
+
+def save_conversation(database_url: str, data: dict) -> dict:
+    """Upsert conversacion en validated_conversations."""
+    conn = _get_pg(database_url)
 
     messages = data.get("messages") or []
     has_tc, tools_used = _has_tool_calling(messages)
     validation = validate_qwen_format(messages)
+    now = datetime.now(timezone.utc)
 
-    record = {
-        "source_file": data["source_file"],
-        "line_number": data["line_number"],
-        "messages": [
-            {"role": m.get("role", ""), "content": m.get("content", "")}
-            for m in messages
-        ],
-        "metadata": data.get("metadata") or {},
-        "tags": data.get("tags") or [],
-        "has_tool_calling": has_tc,
-        "tools_used": tools_used,
-        "format_valid": validation["valid"],
-        "format_errors": validation["errors"],
-        "target_format": data.get("target_format", "qwen"),
-        "quality_rating": data.get("quality_rating"),
-        "review_notes": data.get("review_notes"),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
-    }
+    clean_messages = json.dumps([
+        {"role": m.get("role", ""), "content": m.get("content", "")}
+        for m in messages
+    ], ensure_ascii=False)
+    meta_json = json.dumps(data.get("metadata") or {}, ensure_ascii=False)
+    tags = data.get("tags") or []
+    reviewed_at = now if data.get("quality_rating") is not None else None
 
-    if data.get("quality_rating") is not None:
-        record["reviewed_at"] = datetime.now(timezone.utc).isoformat()
+    with conn.cursor() as cur:
+        cur.execute("""
+            INSERT INTO validated_conversations
+                (source_file, line_number, messages, metadata, tags,
+                 has_tool_calling, tools_used, format_valid, format_errors,
+                 target_format, quality_rating, review_notes, reviewed_at, updated_at)
+            VALUES (%s, %s, %s::jsonb, %s::jsonb, %s,
+                    %s, %s, %s, %s,
+                    %s, %s, %s, %s, %s)
+            ON CONFLICT (source_file, line_number) DO UPDATE SET
+                messages = EXCLUDED.messages,
+                metadata = EXCLUDED.metadata,
+                tags = EXCLUDED.tags,
+                has_tool_calling = EXCLUDED.has_tool_calling,
+                tools_used = EXCLUDED.tools_used,
+                format_valid = EXCLUDED.format_valid,
+                format_errors = EXCLUDED.format_errors,
+                target_format = EXCLUDED.target_format,
+                quality_rating = EXCLUDED.quality_rating,
+                review_notes = EXCLUDED.review_notes,
+                reviewed_at = EXCLUDED.reviewed_at,
+                updated_at = EXCLUDED.updated_at
+            RETURNING *
+        """, (
+            data["source_file"], data["line_number"],
+            clean_messages, meta_json, tags,
+            has_tc, tools_used, validation["valid"], validation["errors"],
+            data.get("target_format", "qwen"),
+            data.get("quality_rating"), data.get("review_notes"),
+            reviewed_at, now,
+        ))
+        row = cur.fetchone()
+        result = _row_to_dict(cur, row) if row else {}
 
-    result = sb.table("dataset_conversations").upsert(
-        record, on_conflict="source_file,line_number"
-    ).execute()
-
-    return {"status": "saved", "data": result.data}
+    return {"status": "saved", "data": [result]}
 
 
 def get_saved_conversations(
-    url: str, key: str,
+    database_url: str,
     source_file: Optional[str] = None,
     rating: Optional[int] = None,
     tag: Optional[str] = None,
 ) -> list[dict]:
     """Obtiene conversaciones guardadas con filtros opcionales."""
-    sb = _get_supabase(url, key)
-    query = sb.table("dataset_conversations").select("*")
+    conn = _get_pg(database_url)
+    conditions = []
+    params = []
 
     if source_file:
-        query = query.eq("source_file", source_file)
+        conditions.append("source_file = %s")
+        params.append(source_file)
     if rating is not None:
-        query = query.eq("quality_rating", rating)
+        conditions.append("quality_rating = %s")
+        params.append(rating)
     if tag:
-        query = query.contains("tags", [tag])
+        conditions.append("%s = ANY(tags)")
+        params.append(tag)
 
-    result = query.order("source_file").order("line_number").execute()
-    return result.data
+    where = (" WHERE " + " AND ".join(conditions)) if conditions else ""
+    query = f"SELECT * FROM validated_conversations{where} ORDER BY source_file, line_number"
 
-
-def update_rating(url: str, key: str, conv_id: str, rating: int, notes: Optional[str] = None) -> dict:
-    """Actualiza rating y notas de una conversación."""
-    sb = _get_supabase(url, key)
-    update = {
-        "quality_rating": rating,
-        "reviewed_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
-    }
-    if notes is not None:
-        update["review_notes"] = notes
-
-    result = sb.table("dataset_conversations").update(update).eq("id", conv_id).execute()
-    return {"status": "updated", "data": result.data}
+    with conn.cursor() as cur:
+        cur.execute(query, params)
+        rows = cur.fetchall()
+        return [_row_to_dict(cur, r) for r in rows]
 
 
-def update_tags(url: str, key: str, conv_id: str, tags: list[str]) -> dict:
-    """Actualiza tags de una conversación."""
-    sb = _get_supabase(url, key)
-    result = sb.table("dataset_conversations").update({
-        "tags": tags,
-        "updated_at": datetime.now(timezone.utc).isoformat(),
-    }).eq("id", conv_id).execute()
-    return {"status": "updated", "data": result.data}
+def update_rating(database_url: str, conv_id: str, rating: int, notes: Optional[str] = None) -> dict:
+    """Actualiza rating y notas de una conversacion."""
+    conn = _get_pg(database_url)
+    now = datetime.now(timezone.utc)
+
+    with conn.cursor() as cur:
+        if notes is not None:
+            cur.execute("""
+                UPDATE validated_conversations
+                SET quality_rating = %s, review_notes = %s, reviewed_at = %s, updated_at = %s
+                WHERE id = %s RETURNING *
+            """, (rating, notes, now, now, conv_id))
+        else:
+            cur.execute("""
+                UPDATE validated_conversations
+                SET quality_rating = %s, reviewed_at = %s, updated_at = %s
+                WHERE id = %s RETURNING *
+            """, (rating, now, now, conv_id))
+        row = cur.fetchone()
+        result = _row_to_dict(cur, row) if row else {}
+
+    return {"status": "updated", "data": [result]}
 
 
-def update_messages(url: str, key: str, conv_id: str, messages: list[dict]) -> dict:
+def update_tags(database_url: str, conv_id: str, tags: list[str]) -> dict:
+    """Actualiza tags de una conversacion."""
+    conn = _get_pg(database_url)
+    now = datetime.now(timezone.utc)
+
+    with conn.cursor() as cur:
+        cur.execute("""
+            UPDATE validated_conversations SET tags = %s, updated_at = %s
+            WHERE id = %s RETURNING *
+        """, (tags, now, conv_id))
+        row = cur.fetchone()
+        result = _row_to_dict(cur, row) if row else {}
+
+    return {"status": "updated", "data": [result]}
+
+
+def update_messages(database_url: str, conv_id: str, messages: list[dict]) -> dict:
     """Guarda mensajes editados."""
-    sb = _get_supabase(url, key)
+    conn = _get_pg(database_url)
     has_tc, tools_used = _has_tool_calling(messages)
     validation = validate_qwen_format(messages)
+    now = datetime.now(timezone.utc)
 
-    result = sb.table("dataset_conversations").update({
-        "messages": messages,
-        "has_tool_calling": has_tc,
-        "tools_used": tools_used,
-        "format_valid": validation["valid"],
-        "format_errors": validation["errors"],
-        "updated_at": datetime.now(timezone.utc).isoformat(),
-    }).eq("id", conv_id).execute()
-    return {"status": "updated", "data": result.data}
+    with conn.cursor() as cur:
+        cur.execute("""
+            UPDATE validated_conversations
+            SET messages = %s::jsonb, has_tool_calling = %s, tools_used = %s,
+                format_valid = %s, format_errors = %s, updated_at = %s
+            WHERE id = %s RETURNING *
+        """, (
+            json.dumps(messages, ensure_ascii=False),
+            has_tc, tools_used,
+            validation["valid"], validation["errors"], now, conv_id,
+        ))
+        row = cur.fetchone()
+        result = _row_to_dict(cur, row) if row else {}
+
+    return {"status": "updated", "data": [result]}
 
 
-def get_review_stats(url: str, key: str) -> dict:
-    """Estadísticas de revisión."""
-    sb = _get_supabase(url, key)
+def get_review_stats(database_url: str) -> dict:
+    """Estadisticas de revision."""
+    conn = _get_pg(database_url)
 
-    all_rows = sb.table("dataset_conversations").select(
-        "quality_rating, tags, reviewed_at"
-    ).execute().data
+    with conn.cursor() as cur:
+        cur.execute("SELECT quality_rating, tags, reviewed_at FROM validated_conversations")
+        rows = cur.fetchall()
 
-    total = len(all_rows)
-    reviewed = sum(1 for r in all_rows if r.get("reviewed_at"))
+    total = len(rows)
+    reviewed = sum(1 for r in rows if r[2] is not None)
     by_rating = {}
     tag_counts = {}
 
-    for r in all_rows:
-        rating = r.get("quality_rating")
+    for r in rows:
+        rating = r[0]
+        tags = r[1] or []
         if rating is not None:
             by_rating[rating] = by_rating.get(rating, 0) + 1
-        for tag in (r.get("tags") or []):
+        for tag in tags:
             tag_counts[tag] = tag_counts.get(tag, 0) + 1
 
     return {

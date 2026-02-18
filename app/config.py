@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     vllm_host: str = Field(default="localhost", description="Host del servidor vLLM")
     vllm_port: int = Field(default=8000, description="Puerto del servidor vLLM")
     vllm_base_url: Optional[str] = Field(default="https://api.trefa.mx", description="URL completa del backend LLM. Default: tunnel Cloudflare a GPU remota. En GPU local, override con TREFA_VLLM_BASE_URL=http://localhost:8001")
-    vllm_api_key: Optional[str] = Field(default=None, description="API key para el backend LLM (Together AI, etc.)")
+    vllm_api_key: Optional[str] = Field(default="EMPTY", description="API key para el backend LLM. 'EMPTY' para vLLM local, clave real para Together AI, etc.")
 
     # FastAPI (público)
     fastapi_port: int = Field(default=8080, description="Puerto de la API FastAPI")
@@ -46,8 +46,7 @@ class Settings(BaseSettings):
         default="/app/datasets",
         description="Directorios a escanear para datasets JSONL (separados por coma)"
     )
-    supabase_url: Optional[str] = Field(default=None, description="URL del proyecto Supabase")
-    supabase_key: Optional[str] = Field(default=None, description="Service role key de Supabase")
+    database_url: Optional[str] = Field(default=None, description="PostgreSQL connection string para persistencia de conversaciones")
 
     # Generación de datasets
     anthropic_api_key: Optional[str] = Field(default=None, description="Anthropic API key para generación sintética")
