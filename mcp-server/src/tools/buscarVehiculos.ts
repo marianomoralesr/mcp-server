@@ -87,7 +87,7 @@ export async function buscarVehiculos(params: z.infer<typeof BuscarVehiculosSche
 
     if (error) throw new Error(error.message);
 
-    const vehiculos = (data || []).map((v: any) => ({
+    const mapVehiculo = (v: any) => ({
       id: v.id,
       titulo: v.titulo || `${v.marca} ${v.modelo} ${v.autoano}`,
       marca: v.marca,
@@ -107,7 +107,9 @@ export async function buscarVehiculos(params: z.infer<typeof BuscarVehiculosSche
       mensualidad_desde: v.mensualidad_minima ? formatPrice(v.mensualidad_minima) : null,
       url: v.liga_web || (v.slug ? `https://autostrefa.mx/autos/${v.slug}` : null),
       liga_mariana: v.liga_bot || null,
-    }));
+    });
+
+    const vehiculos = (data || []).map(mapVehiculo);
 
     // Si hay resultados, devolver normalmente
     if (vehiculos.length > 0) {
@@ -116,6 +118,38 @@ export async function buscarVehiculos(params: z.infer<typeof BuscarVehiculosSche
         total: vehiculos.length,
         ...(correcciones.length > 0 && { correcciones }),
       };
+    }
+
+    // ── Fallback: búsqueda fuzzy con tsvector + trigram ──────────────
+    // Construir texto de búsqueda a partir de los params de texto
+    const textoParts: string[] = [];
+    if (params.marca) textoParts.push(params.marca);
+    if (params.modelo) textoParts.push(params.modelo);
+    if (params.tipo_carroceria) textoParts.push(params.tipo_carroceria);
+    if (params.motor) textoParts.push(params.motor);
+
+    if (textoParts.length > 0) {
+      const { data: fuzzyData, error: fuzzyError } = await supabase
+        .rpc('buscar_vehiculos_fuzzy', {
+          texto_busqueda: textoParts.join(' '),
+          precio_min: params.precio_minimo || null,
+          precio_max: params.precio_maximo || null,
+          anio_min: params.año_minimo || null,
+          anio_max: params.año_maximo || null,
+          km_max: params.kilometraje_max || null,
+          limite: params.limite || 5,
+        });
+
+      if (!fuzzyError && fuzzyData && fuzzyData.length > 0) {
+        const fuzzyVehiculos = fuzzyData.map(mapVehiculo);
+        correcciones.push(`Búsqueda aproximada: "${textoParts.join(' ')}"`);
+        return {
+          vehiculos: fuzzyVehiculos,
+          total: fuzzyVehiculos.length,
+          correcciones,
+          busqueda_aproximada: true,
+        };
+      }
     }
 
     // Sin resultados — construir mensaje amigable según el caso
