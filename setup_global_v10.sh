@@ -290,7 +290,7 @@ pip install flash-attn --no-build-isolation 2>&1 | tail -3 || log "flash-attn no
 pip install datasets transformers sentencepiece protobuf 2>&1 | tail -3
 pip install huggingface_hub safetensors hf_transfer 2>&1 | tail -3
 pip install vllm 2>&1 | tail -3
-pip install litellm 2>&1 | tail -3
+pip install 'litellm[proxy]' 2>&1 | tail -3
 
 # Login HuggingFace
 log "Login a HuggingFace..."
