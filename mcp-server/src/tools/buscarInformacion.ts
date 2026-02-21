@@ -3,13 +3,13 @@ import { getSupabaseClient } from '../lib/supabase.js';
 
 export const BuscarInformacionSchema = z.object({
   pregunta: z.string().describe('Pregunta o tema a buscar'),
-  categoria: z.enum(['faq', 'politicas', 'procesos', 'financiamiento', 'garantias', 'general']).optional()
-    .describe('Categoría: faq, politicas, procesos, financiamiento, garantias, general'),
+  categoria: z.enum(['faq', 'politicas', 'compras', 'financiamiento', 'garantias', 'general']).optional()
+    .describe('Categoría: faq, politicas, compras, financiamiento, garantias, general'),
 });
 
 const CATEGORY_MAP: Record<string, string> = {
   'politicas': 'politica',
-  'procesos': 'proceso',
+  'compras': 'compras',
   'garantias': 'garantia',
   'faq': 'faq',
   'financiamiento': 'financiamiento',

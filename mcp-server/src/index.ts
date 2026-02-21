@@ -149,14 +149,14 @@ Defaults: enganche 20%, plazo 48 meses, tasa 15% anual.`,
     name: 'buscar_informacion',
     description: `Busca en la base de conocimiento de TREFA.
 
-CUÁNDO USAR: Para cualquier pregunta sobre políticas, procesos, garantías, financiamiento, etc.`,
+CUÁNDO USAR: Para cualquier pregunta sobre políticas, compras, garantías, financiamiento, etc.`,
     inputSchema: {
       type: 'object' as const,
       properties: {
         pregunta: { type: 'string', description: 'Pregunta o tema a buscar' },
         categoria: {
           type: 'string',
-          enum: ['faq', 'politicas', 'procesos', 'financiamiento', 'garantias', 'general'],
+          enum: ['faq', 'politicas', 'compras', 'financiamiento', 'garantias', 'general'],
           description: 'Categoría opcional para filtrar',
         },
       },
