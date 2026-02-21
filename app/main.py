@@ -231,16 +231,16 @@ async def lifespan(app: FastAPI):
     # Initialize feedback manager
     feedback_manager = FeedbackManager()
 
-    # Verify vLLM is accessible (skip if disabled)
+    # Verify vLLM is accessible (skip if disabled, timeout corto para no bloquear startup)
     if not VLLM_DISABLED:
         try:
-            response = await http_client.get("/health")
+            response = await http_client.get("/health", timeout=10.0)
             if response.status_code == 200:
                 logger.info("vllm_connected")
             else:
                 logger.warning("vllm_health_non_200")
         except Exception as e:
-            logger.error("vllm_connect_failed", error=str(e))
+            logger.warning("vllm_connect_failed_startup", error=str(e))
     else:
         logger.info("vllm_skipped", mode="no-inference")
 
@@ -249,7 +249,7 @@ async def lifespan(app: FastAPI):
         mcp_health = await mcp_client.health_check()
         logger.info("mcp_connected", status=mcp_health.get("status"))
     except Exception as e:
-        logger.error("mcp_connect_failed", error=str(e))
+        logger.warning("mcp_connect_failed_startup", error=str(e))
 
     # Initialize JobManager for dataset generation
     app.state.job_manager = JobManager(max_concurrent=2)
