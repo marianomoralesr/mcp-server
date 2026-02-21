@@ -189,10 +189,12 @@ if [ -n "$MODEL_PATH" ]; then
     log "Usando modelo pre-existente: $MERGED_DIR"
 fi
 
-# --- Variables de entorno ---
+# --- Variables de entorno (hardcoded defaults para no tener que exportar cada vez) ---
 export HF_TOKEN="${HF_TOKEN:-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}"
 export HF_HUB_ENABLE_HF_TRANSFER=1
 export OPENBLAS_NUM_THREADS=1
+export SUPABASE_URL="${SUPABASE_URL:-https://mhlztgilrmgebkyqowxz.supabase.co}"
+export SUPABASE_SERVICE_ROLE_KEY="${SUPABASE_SERVICE_ROLE_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1obHp0Z2lscm1nZWJreXFvd3h6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjEyMjkyMCwiZXhwIjoyMDgxNjk4OTIwfQ.E4GbZ4KR9NfyPnbNS1Ic6bi3xzW1-9sBNC15BTRpDzg}"
 
 log "╔══════════════════════════════════════════════════════════════╗"
 log "║           TREFA Mariana v10 — Setup Global GPU              ║"
@@ -673,9 +675,16 @@ else:
     done
     [ -z "$EVAL_FILE" ] && log "Sin eval dataset, entrenando solo con train"
 
+    # Siempre refrescar training script desde el repo clonado para evitar versiones viejas cacheadas
+    if [ -d "/app/mcp-server/training" ]; then
+        log "Actualizando training script desde /app/mcp-server/training..."
+        mkdir -p /app/training
+        cp -f /app/mcp-server/training/train_qwen3_vast.py /app/training/train_qwen3_vast.py
+    fi
+
     # Verificar que el script de training existe
     TRAIN_SCRIPT=""
-    for candidate in "/app/training/train_qwen3_vast.py" "/app/inference/training/train_qwen3_vast.py"; do
+    for candidate in "/app/training/train_qwen3_vast.py" "/app/mcp-server/training/train_qwen3_vast.py"; do
         if [ -f "$candidate" ]; then
             TRAIN_SCRIPT="$candidate"
             break
@@ -684,11 +693,10 @@ else:
 
     if [ -z "$TRAIN_SCRIPT" ]; then
         # Clonar repo para obtener el script
-        if [ ! -d "/app/training" ]; then
-            log "Clonando $INFERENCE_BRANCH para training script..."
-            git clone -q -b "$INFERENCE_BRANCH" "$GIT_REPO" /tmp/ir-train && cp -r /tmp/ir-train/* /app/ && rm -rf /tmp/ir-train
-        fi
-        for candidate in "/app/training/train_qwen3_vast.py" "/app/inference/training/train_qwen3_vast.py"; do
+        log "Clonando $INFERENCE_BRANCH para training script..."
+        rm -rf /tmp/ir-train
+        git clone -q -b "$INFERENCE_BRANCH" "$GIT_REPO" /tmp/ir-train && cp -r /tmp/ir-train/* /app/ && rm -rf /tmp/ir-train
+        for candidate in "/app/training/train_qwen3_vast.py" "/app/mcp-server/training/train_qwen3_vast.py"; do
             [ -f "$candidate" ] && TRAIN_SCRIPT="$candidate" && break
         done
     fi
