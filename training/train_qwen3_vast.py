@@ -428,7 +428,7 @@ def train_model(model, tokenizer, train_ds, eval_ds, args):
         output_dir=args.output_dir,
 
         # SFT-specific (moved from SFTTrainer constructor in TRL >= 0.16)
-        max_seq_length=args.max_seq_length,
+        max_length=args.max_seq_length,
         packing=False,
         neftune_noise_alpha=args.neftune,
         dataset_kwargs={"skip_prepare_dataset": True},
