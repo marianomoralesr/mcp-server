@@ -1,13 +1,13 @@
 """
-Wrapper sobre LiteLLM para llamadas LLM con tracing automático.
-Reemplaza las llamadas httpx directas con litellm SDK.
+Wrapper sobre OpenAI SDK para llamadas LLM con tracing automático.
+Usa el SDK openai directamente contra vLLM (OpenAI-compatible).
 """
 
-import os
+import time
 from typing import Any, AsyncGenerator, Dict, List, Optional
 
-import litellm
 import structlog
+from openai import AsyncOpenAI
 
 from app.config import Settings
 
@@ -15,66 +15,11 @@ logger = structlog.get_logger()
 
 
 # ---------------------------------------------------------------------------
-# Callbacks de tracing (structlog)
-# ---------------------------------------------------------------------------
-
-def _log_success(kwargs, response_obj, start_time, end_time):
-    """Callback ejecutado después de cada llamada LLM exitosa."""
-    latency_ms = round((end_time - start_time).total_seconds() * 1000)
-    usage = getattr(response_obj, "usage", None)
-    prompt_tokens = getattr(usage, "prompt_tokens", 0) if usage else 0
-    completion_tokens = getattr(usage, "completion_tokens", 0) if usage else 0
-
-    try:
-        cost = litellm.completion_cost(completion_response=response_obj)
-    except Exception:
-        cost = None
-
-    logger.info(
-        "llm_call_success",
-        model=kwargs.get("model"),
-        latency_ms=latency_ms,
-        tokens_prompt=prompt_tokens,
-        tokens_completion=completion_tokens,
-        cost=cost,
-    )
-
-
-def _log_failure(kwargs, exception, start_time, end_time):
-    """Callback ejecutado cuando una llamada LLM falla."""
-    latency_ms = round((end_time - start_time).total_seconds() * 1000)
-    logger.error(
-        "llm_call_failure",
-        model=kwargs.get("model"),
-        latency_ms=latency_ms,
-        error=str(exception),
-    )
-
-
-# Registrar callbacks globales
-litellm.success_callback = [_log_success]
-litellm.failure_callback = [_log_failure]
-
-# Langfuse opcional: si las env vars están definidas, litellm lo detecta
-if os.environ.get("LANGFUSE_PUBLIC_KEY"):
-    litellm.success_callback.append("langfuse")
-    litellm.failure_callback.append("langfuse")
-    logger.info("langfuse_callback_enabled")
-
-# Opik opcional: si OPIK_API_BASE está definida
-if os.environ.get("OPIK_API_BASE"):
-    from litellm.integrations.opik.opik import OpikLogger
-    opik_logger = OpikLogger()
-    litellm.callbacks.append(opik_logger)
-    logger.info("opik_callback_enabled", base=os.environ["OPIK_API_BASE"])
-
-
-# ---------------------------------------------------------------------------
 # LLMService
 # ---------------------------------------------------------------------------
 
 class LLMService:
-    """Servicio centralizado para llamadas LLM via LiteLLM."""
+    """Servicio centralizado para llamadas LLM via OpenAI SDK."""
 
     # URL del tunnel Cloudflare fijo (fallback cuando no hay vLLM local)
     TUNNEL_URL = "https://api.trefa.mx"
@@ -84,49 +29,27 @@ class LLMService:
 
         # Determinar api_base: explícita > local > tunnel
         raw_base = settings.vllm_base_url or f"http://{settings.vllm_host}:{settings.vllm_port}"
-        # Guardar URL base sin /v1 para health checks, agregar /v1 para LiteLLM
         self.health_url = raw_base.rstrip("/")
         self.api_base = raw_base.rstrip("/")
         if not self.api_base.endswith("/v1"):
             self.api_base += "/v1"
         self.is_tunnel = self.TUNNEL_URL in self.api_base
 
-        # Detectar provider
-        provider = settings.litellm_provider
-        if not provider:
-            if "together" in self.api_base.lower():
-                provider = "together_ai"
-            else:
-                provider = "openai"
+        self.api_key = settings.vllm_api_key or "EMPTY"
 
-        self.provider = provider
-        self.api_key = settings.vllm_api_key
-
-        # LiteLLM: desactivar logs internos excesivos
-        litellm.set_verbose = False
+        # Cliente OpenAI apuntando a vLLM
+        self.client = AsyncOpenAI(
+            base_url=self.api_base,
+            api_key=self.api_key,
+            timeout=300.0,
+        )
 
         logger.info(
             "llm_service_initialized",
-            provider=self.provider,
             api_base=self.api_base,
             is_tunnel=self.is_tunnel,
-            has_api_key=bool(self.api_key),
+            has_api_key=bool(self.api_key and self.api_key != "EMPTY"),
         )
-
-    def _model_name(self, model: str) -> str:
-        """Construye el model string para litellm: 'provider/model'."""
-        return f"{self.provider}/{model}"
-
-    def _common_kwargs(self, model: str, **extra) -> dict:
-        """Kwargs comunes para todas las llamadas litellm."""
-        kwargs = {
-            "model": self._model_name(model),
-            "api_key": self.api_key,
-            "api_base": self.api_base,
-            "timeout": 300.0,
-        }
-        kwargs.update(extra)
-        return kwargs
 
     # ------------------------------------------------------------------
     # Chat completions
@@ -141,16 +64,30 @@ class LLMService:
         **kwargs,
     ) -> dict:
         """Llamada chat completion (no-streaming). Retorna dict OpenAI-format."""
-        params = self._common_kwargs(
-            model,
-            messages=messages,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            stream=False,
-            **kwargs,
-        )
-        response = await litellm.acompletion(**params)
-        return response.model_dump()
+        start = time.monotonic()
+        try:
+            response = await self.client.chat.completions.create(
+                model=model,
+                messages=messages,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                stream=False,
+                **kwargs,
+            )
+            latency_ms = round((time.monotonic() - start) * 1000)
+            usage = response.usage
+            logger.info(
+                "llm_call_success",
+                model=model,
+                latency_ms=latency_ms,
+                tokens_prompt=usage.prompt_tokens if usage else 0,
+                tokens_completion=usage.completion_tokens if usage else 0,
+            )
+            return response.model_dump()
+        except Exception as e:
+            latency_ms = round((time.monotonic() - start) * 1000)
+            logger.error("llm_call_failure", model=model, latency_ms=latency_ms, error=str(e))
+            raise
 
     async def chat_completion_stream(
         self,
@@ -161,16 +98,15 @@ class LLMService:
         **kwargs,
     ) -> AsyncGenerator[str, None]:
         """Llamada chat completion streaming. Genera líneas SSE."""
-        params = self._common_kwargs(
-            model,
+        stream = await self.client.chat.completions.create(
+            model=model,
             messages=messages,
             temperature=temperature,
             max_tokens=max_tokens,
             stream=True,
             **kwargs,
         )
-        response = await litellm.acompletion(**params)
-        async for chunk in response:
+        async for chunk in stream:
             yield f"data: {chunk.model_dump_json()}\n\n"
         yield "data: [DONE]\n\n"
 
@@ -187,16 +123,23 @@ class LLMService:
         **kwargs,
     ) -> dict:
         """Llamada text completion (no-streaming). Retorna dict OpenAI-format."""
-        params = self._common_kwargs(
-            model,
-            prompt=prompt,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            stream=False,
-            **kwargs,
-        )
-        response = await litellm.atext_completion(**params)
-        return response.model_dump()
+        start = time.monotonic()
+        try:
+            response = await self.client.completions.create(
+                model=model,
+                prompt=prompt,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                stream=False,
+                **kwargs,
+            )
+            latency_ms = round((time.monotonic() - start) * 1000)
+            logger.info("llm_call_success", model=model, latency_ms=latency_ms)
+            return response.model_dump()
+        except Exception as e:
+            latency_ms = round((time.monotonic() - start) * 1000)
+            logger.error("llm_call_failure", model=model, latency_ms=latency_ms, error=str(e))
+            raise
 
     async def text_completion_stream(
         self,
@@ -207,15 +150,14 @@ class LLMService:
         **kwargs,
     ) -> AsyncGenerator[str, None]:
         """Llamada text completion streaming. Genera líneas SSE."""
-        params = self._common_kwargs(
-            model,
+        stream = await self.client.completions.create(
+            model=model,
             prompt=prompt,
             temperature=temperature,
             max_tokens=max_tokens,
             stream=True,
             **kwargs,
         )
-        response = await litellm.atext_completion(**params)
-        async for chunk in response:
+        async for chunk in stream:
             yield f"data: {chunk.model_dump_json()}\n\n"
         yield "data: [DONE]\n\n"

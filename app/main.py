@@ -188,7 +188,7 @@ async def lifespan(app: FastAPI):
         http_client = None
         logger.info("vllm_disabled", reason="TREFA_VLLM_DISABLED=true")
 
-    # Initialize LLM service (LiteLLM wrapper con tracing)
+    # Initialize LLM service (OpenAI SDK wrapper con tracing)
     if not VLLM_DISABLED:
         llm_service = LLMService(settings)
     else:
@@ -321,7 +321,7 @@ async def auth_middleware(request: Request, call_next):
     # Rutas publicas exactas
     if path in PUBLIC_PATHS:
         return await call_next(request)
-    # OpenAI-compatible API (con y sin prefijo /v1, para LiteLLM y otros proxies)
+    # OpenAI-compatible API (con y sin prefijo /v1, para proxies externos)
     openai_paths = ("/chat/completions", "/completions", "/models", "/embeddings")
     if path in openai_paths or path.rstrip("/") in openai_paths:
         return await call_next(request)

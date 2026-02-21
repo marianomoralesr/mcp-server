@@ -145,7 +145,7 @@ class ToolOrchestrator:
         temperature: float,
         max_tokens: int,
     ) -> Tuple[str, Dict[str, Any]]:
-        """Llama al LLM via LiteLLM y retorna (texto_respuesta, usage)."""
+        """Llama al LLM via OpenAI SDK y retorna (texto_respuesta, usage)."""
         data = await self.llm.chat_completion(
             messages=messages,
             model=model,

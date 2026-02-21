@@ -4,7 +4,7 @@
 #
 # Descarga adaptadores LoRA entrenados en Together AI desde HF,
 # mergea con modelo base Qwen3-14B, y despliega:
-#   vLLM + MCP Server + FastAPI + LiteLLM + Cloudflare Tunnel
+#   vLLM + MCP Server + FastAPI + Cloudflare Tunnel
 #
 # NO entrena — solo descarga, mergea y sirve.
 #
@@ -17,7 +17,6 @@
 #   vLLM    → 8001
 #   MCP     → 3001
 #   FastAPI → 8081
-#   LiteLLM → 4000
 #
 # Uso:
 #   bash deploy_together_v10.sh
@@ -56,13 +55,11 @@ MY_PPID=$PPID
 VLLM_PID=""
 MCP_PID=""
 FASTAPI_PID=""
-LITELLM_PID=""
 CF_PID=""
 
 cleanup_on_error() {
     log "Limpiando tras error..."
     [ -n "$CF_PID" ]      && kill "$CF_PID"      2>/dev/null || true
-    [ -n "$LITELLM_PID" ] && kill "$LITELLM_PID" 2>/dev/null || true
     [ -n "$FASTAPI_PID" ] && kill "$FASTAPI_PID"  2>/dev/null || true
     [ -n "$MCP_PID" ]     && kill "$MCP_PID"      2>/dev/null || true
     [ -n "$VLLM_PID" ]    && kill "$VLLM_PID"     2>/dev/null || true
@@ -72,7 +69,6 @@ cleanup_on_error() {
 cleanup() {
     log "Deteniendo servicios..."
     [ -n "$CF_PID" ]      && kill "$CF_PID"      2>/dev/null || true
-    [ -n "$LITELLM_PID" ] && kill "$LITELLM_PID" 2>/dev/null || true
     [ -n "$FASTAPI_PID" ] && kill "$FASTAPI_PID"  2>/dev/null || true
     [ -n "$MCP_PID" ]     && kill "$MCP_PID"      2>/dev/null || true
     [ -n "$VLLM_PID" ]    && kill "$VLLM_PID"     2>/dev/null || true
@@ -131,8 +127,6 @@ done
 VLLM_PORT=8001
 MCP_PORT=3001
 FASTAPI_PORT=8081
-LITELLM_PORT=4000
-
 BASE_MODEL="Qwen/Qwen3-14B"
 HF_LORA_REPO="mmoralesf/qwen3-14B-v10-mariana"
 HF_MERGED_REPO="mmoralesf/qwen3-14B-v10-mariana-merged"
@@ -227,8 +221,6 @@ pip install peft accelerate bitsandbytes 2>&1 | tail -3
 pip install datasets transformers sentencepiece protobuf 2>&1 | tail -3
 pip install huggingface_hub safetensors hf_transfer 2>&1 | tail -3
 pip install vllm 2>&1 | tail -3
-pip install 'litellm[proxy]' 2>&1 | tail -3
-
 # Login HuggingFace
 log "Login a HuggingFace..."
 huggingface-cli login --token "$HF_TOKEN" 2>&1 | tail -1 || warn "HF login falló"
@@ -465,7 +457,6 @@ safe_kill "vllm.entrypoints.openai.api_server"
 safe_kill "uvicorn app.main:app"
 safe_kill "npm.*start:http"
 safe_kill "node.*mcp-server.*dist"
-safe_kill "litellm.*--config"
 sleep 2
 
 # Forzar SIGKILL si quedaron
@@ -629,53 +620,6 @@ else
     tail -15 /tmp/fastapi.log 2>/dev/null || true
 fi
 
-# ─── 5d. LiteLLM ────────────────────────────────────────────
-
-log "5d. Iniciando LiteLLM (puerto $LITELLM_PORT)..."
-
-mkdir -p /app/litellm
-cat > /app/litellm/config.yaml << LITELLM_EOF
-model_list:
-  - model_name: qwen3-14b-trefa
-    litellm_params:
-      model: openai/qwen3-14b-trefa
-      api_base: http://localhost:${VLLM_PORT}/v1
-      api_key: EMPTY
-      timeout: 300
-      stream_timeout: 300
-
-  - model_name: trefa-lora
-    litellm_params:
-      model: openai/trefa-lora
-      api_base: http://localhost:${VLLM_PORT}/v1
-      api_key: EMPTY
-      timeout: 300
-      stream_timeout: 300
-
-litellm_settings:
-  drop_params: true
-  set_verbose: false
-  num_retries: 2
-  request_timeout: 300
-
-general_settings:
-  master_key: ${LITELLM_MASTER_KEY:-sk-trefa-litellm-local}
-LITELLM_EOF
-
-tmux kill-session -t litellm 2>/dev/null || true
-tmux new-session -d -s litellm "\
-    litellm --config /app/litellm/config.yaml --port ${LITELLM_PORT} --host 0.0.0.0 \
-    2>&1 | tee /tmp/litellm.log"
-
-sleep 5
-LITELLM_PID=$(pgrep -f "litellm.*--config" 2>/dev/null | head -1 || echo "")
-
-if curl -sf "http://localhost:${LITELLM_PORT}/health" > /dev/null 2>&1; then
-    log "LiteLLM listo (PID: ${LITELLM_PID:-?})"
-else
-    warn "LiteLLM no respondió — puede necesitar tiempo extra"
-fi
-
 log "Fase 5 completada"
 
 # ============================================================
@@ -766,10 +710,6 @@ FASTAPI_STATUS="OFF"
 FASTAPI_PID=$(pgrep -f "uvicorn app.main:app" 2>/dev/null | head -1 || echo "")
 [ -n "$FASTAPI_PID" ] && FASTAPI_STATUS="OK (PID $FASTAPI_PID)"
 
-LITELLM_STATUS="OFF"
-LITELLM_PID=$(pgrep -f "litellm.*--config" 2>/dev/null | head -1 || echo "")
-[ -n "$LITELLM_PID" ] && LITELLM_STATUS="OK (PID $LITELLM_PID)"
-
 CF_STATUS="OFF"
 CF_PID=$(pgrep -f "cloudflared tunnel" 2>/dev/null | head -1 || echo "")
 [ -n "$CF_PID" ] && CF_STATUS="OK (PID $CF_PID)"
@@ -808,14 +748,12 @@ log "║  SERVICIOS                                                   ║"
 log "║    vLLM:         :$VLLM_PORT  → $VLLM_STATUS"
 log "║    MCP Server:   :$MCP_PORT  → $MCP_STATUS"
 log "║    FastAPI:      :$FASTAPI_PORT  → $FASTAPI_STATUS"
-log "║    LiteLLM:      :$LITELLM_PORT  → $LITELLM_STATUS"
 log "║    Tunnel:       $CF_STATUS"
 log "║    SSH:          $SSH_STATUS"
 log "║                                                              ║"
 log "║  ENDPOINTS                                                   ║"
 log "║    vLLM:         http://localhost:${VLLM_PORT}/v1"
 log "║    FastAPI:      http://localhost:${FASTAPI_PORT}"
-log "║    LiteLLM:      http://localhost:${LITELLM_PORT}"
 if [ -n "$CF_URL" ]; then
 log "║    Público:      ${CF_URL}"
 log "║    Health:       ${CF_URL}/health"
@@ -825,7 +763,6 @@ log "║  TMUX SESSIONS                                               ║"
 log "║    tmux attach -t vllm      (logs vLLM)"
 log "║    tmux attach -t mcp       (logs MCP)"
 log "║    tmux attach -t fastapi   (logs FastAPI)"
-log "║    tmux attach -t litellm   (logs LiteLLM)"
 if [ -n "$CF_URL" ]; then
 log "║    tmux attach -t tunnel    (logs Cloudflare)"
 fi
