@@ -167,21 +167,39 @@ class ToolOrchestrator:
                         known_ids.append(vid)
 
         # Fuente 2: <tool_response> en mensajes de turnos anteriores
+        _TR_TAG = "<tool_response>"
+        _TR_END = "</tool_response>"
         for msg in messages:
             content = msg.get("content", "")
-            if "<tool_response>" not in content:
+            if _TR_TAG not in content:
                 continue
-            try:
-                # Extraer JSON de <tool_response>...</tool_response>
-                start = content.index("<tool_response>") + len("<tool_response>")
-                end = content.index("</tool_response>")
-                payload = json.loads(content[start:end].strip())
-                for v in payload.get("vehiculos", []):
-                    vid = v.get("id")
-                    if vid is not None:
-                        known_ids.append(vid)
-            except (ValueError, json.JSONDecodeError, KeyError):
-                continue
+            # Extraer TODOS los bloques <tool_response> del mensaje
+            search_start = 0
+            while True:
+                idx = content.find(_TR_TAG, search_start)
+                if idx == -1:
+                    break
+                end_idx = content.find(_TR_END, idx)
+                if end_idx == -1:
+                    break
+                json_str = content[idx + len(_TR_TAG):end_idx].strip()
+                search_start = end_idx + len(_TR_END)
+                try:
+                    payload = json.loads(json_str)
+                    for v in payload.get("vehiculos", []):
+                        vid = v.get("id")
+                        if vid is not None:
+                            known_ids.append(vid)
+                except (json.JSONDecodeError, AttributeError):
+                    # Fallback: buscar patrón "id": <number> directamente
+                    for m in re.finditer(r'"id"\s*:\s*(\d+)', json_str):
+                        known_ids.append(int(m.group(1)))
+
+        logger.info(
+            "fix_vehicle_id_check",
+            requested=requested_id,
+            known_ids=known_ids,
+        )
 
         if not known_ids:
             return tool_args
@@ -189,8 +207,16 @@ class ToolOrchestrator:
         if requested_id in known_ids:
             return tool_args
 
-        # ID incorrecto — usar el último visto (más probable que sea el elegido)
-        corrected_id = known_ids[-1]
+        # Deduplicar preservando orden
+        seen = set()
+        unique_ids = []
+        for kid in known_ids:
+            if kid not in seen:
+                seen.add(kid)
+                unique_ids.append(kid)
+
+        # ID incorrecto — usar el primero si hay uno solo, último si hay varios
+        corrected_id = unique_ids[0] if len(unique_ids) == 1 else unique_ids[-1]
         logger.warning(
             "vehicle_id_corrected",
             requested=requested_id,
