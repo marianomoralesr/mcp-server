@@ -521,6 +521,16 @@ async def chat(
                 max_tokens=request.max_tokens,
             )
 
+            # Guardar mensajes intermedios de tool calling en la sesión
+            # para que turnos futuros tengan el historial completo
+            for tc in result["tool_calls_executed"]:
+                # Respuesta del asistente con tool_call (resumida)
+                tc_json = json.dumps({"name": tc["name"], "arguments": tc["arguments"]}, ensure_ascii=False)
+                session.add_message("assistant", f"<tool_call>\n{tc_json}\n</tool_call>")
+                # Resultado de la herramienta
+                tr_json = json.dumps(tc.get("result", {}), ensure_ascii=False)
+                session.add_message("user", f"<tool_response>\n{tr_json}\n</tool_response>")
+
             # Save assistant response to session
             session.add_message("assistant", result["response"])
 
