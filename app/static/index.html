@@ -2170,7 +2170,7 @@ body {
             <div id="gpu-result-content"></div>
           </div>
           <div class="gpu-note">
-            Para usar este servidor permanentemente, configura <strong>TREFA_VLLM_BASE_URL</strong> en las variables de entorno del servidor (ej. Railway).
+            Verifica la conexion y presiona <strong>Aplicar</strong> para usar el backend en esta sesion. Para hacerlo permanente, configura <strong>TREFA_VLLM_BASE_URL</strong> en Railway.
           </div>
         </div>
       </div>
@@ -3478,6 +3478,9 @@ async function testGPUConnection() {
           </div>
         </div>
         ${modelsHtml}
+        <button class="btn btn-primary" style="margin-top:10px;width:100%;" onclick="switchGPUBackend('${url.replace(/'/g, "\\'")}')">
+          Aplicar — Usar este backend
+        </button>
       `;
     } else {
       contentDiv.innerHTML = `
@@ -3496,6 +3499,47 @@ async function testGPUConnection() {
     `;
   } finally {
     btn.disabled = false;
+  }
+}
+
+async function switchGPUBackend(url) {
+  const contentDiv = document.getElementById('gpu-result-content');
+  contentDiv.innerHTML = '<span class="gpu-spinner"></span> Aplicando backend...';
+
+  try {
+    const res = await fetch(`${API}/admin/vllm/switch`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': authToken },
+      body: JSON.stringify({ url }),
+    });
+    const d = await res.json();
+
+    if (res.ok) {
+      contentDiv.innerHTML = `
+        <div class="gpu-detail-grid">
+          <span class="gpu-status-badge ok">Backend activo</span>
+        </div>
+        <div style="margin-top:8px;font-size:13px;color:var(--text-secondary);">
+          URL: <code>${d.api_base}</code>
+        </div>
+      `;
+      // Refrescar health para mostrar nueva URL
+      loadHealth();
+    } else {
+      contentDiv.innerHTML = `
+        <div class="gpu-detail-grid">
+          <span class="gpu-status-badge fail">Error</span>
+        </div>
+        <div class="gpu-error-msg">${d.detail || 'Error al cambiar backend'}</div>
+      `;
+    }
+  } catch (e) {
+    contentDiv.innerHTML = `
+      <div class="gpu-detail-grid">
+        <span class="gpu-status-badge fail">Error</span>
+      </div>
+      <div class="gpu-error-msg">${e.message}</div>
+    `;
   }
 }
 

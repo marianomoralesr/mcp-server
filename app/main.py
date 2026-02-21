@@ -708,6 +708,69 @@ async def analytics(
     return stats
 
 
+@app.post("/admin/vllm/switch")
+async def switch_vllm_backend(request: VLLMTestConnectionRequest):
+    """Cambiar el backend LLM en runtime (sin reiniciar el servidor).
+
+    Recrea LLMService, http_client y actualiza la referencia en tool_orchestrator.
+    """
+    global http_client, llm_service, tool_orchestrator
+
+    url = request.url.strip().rstrip("/")
+    if not url.startswith("http://") and not url.startswith("https://"):
+        url = "https://" + url
+
+    # 1. Verificar que el nuevo backend responda antes de switchear
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as tmp:
+            health = await tmp.get(f"{url}/health")
+            if health.status_code != 200:
+                raise HTTPException(
+                    status_code=502,
+                    detail=f"Backend respondió con status {health.status_code}"
+                )
+    except httpx.ConnectError:
+        raise HTTPException(status_code=502, detail="No se pudo conectar al backend")
+    except httpx.ConnectTimeout:
+        raise HTTPException(status_code=504, detail="Timeout conectando al backend")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=str(e))
+
+    # 2. Cerrar clientes anteriores
+    if http_client:
+        await http_client.aclose()
+
+    # 3. Recrear http_client
+    headers = {}
+    if settings.vllm_api_key:
+        headers["Authorization"] = f"Bearer {settings.vllm_api_key}"
+    http_client = httpx.AsyncClient(
+        base_url=url,
+        headers=headers,
+        timeout=300.0,
+        limits=httpx.Limits(max_keepalive_connections=20, max_connections=100),
+    )
+
+    # 4. Recrear LLMService con nueva URL
+    original_url = settings.vllm_base_url
+    settings.vllm_base_url = url
+    llm_service = LLMService(settings)
+
+    # 5. Actualizar referencia en tool_orchestrator
+    if tool_orchestrator:
+        tool_orchestrator.llm = llm_service
+
+    logger.info("vllm_backend_switched", new_url=url, old_url=original_url)
+
+    return {
+        "status": "switched",
+        "url": url,
+        "api_base": llm_service.api_base,
+    }
+
+
 @app.post("/admin/vllm/test-connection")
 async def test_vllm_connection(request: VLLMTestConnectionRequest):
     """Probar conexión a un servidor vLLM remoto sin modificar el estado global"""
