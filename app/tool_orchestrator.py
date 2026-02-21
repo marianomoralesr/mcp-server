@@ -199,6 +199,46 @@ class ToolOrchestrator:
         )
         return {**tool_args, "id": corrected_id}
 
+    @staticmethod
+    def _sanitize_contact_data(
+        tool_args: Dict[str, Any],
+        messages: List[Dict[str, str]],
+    ) -> Dict[str, Any]:
+        """Elimina email y teléfono de solicitar_datos_contacto si el cliente
+        no los escribió explícitamente en la conversación.
+
+        Evita que el modelo invente datos de contacto.
+        """
+        # Concatenar todos los mensajes del usuario (sin tool_responses)
+        user_text = ""
+        for msg in messages:
+            if msg.get("role") != "user":
+                continue
+            content = msg.get("content", "")
+            if content.strip().startswith("<tool_response>"):
+                continue
+            user_text += " " + content
+
+        cleaned = dict(tool_args)
+
+        # Verificar email: debe aparecer textualmente en lo que el usuario escribió
+        email = tool_args.get("email", "")
+        if email and email not in user_text:
+            logger.warning("hallucinated_email_removed", email=email)
+            del cleaned["email"]
+
+        # Verificar teléfono: los dígitos deben aparecer en mensajes del usuario
+        telefono = tool_args.get("telefono", "")
+        if telefono:
+            digits = re.sub(r"\D", "", telefono)
+            # Buscar al menos los últimos 7 dígitos en el texto del usuario
+            user_digits = re.sub(r"\D", "", user_text)
+            if len(digits) >= 7 and digits[-7:] not in user_digits:
+                logger.warning("hallucinated_phone_removed", telefono=telefono)
+                del cleaned["telefono"]
+
+        return cleaned
+
     async def _call_llm(
         self,
         messages: List[Dict[str, str]],
@@ -309,6 +349,10 @@ class ToolOrchestrator:
                 # Guard: corregir ID incorrecto en obtener_vehiculo
                 if tool_name == "obtener_vehiculo" and "id" in tool_args:
                     tool_args = self._fix_vehicle_id(tool_args, tool_calls_executed, working_messages)
+
+                # Guard: eliminar datos de contacto inventados
+                if tool_name == "solicitar_datos_contacto":
+                    tool_args = self._sanitize_contact_data(tool_args, working_messages)
 
                 if tool_name not in self.known_tools:
                     logger.warning("unknown_tool_call", tool=tool_name)
