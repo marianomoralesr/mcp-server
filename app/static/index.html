@@ -1936,6 +1936,92 @@ body {
   transition: all 0.2s;
 }
 .btn-logout:hover { background: rgba(255,255,255,0.25); color: #fff; }
+
+/* ====== PROMPTS TAB ====== */
+.prompts-view { flex-direction: column; }
+.pm-subtabs {
+  display: flex; gap: 0; border-bottom: 1px solid var(--border);
+  padding: 0 16px; background: var(--bg-card);
+}
+.pm-subtab {
+  background: transparent; color: var(--text-light); border: none;
+  padding: 10px 18px; font-size: 13px; font-weight: 500; cursor: pointer;
+  border-bottom: 2px solid transparent; transition: all 0.2s;
+}
+.pm-subtab:hover { color: var(--text-primary); }
+.pm-subtab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.pm-tab-panel { display: none; flex: 1; overflow: hidden; }
+.pm-tab-panel.active { display: flex; }
+
+/* Editor layout */
+.pm-editor-layout { display: flex; flex: 1; overflow: hidden; }
+.pm-list-panel { width: 260px; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+.pm-list-header { padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+.pm-prompt-list { flex: 1; overflow-y: auto; }
+.pm-prompt-item {
+  padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--border-light, rgba(0,0,0,0.06));
+  transition: background 0.15s; font-size: 13px;
+}
+.pm-prompt-item:hover { background: var(--bg-hover, rgba(0,0,0,0.04)); }
+.pm-prompt-item.active { background: rgba(26, 35, 126, 0.08); border-left: 3px solid var(--primary); }
+.pm-prompt-item .pm-item-name { font-weight: 600; }
+.pm-prompt-item .pm-item-meta { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+.pm-badge-active {
+  display: inline-block; background: var(--success); color: #fff; font-size: 10px;
+  padding: 1px 6px; border-radius: 8px; margin-left: 6px; vertical-align: middle;
+}
+
+/* Editor form */
+.pm-edit-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.pm-editor-empty { flex: 1; display: flex; align-items: center; justify-content: center; }
+.pm-editor-form { flex: 1; display: flex; flex-direction: column; padding: 16px; gap: 10px; overflow: hidden; }
+.pm-form-row { display: flex; flex-direction: column; gap: 4px; }
+.pm-form-row label { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+.pm-form-row input { padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+.pm-textarea {
+  flex: 1; min-height: 200px; padding: 10px; border: 1px solid var(--border); border-radius: 6px;
+  font-size: 13px; font-family: 'Fira Code', 'Consolas', monospace; line-height: 1.5; resize: none;
+}
+.pm-form-actions { display: flex; gap: 8px; align-items: center; padding-top: 8px; }
+.pm-btn-save { background: var(--primary) !important; color: #fff !important; }
+.pm-btn-activate { background: var(--success) !important; color: #fff !important; }
+.pm-btn-delete { background: var(--error) !important; color: #fff !important; }
+
+/* Stats */
+.pm-stats-body { flex: 1; overflow-y: auto; padding: 20px; }
+.pm-stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+.pm-stat-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 18px; position: relative;
+}
+.pm-stat-card.is-active { border-color: var(--success); }
+.pm-stat-card h3 { font-size: 15px; margin: 0 0 12px 0; }
+.pm-stat-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
+.pm-stat-row .pm-stat-label { color: var(--text-secondary); }
+.pm-stat-row .pm-stat-value { font-weight: 600; }
+.pm-stat-bar-bg { height: 6px; background: var(--bg-hover, #eee); border-radius: 3px; margin-top: 4px; }
+.pm-stat-bar { height: 6px; border-radius: 3px; background: var(--primary); transition: width 0.3s; }
+
+/* Conversations */
+.pm-conv-layout { display: flex; flex: 1; overflow: hidden; }
+.pm-conv-sidebar { width: 200px; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+.pm-conv-list-panel { width: 300px; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+.pm-conv-list { flex: 1; overflow-y: auto; }
+.pm-conv-item {
+  padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--border-light, rgba(0,0,0,0.06));
+  font-size: 12px; transition: background 0.15s;
+}
+.pm-conv-item:hover { background: var(--bg-hover, rgba(0,0,0,0.04)); }
+.pm-conv-item.active { background: rgba(26, 35, 126, 0.08); }
+.pm-conv-item .pm-conv-session { font-weight: 600; font-size: 12px; word-break: break-all; }
+.pm-conv-item .pm-conv-meta { color: var(--text-secondary); margin-top: 3px; font-size: 11px; }
+.pm-conv-pagination { padding: 8px 14px; display: flex; gap: 8px; align-items: center; border-top: 1px solid var(--border); font-size: 12px; }
+.pm-conv-detail-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.pm-conv-detail { flex: 1; overflow-y: auto; padding: 16px; }
+.pm-msg { margin-bottom: 10px; padding: 10px 14px; border-radius: 10px; font-size: 13px; line-height: 1.5; max-width: 85%; }
+.pm-msg.user { background: var(--primary); color: #fff; margin-left: auto; border-bottom-right-radius: 2px; }
+.pm-msg.assistant { background: var(--bg-card); border: 1px solid var(--border); border-bottom-left-radius: 2px; }
+.pm-msg .pm-msg-role { font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; opacity: 0.7; }
 </style>
 </head>
 <body>
@@ -1960,6 +2046,7 @@ body {
     <button class="tab active" onclick="switchView('chat')">Chat</button>
     <button class="tab" onclick="switchView('dashboard')">Dashboard</button>
     <button class="tab" onclick="switchView('datasets')">Datasets</button>
+    <button class="tab" onclick="switchView('prompts')">Prompts</button>
   </div>
   <button class="btn-logout" onclick="doLogout()">Salir</button>
 </div>
@@ -2638,6 +2725,93 @@ body {
     </div>
   </div>
 
+  <!-- ============================================================ -->
+  <!-- Prompts View                                                  -->
+  <!-- ============================================================ -->
+  <div id="prompts-view" class="view prompts-view" style="flex-direction:column;">
+
+    <!-- Sub-tabs -->
+    <div class="pm-subtabs">
+      <button class="pm-subtab active" onclick="pmSwitchTab('editor')">Editor</button>
+      <button class="pm-subtab" onclick="pmSwitchTab('stats')">Estadísticas</button>
+      <button class="pm-subtab" onclick="pmSwitchTab('conversations')">Conversaciones</button>
+    </div>
+
+    <!-- TAB: Editor -->
+    <div class="pm-tab-panel active" id="pm-panel-editor">
+      <div class="pm-editor-layout">
+        <!-- Lista de prompts -->
+        <div class="pm-list-panel">
+          <div class="pm-list-header">
+            <span style="font-weight:600;">Prompts</span>
+            <button class="btn-wf" onclick="pmNewPrompt()" style="font-size:12px;padding:4px 10px;">+ Nuevo</button>
+          </div>
+          <div id="pm-prompt-list" class="pm-prompt-list"></div>
+        </div>
+        <!-- Editor -->
+        <div class="pm-edit-panel">
+          <div id="pm-editor-empty" class="pm-editor-empty">
+            <p style="color:var(--text-secondary);">Selecciona un prompt o crea uno nuevo</p>
+          </div>
+          <div id="pm-editor-form" class="pm-editor-form" style="display:none;">
+            <div class="pm-form-row">
+              <label>Nombre</label>
+              <input type="text" id="pm-edit-name" placeholder="ej: Mariana Discovery">
+            </div>
+            <div class="pm-form-row">
+              <label>Descripción</label>
+              <input type="text" id="pm-edit-desc" placeholder="Descripción opcional">
+            </div>
+            <div class="pm-form-row" style="flex:1;display:flex;flex-direction:column;">
+              <label>Prompt Text <span id="pm-edit-version" style="font-size:11px;color:var(--text-secondary);"></span></label>
+              <textarea id="pm-edit-text" class="pm-textarea" placeholder="Texto del system prompt (sin el bloque <tools>, se agrega dinámicamente)"></textarea>
+            </div>
+            <div class="pm-form-actions">
+              <button class="btn-wf pm-btn-save" onclick="pmSave()">Guardar</button>
+              <button class="btn-wf pm-btn-activate" onclick="pmActivate()">Activar</button>
+              <button class="btn-wf pm-btn-delete" onclick="pmDelete()">Eliminar</button>
+              <span id="pm-save-status" style="font-size:12px;margin-left:12px;"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Estadísticas -->
+    <div class="pm-tab-panel" id="pm-panel-stats">
+      <div id="pm-stats-body" class="pm-stats-body">
+        <p style="color:var(--text-secondary);padding:24px;">Cargando estadísticas...</p>
+      </div>
+    </div>
+
+    <!-- TAB: Conversaciones -->
+    <div class="pm-tab-panel" id="pm-panel-conversations">
+      <div class="pm-conv-layout">
+        <!-- Selector de prompt -->
+        <div class="pm-conv-sidebar">
+          <div class="pm-list-header"><span style="font-weight:600;">Prompt</span></div>
+          <div id="pm-conv-prompt-list" class="pm-prompt-list"></div>
+        </div>
+        <!-- Lista de conversaciones -->
+        <div class="pm-conv-list-panel">
+          <div class="pm-list-header">
+            <span style="font-weight:600;">Conversaciones</span>
+            <span id="pm-conv-count" style="font-size:12px;color:var(--text-secondary);"></span>
+          </div>
+          <div id="pm-conv-list" class="pm-conv-list"></div>
+          <div id="pm-conv-pagination" class="pm-conv-pagination"></div>
+        </div>
+        <!-- Detalle de conversación -->
+        <div class="pm-conv-detail-panel">
+          <div id="pm-conv-detail" class="pm-conv-detail">
+            <p style="color:var(--text-secondary);padding:16px;">Selecciona una conversación</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
 </div>
 
 <script>
@@ -2752,6 +2926,8 @@ function switchView(view) {
     loadTools();
   } else if (view === 'datasets') {
     dsLoadFiles();
+  } else if (view === 'prompts') {
+    pmLoadPrompts();
   }
 }
 
@@ -4484,6 +4660,287 @@ genUpdateKeyIndicators();
 
 // Focus input on load
 document.getElementById('msg-input').focus();
+
+// ===== PROMPTS TAB =====
+let _pmPrompts = [];
+let _pmSelectedId = null;
+let _pmIsNew = false;
+let _pmConvPromptId = null;
+let _pmConvOffset = 0;
+const _pmConvLimit = 20;
+
+function pmSwitchTab(tab) {
+  document.querySelectorAll('.pm-subtab').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.pm-tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.pm-subtab').forEach(b => {
+    const t = b.textContent.trim().toLowerCase();
+    if ((tab === 'editor' && t === 'editor') ||
+        (tab === 'stats' && t.startsWith('estad')) ||
+        (tab === 'conversations' && t.startsWith('conv'))) {
+      b.classList.add('active');
+    }
+  });
+  document.getElementById('pm-panel-' + tab).classList.add('active');
+  if (tab === 'stats') pmLoadStats();
+  if (tab === 'conversations') pmLoadConvPromptList();
+}
+
+async function pmLoadPrompts() {
+  try {
+    const res = await fetch(`${API}/v1/prompts`);
+    const data = await res.json();
+    _pmPrompts = data.prompts || [];
+    pmRenderList();
+  } catch (e) {
+    document.getElementById('pm-prompt-list').innerHTML =
+      `<p style="color:var(--error);padding:14px;font-size:13px;">Error: ${e.message}</p>`;
+  }
+}
+
+function pmRenderList() {
+  const el = document.getElementById('pm-prompt-list');
+  if (_pmPrompts.length === 0) {
+    el.innerHTML = '<p style="color:var(--text-secondary);padding:14px;font-size:13px;">Sin prompts</p>';
+    return;
+  }
+  el.innerHTML = _pmPrompts.map(p => `
+    <div class="pm-prompt-item ${p.id === _pmSelectedId ? 'active' : ''}" onclick="pmSelectPrompt(${p.id})">
+      <div class="pm-item-name">${_esc(p.name)}${p.is_active ? '<span class="pm-badge-active">activo</span>' : ''}</div>
+      <div class="pm-item-meta">v${p.version} · ${_pmFmtDate(p.updated_at)}</div>
+    </div>
+  `).join('');
+}
+
+function _esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function _pmFmtDate(iso) {
+  if (!iso) return '';
+  try { return new Date(iso).toLocaleString('es-MX', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}); }
+  catch { return iso; }
+}
+
+function pmSelectPrompt(id) {
+  _pmSelectedId = id;
+  _pmIsNew = false;
+  const p = _pmPrompts.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('pm-editor-empty').style.display = 'none';
+  document.getElementById('pm-editor-form').style.display = 'flex';
+  document.getElementById('pm-edit-name').value = p.name;
+  document.getElementById('pm-edit-desc').value = p.description || '';
+  document.getElementById('pm-edit-text').value = p.prompt_text;
+  document.getElementById('pm-edit-version').textContent = `v${p.version}`;
+  document.getElementById('pm-save-status').textContent = '';
+  pmRenderList();
+}
+
+function pmNewPrompt() {
+  _pmSelectedId = null;
+  _pmIsNew = true;
+  document.getElementById('pm-editor-empty').style.display = 'none';
+  document.getElementById('pm-editor-form').style.display = 'flex';
+  document.getElementById('pm-edit-name').value = '';
+  document.getElementById('pm-edit-desc').value = '';
+  document.getElementById('pm-edit-text').value = '';
+  document.getElementById('pm-edit-version').textContent = 'nuevo';
+  document.getElementById('pm-save-status').textContent = '';
+  pmRenderList();
+}
+
+async function pmSave() {
+  const name = document.getElementById('pm-edit-name').value.trim();
+  const desc = document.getElementById('pm-edit-desc').value.trim();
+  const text = document.getElementById('pm-edit-text').value;
+  const status = document.getElementById('pm-save-status');
+  if (!name || !text) { status.textContent = 'Nombre y texto son obligatorios'; status.style.color='var(--error)'; return; }
+
+  try {
+    let res;
+    if (_pmIsNew) {
+      res = await fetch(`${API}/v1/prompts`, {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({name, description: desc, prompt_text: text})
+      });
+    } else {
+      res = await fetch(`${API}/v1/prompts/${_pmSelectedId}`, {
+        method: 'PUT', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({name, description: desc, prompt_text: text})
+      });
+    }
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    status.textContent = 'Guardado'; status.style.color = 'var(--success)';
+    await pmLoadPrompts();
+    if (_pmIsNew && data.prompt) { _pmSelectedId = data.prompt.id; _pmIsNew = false; }
+    pmSelectPrompt(_pmSelectedId);
+  } catch (e) { status.textContent = e.message; status.style.color = 'var(--error)'; }
+}
+
+async function pmActivate() {
+  if (!_pmSelectedId) return;
+  const status = document.getElementById('pm-save-status');
+  try {
+    const res = await fetch(`${API}/v1/prompts/${_pmSelectedId}/activate`, {method:'POST'});
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    status.textContent = 'Activado'; status.style.color = 'var(--success)';
+    await pmLoadPrompts();
+    pmSelectPrompt(_pmSelectedId);
+  } catch (e) { status.textContent = e.message; status.style.color = 'var(--error)'; }
+}
+
+async function pmDelete() {
+  if (!_pmSelectedId) return;
+  if (!confirm('¿Eliminar este prompt?')) return;
+  const status = document.getElementById('pm-save-status');
+  try {
+    const res = await fetch(`${API}/v1/prompts/${_pmSelectedId}`, {method:'DELETE'});
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    _pmSelectedId = null;
+    document.getElementById('pm-editor-empty').style.display = 'flex';
+    document.getElementById('pm-editor-form').style.display = 'none';
+    await pmLoadPrompts();
+  } catch (e) { status.textContent = e.message; status.style.color = 'var(--error)'; }
+}
+
+// Stats
+async function pmLoadStats() {
+  const el = document.getElementById('pm-stats-body');
+  try {
+    const res = await fetch(`${API}/v1/prompts/stats`);
+    const data = await res.json();
+    const stats = data.stats || [];
+    if (stats.length === 0) { el.innerHTML = '<p style="color:var(--text-secondary);padding:24px;">Sin datos de prompts</p>'; return; }
+
+    const maxConv = Math.max(...stats.map(s => s.total_conversations), 1);
+    el.innerHTML = '<div class="pm-stats-grid">' + stats.map(s => `
+      <div class="pm-stat-card ${s.is_active ? 'is-active' : ''}">
+        <h3>${_esc(s.prompt_name)} ${s.is_active ? '<span class="pm-badge-active">activo</span>' : ''}</h3>
+        <div class="pm-stat-row"><span class="pm-stat-label">Conversaciones</span><span class="pm-stat-value">${s.total_conversations}</span></div>
+        <div class="pm-stat-bar-bg"><div class="pm-stat-bar" style="width:${(s.total_conversations/maxConv*100).toFixed(0)}%;"></div></div>
+        <div class="pm-stat-row"><span class="pm-stat-label">Rating promedio</span><span class="pm-stat-value">${s.avg_rating > 0 ? s.avg_rating.toFixed(1) + '/5' : '—'} <small>(${s.rated_count} votos)</small></span></div>
+        <div class="pm-stat-row"><span class="pm-stat-label">Mensajes promedio</span><span class="pm-stat-value">${s.avg_messages.toFixed(1)}</span></div>
+        <div class="pm-stat-row"><span class="pm-stat-label">Tool calls promedio</span><span class="pm-stat-value">${s.avg_tool_calls.toFixed(1)}</span></div>
+        <div class="pm-stat-row"><span class="pm-stat-label">Tasa tool calling</span><span class="pm-stat-value">${s.tool_calling_rate}%</span></div>
+        <div class="pm-stat-row"><span class="pm-stat-label">Duración promedio</span><span class="pm-stat-value">${s.avg_duration > 0 ? Math.round(s.avg_duration) + 's' : '—'}</span></div>
+        <div class="pm-stat-row"><span class="pm-stat-label">Alucinaciones</span><span class="pm-stat-value">${s.hallucination_rate}%</span></div>
+      </div>
+    `).join('') + '</div>';
+  } catch (e) { el.innerHTML = `<p style="color:var(--error);padding:24px;">Error: ${e.message}</p>`; }
+}
+
+// Conversations
+async function pmLoadConvPromptList() {
+  try {
+    const res = await fetch(`${API}/v1/prompts`);
+    const data = await res.json();
+    const prompts = data.prompts || [];
+    const el = document.getElementById('pm-conv-prompt-list');
+    el.innerHTML = prompts.map(p => `
+      <div class="pm-prompt-item ${p.id === _pmConvPromptId ? 'active' : ''}" onclick="pmSelectConvPrompt(${p.id})">
+        <div class="pm-item-name">${_esc(p.name)}${p.is_active ? '<span class="pm-badge-active">activo</span>' : ''}</div>
+      </div>
+    `).join('');
+    if (!_pmConvPromptId && prompts.length > 0) {
+      pmSelectConvPrompt(prompts[0].id);
+    }
+  } catch (e) {
+    document.getElementById('pm-conv-prompt-list').innerHTML =
+      `<p style="color:var(--error);padding:14px;font-size:13px;">Error: ${e.message}</p>`;
+  }
+}
+
+function pmSelectConvPrompt(id) {
+  _pmConvPromptId = id;
+  _pmConvOffset = 0;
+  pmLoadConversations();
+  // Re-render sidebar highlight
+  document.querySelectorAll('#pm-conv-prompt-list .pm-prompt-item').forEach(el => {
+    el.classList.toggle('active', el.onclick.toString().includes(id));
+  });
+  pmLoadConvPromptList();
+}
+
+async function pmLoadConversations() {
+  if (!_pmConvPromptId) return;
+  const listEl = document.getElementById('pm-conv-list');
+  const countEl = document.getElementById('pm-conv-count');
+  const pagEl = document.getElementById('pm-conv-pagination');
+  try {
+    const res = await fetch(`${API}/v1/prompts/${_pmConvPromptId}/conversations?offset=${_pmConvOffset}&limit=${_pmConvLimit}`);
+    const data = await res.json();
+    const convs = data.conversations || [];
+    const total = data.total || 0;
+    countEl.textContent = `${total} total`;
+
+    if (convs.length === 0) {
+      listEl.innerHTML = '<p style="color:var(--text-secondary);padding:14px;font-size:12px;">Sin conversaciones</p>';
+      pagEl.innerHTML = '';
+      return;
+    }
+
+    listEl.innerHTML = convs.map(c => `
+      <div class="pm-conv-item" onclick="pmShowConversation(${JSON.stringify(c).replace(/"/g,'&quot;')})">
+        <div class="pm-conv-session">${_esc((c.session_id||'').slice(0,12))}...</div>
+        <div class="pm-conv-meta">
+          ${c.message_count || 0} msgs · ${c.tool_call_count || 0} tools
+          ${c.rating ? ' · ⭐' + c.rating : ''}
+          ${c.has_hallucination ? ' · ⚠️' : ''}
+        </div>
+        <div class="pm-conv-meta">${_pmFmtDate(c.started_at)}</div>
+      </div>
+    `).join('');
+
+    // Pagination
+    const pages = Math.ceil(total / _pmConvLimit);
+    const currentPage = Math.floor(_pmConvOffset / _pmConvLimit);
+    let pagHtml = '';
+    if (currentPage > 0) pagHtml += `<button class="btn-wf" style="font-size:11px;padding:3px 8px;" onclick="_pmConvOffset=${(currentPage-1)*_pmConvLimit};pmLoadConversations()">← Ant</button>`;
+    pagHtml += `<span>${currentPage+1}/${pages}</span>`;
+    if (currentPage < pages - 1) pagHtml += `<button class="btn-wf" style="font-size:11px;padding:3px 8px;" onclick="_pmConvOffset=${(currentPage+1)*_pmConvLimit};pmLoadConversations()">Sig →</button>`;
+    pagEl.innerHTML = pagHtml;
+  } catch (e) { listEl.innerHTML = `<p style="color:var(--error);padding:14px;font-size:12px;">Error: ${e.message}</p>`; }
+}
+
+function pmShowConversation(conv) {
+  const el = document.getElementById('pm-conv-detail');
+  const messages = conv.messages || [];
+
+  // Highlight selected item
+  document.querySelectorAll('#pm-conv-list .pm-conv-item').forEach(item => item.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+
+  let html = `<div style="margin-bottom:12px;font-size:12px;color:var(--text-secondary);">
+    Session: ${_esc(conv.session_id || '')} · ${conv.message_count || 0} msgs · ${conv.tool_call_count || 0} tool calls
+    ${conv.rating ? ' · Rating: ' + conv.rating + '/5' : ''}
+    ${conv.rating_comment ? ' · "' + _esc(conv.rating_comment) + '"' : ''}
+    ${conv.duration_seconds ? ' · ' + conv.duration_seconds + 's' : ''}
+  </div>`;
+
+  messages.forEach(m => {
+    const role = m.role || 'unknown';
+    if (role === 'system') return;
+    const cls = role === 'user' ? 'user' : 'assistant';
+    html += `<div class="pm-msg ${cls}">
+      <div class="pm-msg-role">${role}</div>
+      ${_esc(m.content || '').replace(/\n/g, '<br>')}
+    </div>`;
+  });
+
+  // Tool calls
+  const tcs = conv.tool_calls || [];
+  if (tcs.length > 0) {
+    html += '<div style="margin-top:16px;font-size:12px;"><strong>Tool Calls:</strong></div>';
+    tcs.forEach(tc => {
+      html += `<div style="font-size:11px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px;margin-top:6px;">
+        <strong>${_esc(tc.name||'')}</strong> (${tc.duration_ms||0}ms)<br>
+        <span style="color:var(--text-secondary);">${_esc(JSON.stringify(tc.arguments||{}))}</span>
+      </div>`;
+    });
+  }
+
+  el.innerHTML = html;
+}
 </script>
 </body>
 </html>

@@ -151,6 +151,16 @@ def build_system_prompt(tools_definitions: List[Dict[str, Any]]) -> str:
         tools_definitions: Lista de definiciones de tools del MCP Server
                           (formato {name, description, inputSchema}).
     """
+    return build_system_prompt_from_text(MARIANA_SYSTEM_PROMPT, tools_definitions)
+
+
+def build_system_prompt_from_text(prompt_text: str, tools_definitions: List[Dict[str, Any]]) -> str:
+    """Construye system prompt a partir de texto arbitrario + bloque <tools>.
+
+    Args:
+        prompt_text: Texto base del prompt (sin bloque tools).
+        tools_definitions: Lista de definiciones de tools del MCP Server.
+    """
     schemas = [_mcp_to_openai_schema(t) for t in tools_definitions]
     tools_json = "\n".join(json.dumps(s, ensure_ascii=False) for s in schemas)
-    return MARIANA_SYSTEM_PROMPT + TOOLS_DECLARATION_TEMPLATE.format(tools_json=tools_json)
+    return prompt_text + TOOLS_DECLARATION_TEMPLATE.format(tools_json=tools_json)

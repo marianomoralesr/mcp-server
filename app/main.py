@@ -34,9 +34,10 @@ from app.mcp_client import MCPClient
 from app.llm_service import LLMService
 from app.tool_orchestrator import ToolOrchestrator
 from app.session_manager import InMemorySessionManager
-from app.system_prompts import build_system_prompt
+from app.system_prompts import build_system_prompt, build_system_prompt_from_text, MARIANA_SYSTEM_PROMPT
 from app.feedback import FeedbackManager
 from app import dataset_manager
+from app import prompt_manager
 from app.generation_routes import router as generation_router
 from app.job_manager import JobManager
 
@@ -255,6 +256,17 @@ async def lifespan(app: FastAPI):
     app.state.settings = settings
     logger.info("job_manager_initialized")
 
+    # Seed master_prompts y cargar prompt activo de DB
+    if settings.database_url:
+        try:
+            prompt_manager.seed_default_prompt(settings.database_url, MARIANA_SYSTEM_PROMPT)
+            active = prompt_manager.get_active_prompt(settings.database_url)
+            if active:
+                system_prompt = build_system_prompt_from_text(active["prompt_text"], tools_definitions)
+                logger.info("active_prompt_loaded", name=active["name"], version=active["version"])
+        except Exception as e:
+            logger.error("prompt_manager_init_failed", error=str(e))
+
     yield
 
     # Shutdown
@@ -471,18 +483,34 @@ async def chat(
 
     with REQUEST_LATENCY.labels(endpoint="chat").time():
         try:
+            # Resolver system prompt activo (DB > fallback hardcodeado)
+            active_system_prompt = system_prompt
+            active_prompt_id = None
+            if settings.database_url:
+                try:
+                    active = prompt_manager.get_active_prompt(settings.database_url)
+                    if active:
+                        active_system_prompt = build_system_prompt_from_text(
+                            active["prompt_text"], tools_definitions
+                        )
+                        active_prompt_id = active["id"]
+                except Exception:
+                    pass  # fallback al system_prompt global
+
             # Get or create session
             session = None
             if request.session_id:
                 session = session_manager.get_session(request.session_id)
             if session is None:
-                session = session_manager.create_session()
+                session = session_manager.create_session(
+                    metadata={"master_prompt_id": active_prompt_id}
+                )
 
             # Add user message to session
             session.add_message("user", request.message)
 
             # Build messages with system prompt + session history
-            messages = session.get_messages(system_prompt)
+            messages = session.get_messages(active_system_prompt)
 
             # Execute with tool orchestration
             result = await tool_orchestrator.execute_with_tools(
@@ -517,6 +545,26 @@ async def chat(
                 feedback_manager.log_conversation(session, result["tool_calls_executed"])
 
             REQUEST_COUNT.labels(endpoint="chat", status="success").inc()
+
+            # Persistir conversación en DB
+            if settings.database_url:
+                try:
+                    prompt_id = session.metadata.get("master_prompt_id") or active_prompt_id
+                    is_suspect = False
+                    if feedback_manager:
+                        is_suspect = feedback_manager.detect_potential_hallucination(
+                            result["response"], result["tool_calls_executed"]
+                        )
+                    prompt_manager.save_or_update_conversation(
+                        database_url=settings.database_url,
+                        session_id=session.id,
+                        master_prompt_id=prompt_id,
+                        messages=session.messages,
+                        tool_calls=result["tool_calls_executed"],
+                        has_hallucination=is_suspect,
+                    )
+                except Exception as exc:
+                    logger.warning("conversation_persist_failed", error=str(exc))
 
             return {
                 "session_id": session.id,
@@ -626,6 +674,15 @@ async def submit_feedback(
             rating=request.rating,
             comment=request.comment,
         )
+
+    # Persistir rating en chat_conversations
+    if settings.database_url:
+        try:
+            prompt_manager.update_conversation_rating(
+                settings.database_url, request.session_id, request.rating, request.comment
+            )
+        except Exception as exc:
+            logger.warning("conversation_rating_persist_failed", error=str(exc))
 
     return {
         "status": "received",
@@ -926,6 +983,132 @@ async def switch_quantization(
         "model_file": model_file,
         "required_action": "container_restart"
     }
+
+
+# ============================================================================
+# Prompt Management endpoints (Prompts tab)
+# ============================================================================
+
+
+class PromptCreateRequest(BaseModel):
+    name: str = Field(..., description="Nombre único del prompt")
+    prompt_text: str = Field(..., description="Texto del prompt")
+    description: str = Field(default="", description="Descripción opcional")
+
+
+class PromptUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    prompt_text: Optional[str] = None
+    description: Optional[str] = None
+
+
+@app.get("/v1/prompts")
+async def list_prompts_endpoint():
+    """Lista todos los master prompts"""
+    if not settings.database_url:
+        raise HTTPException(status_code=503, detail="PostgreSQL no configurado (TREFA_DATABASE_URL)")
+    return {"prompts": prompt_manager.list_prompts(settings.database_url)}
+
+
+@app.post("/v1/prompts")
+async def create_prompt_endpoint(request: PromptCreateRequest):
+    """Crea un nuevo master prompt"""
+    if not settings.database_url:
+        raise HTTPException(status_code=503, detail="PostgreSQL no configurado (TREFA_DATABASE_URL)")
+    try:
+        result = prompt_manager.create_prompt(
+            settings.database_url, request.name, request.prompt_text, request.description
+        )
+        return {"status": "created", "prompt": result}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/v1/prompts/active")
+async def get_active_prompt_endpoint():
+    """Retorna el prompt activo actual"""
+    if not settings.database_url:
+        return {"prompt": None, "fallback": True}
+    active = prompt_manager.get_active_prompt(settings.database_url)
+    return {"prompt": active, "fallback": active is None}
+
+
+@app.get("/v1/prompts/stats")
+async def get_all_prompts_stats():
+    """Estadísticas de todos los prompts"""
+    if not settings.database_url:
+        raise HTTPException(status_code=503, detail="PostgreSQL no configurado (TREFA_DATABASE_URL)")
+    return {"stats": prompt_manager.get_all_prompt_stats(settings.database_url)}
+
+
+@app.get("/v1/prompts/{prompt_id}")
+async def get_prompt_endpoint(prompt_id: int):
+    """Obtiene un prompt por ID"""
+    if not settings.database_url:
+        raise HTTPException(status_code=503, detail="PostgreSQL no configurado (TREFA_DATABASE_URL)")
+    result = prompt_manager.get_prompt(settings.database_url, prompt_id)
+    if not result:
+        raise HTTPException(status_code=404, detail="Prompt no encontrado")
+    return {"prompt": result}
+
+
+@app.put("/v1/prompts/{prompt_id}")
+async def update_prompt_endpoint(prompt_id: int, request: PromptUpdateRequest):
+    """Actualiza un prompt existente"""
+    if not settings.database_url:
+        raise HTTPException(status_code=503, detail="PostgreSQL no configurado (TREFA_DATABASE_URL)")
+    data = {k: v for k, v in request.model_dump().items() if v is not None}
+    if not data:
+        raise HTTPException(status_code=400, detail="No hay campos para actualizar")
+    result = prompt_manager.update_prompt(settings.database_url, prompt_id, data)
+    if not result:
+        raise HTTPException(status_code=404, detail="Prompt no encontrado")
+    return {"status": "updated", "prompt": result}
+
+
+@app.delete("/v1/prompts/{prompt_id}")
+async def delete_prompt_endpoint(prompt_id: int):
+    """Elimina un prompt (no se puede eliminar el activo)"""
+    if not settings.database_url:
+        raise HTTPException(status_code=503, detail="PostgreSQL no configurado (TREFA_DATABASE_URL)")
+    try:
+        deleted = prompt_manager.delete_prompt(settings.database_url, prompt_id)
+        if not deleted:
+            raise HTTPException(status_code=404, detail="Prompt no encontrado")
+        return {"status": "deleted"}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post("/v1/prompts/{prompt_id}/activate")
+async def activate_prompt_endpoint(prompt_id: int):
+    """Activa un prompt y desactiva todos los demás"""
+    global system_prompt
+    if not settings.database_url:
+        raise HTTPException(status_code=503, detail="PostgreSQL no configurado (TREFA_DATABASE_URL)")
+    result = prompt_manager.activate_prompt(settings.database_url, prompt_id)
+    if not result:
+        raise HTTPException(status_code=404, detail="Prompt no encontrado")
+    # Actualizar system_prompt global
+    system_prompt = build_system_prompt_from_text(result["prompt_text"], tools_definitions)
+    logger.info("prompt_activated", name=result["name"], version=result["version"])
+    return {"status": "activated", "prompt": result}
+
+
+@app.get("/v1/prompts/{prompt_id}/stats")
+async def get_prompt_stats_endpoint(prompt_id: int):
+    """Estadísticas de un prompt específico"""
+    if not settings.database_url:
+        raise HTTPException(status_code=503, detail="PostgreSQL no configurado (TREFA_DATABASE_URL)")
+    return {"stats": prompt_manager.get_prompt_stats(settings.database_url, prompt_id)}
+
+
+@app.get("/v1/prompts/{prompt_id}/conversations")
+async def get_prompt_conversations_endpoint(prompt_id: int, offset: int = 0, limit: int = 20):
+    """Conversaciones paginadas de un prompt"""
+    if not settings.database_url:
+        raise HTTPException(status_code=503, detail="PostgreSQL no configurado (TREFA_DATABASE_URL)")
+    return prompt_manager.get_conversations_by_prompt(settings.database_url, prompt_id, offset, limit)
 
 
 # ============================================================================
