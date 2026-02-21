@@ -1,24 +1,23 @@
 #!/usr/bin/env python3
 """
 ===============================================================
- Fine-tuning Qwen3-14B con Unsloth — vast.ai (48GB VRAM)
+ Fine-tuning Qwen3-14B con LoRA bf16 — vast.ai (48GB VRAM)
 ===============================================================
 
- Script standalone que auto-instala dependencias, descarga el
- modelo, entrena con QLoRA, exporta y testea.
+ Script standalone: PEFT + transformers (sin Unsloth).
+ Carga modelo en bf16, aplica LoRA, entrena con SFTTrainer.
 
- Modelo base:  Qwen3-14B (4-bit QLoRA)
+ Modelo base:  Qwen/Qwen3-14B (bf16 LoRA, ~28GB weights)
  Dataset:      JSONL con campo "messages" (ChatML + tool_call)
  Modo:         Non-thinking (sin bloques <think>)
- GPU:          48GB VRAM (RTX A6000 / A40 / etc.)
+ GPU:          48GB VRAM (RTX 6000 Ada / A6000 / etc.)
 
  Uso:
    python3 train_qwen3_vast.py --help
    python3 train_qwen3_vast.py --dry-run
    python3 train_qwen3_vast.py --train-file datos.jsonl
-   python3 train_qwen3_vast.py --epochs 5 --lr 1e-4 --lora-r 64
+   python3 train_qwen3_vast.py --epochs 2 --lr 2e-4 --lora-r 32
    python3 train_qwen3_vast.py --resume-from ./qwen3-lora/checkpoint-200
-   python3 train_qwen3_vast.py --export-only
 
 ===============================================================
 """
@@ -31,13 +30,14 @@ def install_dependencies():
     import sys
 
     packages = [
-        ("unsloth", "unsloth"),
         ("torch", "torch"),
         ("transformers", "transformers"),
+        ("peft", "peft"),
         ("trl", "trl"),
         ("datasets", "datasets"),
-        ("tensorboard", "tensorboard"),
         ("accelerate", "accelerate"),
+        ("tensorboard", "tensorboard"),
+        ("bitsandbytes", "bitsandbytes"),
     ]
 
     missing = []
@@ -51,18 +51,10 @@ def install_dependencies():
         return
 
     print(f"Instalando dependencias faltantes: {', '.join(missing)}")
-    try:
-        subprocess.check_call(
-            [sys.executable, "-m", "pip", "install", "--upgrade"] + missing,
-            stdout=subprocess.DEVNULL,
-        )
-    except subprocess.CalledProcessError:
-        print("Fallo pip install estandar, intentando unsloth desde GitHub...")
-        subprocess.check_call(
-            [sys.executable, "-m", "pip", "install",
-             "unsloth[cu124-torch250] @ git+https://github.com/unslothai/unsloth.git"],
-            stdout=subprocess.DEVNULL,
-        )
+    subprocess.check_call(
+        [sys.executable, "-m", "pip", "install", "--upgrade"] + missing,
+        stdout=subprocess.DEVNULL,
+    )
 
 install_dependencies()
 
@@ -78,11 +70,17 @@ import time
 from pathlib import Path
 
 import torch
-from transformers import TrainerCallback
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    TrainerCallback,
+    TrainingArguments,
+)
+from peft import LoraConfig, get_peft_model, TaskType
 
 # ─── Configuracion por defecto ─────────────────────────────────
 
-MODEL_NAME      = "unsloth/Qwen3-14B"
+MODEL_NAME      = "Qwen/Qwen3-14B"
 MAX_SEQ_LENGTH  = 4096
 
 TRAIN_FILE      = "train.jsonl"
@@ -96,31 +94,30 @@ TARGET_MODULES  = [
     "gate_proj", "up_proj", "down_proj",
 ]
 
-EPOCHS          = 3
-BATCH_SIZE      = 4
-GRAD_ACCUM      = 4          # effective batch = 4 * 4 = 16
+EPOCHS          = 2
+BATCH_SIZE      = 1           # bf16 14B needs ~28GB, keep batch small
+GRAD_ACCUM      = 16          # effective batch = 1 * 16 = 16
 LEARNING_RATE   = 2e-4
 LR_SCHEDULER    = "cosine"
-WARMUP_RATIO    = 0.05       # 5%
+WARMUP_RATIO    = 0.05        # 5%
 WEIGHT_DECAY    = 0.01
 MAX_GRAD_NORM   = 1.0
 NEFTUNE_NOISE   = 5
 
 OUTPUT_DIR      = "./qwen3-lora"
 MERGED_DIR      = "./qwen3-merged"
-GGUF_QUANTS     = ["q5_k_m", "q4_k_m"]
 
 
 # ─── Argumentos CLI ────────────────────────────────────────────
 
 def parse_args():
     p = argparse.ArgumentParser(
-        description="Fine-tuning Qwen3-14B — vast.ai (48GB)",
+        description="Fine-tuning Qwen3-14B con LoRA bf16 — vast.ai (48GB)",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
     g = p.add_argument_group("Modelo")
-    g.add_argument("--model", default=MODEL_NAME, help="Modelo base de Unsloth/HF")
+    g.add_argument("--model", default=MODEL_NAME, help="Modelo base HuggingFace")
     g.add_argument("--max-seq-length", type=int, default=MAX_SEQ_LENGTH)
 
     g = p.add_argument_group("Dataset")
@@ -141,8 +138,8 @@ def parse_args():
 
     g = p.add_argument_group("Output")
     g.add_argument("--output-dir", default=OUTPUT_DIR, help="Directorio para LoRA adapters")
-    g.add_argument("--merged-dir", default=MERGED_DIR, help="Directorio para modelo merged 16-bit")
-    g.add_argument("--no-gguf", action="store_true", help="No exportar GGUFs")
+    g.add_argument("--merged-dir", default=MERGED_DIR, help="Directorio para modelo merged")
+    g.add_argument("--no-gguf", action="store_true", help="No exportar GGUFs (ignorado, GGUF no soportado sin Unsloth)")
 
     g = p.add_argument_group("Modos especiales")
     g.add_argument("--resume-from", default=None, help="Reanudar desde checkpoint")
@@ -164,8 +161,15 @@ def check_cuda():
 
     gpu_name = torch.cuda.get_device_name(0)
     vram_total = torch.cuda.get_device_properties(0).total_memory / 1e9
+    vram_free = torch.cuda.mem_get_info()[0] / 1e9
     print(f"GPU detectada: {gpu_name}")
     print(f"VRAM total:    {vram_total:.1f} GB")
+    print(f"VRAM libre:    {vram_free:.1f} GB")
+
+    if vram_free < 35:
+        print(f"ADVERTENCIA: LoRA bf16 necesita ~36-40GB VRAM libre. Actual: {vram_free:.1f}GB")
+        print(f"  Verifica que no haya procesos usando la GPU (nvidia-smi)")
+
     return vram_total
 
 
@@ -176,21 +180,17 @@ def check_disk_space(path: str, required_gb: float = 50.0):
     print(f"Disco libre:   {free_gb:.1f} GB (necesario: ~{required_gb:.0f} GB)")
     if free_gb < required_gb:
         print(f"ADVERTENCIA: Espacio insuficiente. Libre: {free_gb:.1f} GB, recomendado: {required_gb:.0f} GB")
-        print("  La exportacion GGUF puede fallar. Considera --no-gguf")
     return free_gb
 
 
 def auto_adjust_batch_size(vram_gb: float, batch_size: int) -> int:
     """Reduce batch size automaticamente si la VRAM es menor a la esperada."""
     if vram_gb >= 44:
-        return batch_size  # 48GB: sin cambios
-    if vram_gb >= 22:
         adjusted = min(batch_size, 2)
-        if adjusted != batch_size:
-            print(f"  Auto-ajuste: batch_size {batch_size} -> {adjusted} (VRAM: {vram_gb:.0f} GB)")
-        return adjusted
-    # <22GB: minimo
-    adjusted = 1
+    elif vram_gb >= 35:
+        adjusted = 1
+    else:
+        adjusted = 1
     if adjusted != batch_size:
         print(f"  Auto-ajuste: batch_size {batch_size} -> {adjusted} (VRAM: {vram_gb:.0f} GB)")
     return adjusted
@@ -305,7 +305,6 @@ def create_formatting_function(tokenizer):
     def formatting_func(examples):
         texts = []
         for messages in examples["messages"]:
-            # Qwen3 soporta role "tool" nativamente en su template
             text = tokenizer.apply_chat_template(
                 messages,
                 tokenize=False,
@@ -320,38 +319,54 @@ def create_formatting_function(tokenizer):
 # ─── Modelo y LoRA ──────────────────────────────────────────────
 
 def load_model(args):
-    """Carga modelo base con Unsloth y aplica LoRA."""
-    from unsloth import FastLanguageModel
+    """Carga modelo base en bf16 y aplica LoRA con PEFT."""
 
     print(f"\nCargando modelo: {args.model}")
     print(f"  Max seq length: {args.max_seq_length}")
-    print(f"  4-bit QLoRA")
+    print(f"  Precision: bf16 (LoRA, sin cuantizacion)")
 
-    model, tokenizer = FastLanguageModel.from_pretrained(
-        model_name=args.model,
-        max_seq_length=args.max_seq_length,
-        load_in_4bit=True,
-        load_in_8bit=False,
-        full_finetuning=False,
+    # Cargar tokenizer
+    tokenizer = AutoTokenizer.from_pretrained(
+        args.model,
+        trust_remote_code=True,
+        use_fast=True,
+    )
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+
+    # Cargar modelo en bf16 directo a GPU
+    model = AutoModelForCausalLM.from_pretrained(
+        args.model,
+        torch_dtype=torch.bfloat16,
+        device_map="auto",
+        trust_remote_code=True,
+        attn_implementation="flash_attention_2",
     )
 
+    # Habilitar gradient checkpointing para ahorrar VRAM
+    model.gradient_checkpointing_enable()
+    model.enable_input_require_grads()
+
+    # Configurar LoRA
     print(f"\nAplicando LoRA (r={args.lora_r}, alpha={args.lora_alpha})")
-    model = FastLanguageModel.get_peft_model(
-        model,
+    lora_config = LoraConfig(
         r=args.lora_r,
-        target_modules=TARGET_MODULES,
         lora_alpha=args.lora_alpha,
         lora_dropout=LORA_DROPOUT,
+        target_modules=TARGET_MODULES,
         bias="none",
-        use_gradient_checkpointing="unsloth",
-        random_state=3407,
-        use_rslora=False,
-        loftq_config=None,
+        task_type=TaskType.CAUSAL_LM,
     )
+
+    model = get_peft_model(model, lora_config)
 
     trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
     total = sum(p.numel() for p in model.parameters())
     print(f"  Parametros entrenables: {trainable:,} / {total:,} ({100*trainable/total:.2f}%)")
+
+    if torch.cuda.is_available():
+        mem = torch.cuda.memory_allocated() / 1e9
+        print(f"  VRAM despues de cargar: {mem:.1f} GB")
 
     return model, tokenizer
 
@@ -387,7 +402,6 @@ class NaNDetectionCallback(TrainerCallback):
 def train_model(model, tokenizer, train_ds, eval_ds, args):
     """Configura y ejecuta el entrenamiento con SFTTrainer."""
     from trl import SFTTrainer
-    from transformers import TrainingArguments
 
     formatting_func = create_formatting_function(tokenizer)
 
@@ -401,13 +415,14 @@ def train_model(model, tokenizer, train_ds, eval_ds, args):
     print(f"  Gradient accum:      {args.grad_accum}")
     print(f"  Effective batch:     {args.batch_size * args.grad_accum}")
     print(f"  Learning rate:       {args.lr}")
-    print(f"  LR scheduler:       {LR_SCHEDULER}")
-    print(f"  Warmup:             {WARMUP_RATIO*100:.0f}%")
+    print(f"  LR scheduler:        {LR_SCHEDULER}")
+    print(f"  Warmup:              {WARMUP_RATIO*100:.0f}%")
     print(f"  NEFTune noise:       {args.neftune}")
     print(f"  Steps estimados:     ~{estimated_steps}")
     print(f"  Save cada:           {save_steps} steps")
     print(f"  Log cada:            {logging_steps} steps")
     print(f"  Evaluacion:          {'Si' if eval_ds else 'No'}")
+    print(f"  Gradient checkpoint: Si (ahorro VRAM)")
 
     training_args = TrainingArguments(
         output_dir=args.output_dir,
@@ -426,11 +441,15 @@ def train_model(model, tokenizer, train_ds, eval_ds, args):
         warmup_ratio=WARMUP_RATIO,
         weight_decay=WEIGHT_DECAY,
         max_grad_norm=MAX_GRAD_NORM,
-        optim="adamw_8bit",
+        optim="adamw_torch",
 
         # Precision
         fp16=False,
         bf16=True,
+
+        # Gradient checkpointing
+        gradient_checkpointing=True,
+        gradient_checkpointing_kwargs={"use_reentrant": False},
 
         # Evaluacion
         eval_strategy="steps" if eval_ds else "no",
@@ -450,6 +469,8 @@ def train_model(model, tokenizer, train_ds, eval_ds, args):
 
         # Misc
         seed=3407,
+        dataloader_pin_memory=True,
+        dataloader_num_workers=2,
     )
 
     trainer = SFTTrainer(
@@ -494,42 +515,42 @@ def train_model(model, tokenizer, train_ds, eval_ds, args):
     return model, tokenizer, elapsed
 
 
-# ─── Exportar modelo ────────────────────────────────────────────
+# ─── Exportar modelo (merge) ────────────────────────────────────
 
 def export_model(model, tokenizer, args):
-    """Exporta modelo merged 16-bit y GGUFs."""
+    """Merge LoRA con base y guarda modelo completo."""
+    from peft import PeftModel
 
-    # Verificar espacio antes de exportar
-    check_disk_space(".", required_gb=30.0)
+    print(f"\nExportando modelo merged bf16 a {args.merged_dir}")
 
-    # 1. Modelo merged 16-bit
-    print(f"\nExportando modelo merged 16-bit a {args.merged_dir}")
-    model.save_pretrained_merged(
-        args.merged_dir,
-        tokenizer,
-        save_method="merged_16bit",
-    )
-
-    # 2. GGUFs
-    if not args.no_gguf:
-        for quant in GGUF_QUANTS:
-            print(f"\nExportando GGUF {quant}...")
-            model.save_pretrained_gguf(
-                f"qwen3-14b-{quant}",
-                tokenizer,
-                quantization_method=quant,
-            )
+    # Si el modelo ya es PeftModel, merge
+    if hasattr(model, 'merge_and_unload'):
+        merged = model.merge_and_unload()
     else:
-        print("\n  Exportacion GGUF omitida (--no-gguf)")
+        merged = model
+
+    os.makedirs(args.merged_dir, exist_ok=True)
+    merged.save_pretrained(args.merged_dir, safe_serialization=True)
+    tokenizer.save_pretrained(args.merged_dir)
+
+    # Verificar
+    config_path = os.path.join(args.merged_dir, "config.json")
+    if os.path.exists(config_path):
+        size = sum(
+            os.path.getsize(os.path.join(args.merged_dir, f))
+            for f in os.listdir(args.merged_dir)
+            if os.path.isfile(os.path.join(args.merged_dir, f))
+        )
+        print(f"  Merge OK: {args.merged_dir} ({size/1e9:.1f} GB)")
+    else:
+        print(f"  ERROR: config.json no encontrado en {args.merged_dir}")
 
 
 # ─── Test de inferencia ─────────────────────────────────────────
 
 def test_inference(model, tokenizer):
     """Prueba rapida de inferencia post-entrenamiento."""
-    from unsloth import FastLanguageModel
-
-    FastLanguageModel.for_inference(model)
+    model.eval()
 
     test_messages = [
         {"role": "system", "content": "Eres un asistente util."},
@@ -549,17 +570,18 @@ def test_inference(model, tokenizer):
     print(f"  User: {test_messages[-1]['content']}")
     print(f"  Modelo: ", end="", flush=True)
 
-    from transformers import TextStreamer
-    streamer = TextStreamer(tokenizer, skip_prompt=True, skip_special_tokens=True)
+    with torch.no_grad():
+        outputs = model.generate(
+            **inputs,
+            max_new_tokens=256,
+            temperature=0.7,
+            top_p=0.8,
+            top_k=20,
+            do_sample=True,
+        )
 
-    _ = model.generate(
-        **inputs,
-        max_new_tokens=512,
-        temperature=0.7,
-        top_p=0.8,
-        top_k=20,
-        streamer=streamer,
-    )
+    response = tokenizer.decode(outputs[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True)
+    print(response[:500])
     print()
 
 
@@ -570,7 +592,7 @@ def main():
     total_start = time.time()
 
     print("=" * 60)
-    print("  Fine-tuning Qwen3-14B — vast.ai (48GB)")
+    print("  Fine-tuning Qwen3-14B — LoRA bf16 — vast.ai (48GB)")
     print("=" * 60)
 
     # ── Verificar entorno ──
@@ -609,12 +631,15 @@ def main():
     # ── Export-only ──
     if args.export_only:
         print(f"\nModo export-only: cargando modelo desde {args.output_dir}...")
-        from unsloth import FastLanguageModel
-        model, tokenizer = FastLanguageModel.from_pretrained(
-            model_name=args.output_dir,
-            max_seq_length=args.max_seq_length,
-            load_in_4bit=True,
+        tokenizer = AutoTokenizer.from_pretrained(args.output_dir, trust_remote_code=True)
+        model = AutoModelForCausalLM.from_pretrained(
+            args.model,
+            torch_dtype=torch.bfloat16,
+            device_map="auto",
+            trust_remote_code=True,
         )
+        from peft import PeftModel
+        model = PeftModel.from_pretrained(model, args.output_dir)
         export_model(model, tokenizer, args)
         print("\nExportacion completada.")
         return
@@ -631,7 +656,7 @@ def main():
     # ── Test de inferencia ──
     test_inference(model, tokenizer)
 
-    # ── Exportar ──
+    # ── Exportar (merge) ──
     export_model(model, tokenizer, args)
 
     # ── Resumen final ──
@@ -646,9 +671,6 @@ def main():
     print(f"\n  Archivos generados:")
     print(f"    LoRA adapters:     {args.output_dir}/")
     print(f"    Modelo merged:     {args.merged_dir}/")
-    if not args.no_gguf:
-        for q in GGUF_QUANTS:
-            print(f"    GGUF {q}:       qwen3-14b-{q}/")
     print(f"    TensorBoard logs:  {args.output_dir}/logs/")
     print(f"\n  Para ver metricas:")
     print(f"    tensorboard --logdir {args.output_dir}/logs")

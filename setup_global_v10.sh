@@ -7,7 +7,7 @@
 #   Fase 1: Dependencias del sistema
 #   Fase 2: Dependencias Python para fine-tuning
 #   Fase 3: Descargar modelo base y dataset
-#   Fase 4: Fine-tuning con Unsloth (LoRA)
+#   Fase 4: Fine-tuning con LoRA bf16 (LoRA)
 #   Fase 5: Merge de adaptadores
 #   Fase 6: Upload a HuggingFace
 #   Fase 7: Node.js y repositorio MCP
@@ -162,7 +162,7 @@ MCP_PORT=3001
 FASTAPI_PORT=8081
 LITELLM_PORT=4000
 
-BASE_MODEL="unsloth/Qwen3-14B-bnb-4bit"
+BASE_MODEL="Qwen/Qwen3-14B"
 HF_LORA_REPO="mmoralesf/qwen3-14B-v10-mariana-unsloth"
 HF_MERGED_REPO="mmoralesf/qwen3-14B-v10-mariana-unsloth-merged"
 SERVED_MODEL="trefa-unsloth"
@@ -276,9 +276,9 @@ if [ "$TORCH_CUDA" != "True" ]; then
     pip install torch torchvision torchaudio 2>&1 | tail -3
 fi
 
-log "Instalando Unsloth + dependencias de training..."
-pip install "unsloth[cu124-torch250] @ git+https://github.com/unslothai/unsloth.git" 2>&1 | tail -3
-pip install xformers trl peft accelerate bitsandbytes 2>&1 | tail -3
+log "Instalando PEFT + dependencias de training (LoRA bf16, sin Unsloth)..."
+pip install trl peft accelerate bitsandbytes 2>&1 | tail -3
+pip install flash-attn --no-build-isolation 2>&1 | tail -3 || log "flash-attn no disponible, usando atencion estandar"
 pip install datasets transformers sentencepiece protobuf 2>&1 | tail -3
 pip install huggingface_hub safetensors hf_transfer 2>&1 | tail -3
 pip install vllm 2>&1 | tail -3
@@ -606,7 +606,7 @@ fi
 log "Fase 3 completada"
 
 # ============================================================
-# FASE 4: Fine-tuning con Unsloth
+# FASE 4: Fine-tuning con LoRA bf16
 # ============================================================
 
 log "=== FASE 4: Fine-tuning ==="
@@ -885,7 +885,7 @@ api.upload_folder(
     folder_path=out_dir,
     repo_id=repo,
     repo_type="model",
-    commit_message="v10: Qwen3-14B + LoRA mariana v10 (Unsloth) — modelo mergeado para vLLM",
+    commit_message="v10: Qwen3-14B + LoRA mariana v10 (bf16) — modelo mergeado para vLLM",
 )
 
 print(f"[upload] Listo! https://huggingface.co/{repo}")
