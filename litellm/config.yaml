@@ -1,10 +1,4 @@
-# ============================================================
-# LiteLLM Proxy — Configuracion para TREFA
-# Proxy gateway que enruta requests a vLLM backend (api.trefa.mx)
-# ============================================================
-
 model_list:
-  # Modelo principal TREFA (Qwen3-14B fine-tuned)
   - model_name: qwen3-14b-trefa
     litellm_params:
       model: openai/qwen3-14b-trefa
@@ -13,7 +7,6 @@ model_list:
       timeout: 300
       stream_timeout: 300
 
-  # Alias con LoRA
   - model_name: trefa-lora
     litellm_params:
       model: openai/trefa-lora
@@ -27,20 +20,8 @@ litellm_settings:
   set_verbose: false
   num_retries: 2
   request_timeout: 300
-  cache: true
-  cache_params:
-    type: redis
-    host: os.environ/REDIS_HOST
-    port: os.environ/REDIS_PORT
-    password: os.environ/REDIS_PASSWORD
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
   database_url: os.environ/DATABASE_URL
   store_model_in_db: true
-  proxy_budget_rescheduler_min_time: 60
-  proxy_budget_rescheduler_max_time: 64
-  proxy_batch_write_at: 10
-  disable_spend_logs: false
-  allow_user_auth: true
-  health_check_interval: 0

@@ -163,7 +163,7 @@ def check_cuda():
         sys.exit(1)
 
     gpu_name = torch.cuda.get_device_name(0)
-    vram_total = torch.cuda.get_device_properties(0).total_mem / 1e9
+    vram_total = torch.cuda.get_device_properties(0).total_memory / 1e9
     print(f"GPU detectada: {gpu_name}")
     print(f"VRAM total:    {vram_total:.1f} GB")
     return vram_total
@@ -468,7 +468,7 @@ def train_model(model, tokenizer, train_ds, eval_ds, args):
     # VRAM antes de iniciar
     if torch.cuda.is_available():
         mem = torch.cuda.memory_allocated() / 1e9
-        mem_total = torch.cuda.get_device_properties(0).total_mem / 1e9
+        mem_total = torch.cuda.get_device_properties(0).total_memory / 1e9
         print(f"\n  VRAM antes de train: {mem:.1f} / {mem_total:.1f} GB")
 
     print(f"\nIniciando entrenamiento...")
