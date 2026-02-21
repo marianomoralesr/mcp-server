@@ -216,7 +216,7 @@ class ToolOrchestrator:
             }
         """
         tool_calls_executed = []
-        total_usage = {}
+        total_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
         working_messages = list(messages)
 
         # --- Guard: fase de descubrimiento ---
@@ -254,14 +254,20 @@ class ToolOrchestrator:
                 "response": clean_response(content),
                 "tool_calls_executed": [],
                 "iterations": 1,
-                "usage": usage,
+                "usage": {
+                    "prompt_tokens": usage.get("prompt_tokens", 0),
+                    "completion_tokens": usage.get("completion_tokens", 0),
+                    "total_tokens": usage.get("total_tokens", 0),
+                },
             }
 
         for iteration in range(1, self.max_iterations + 1):
             content, usage = await self._call_llm(
                 working_messages, model, temperature, max_tokens
             )
-            total_usage = usage
+            total_usage["prompt_tokens"] += usage.get("prompt_tokens", 0)
+            total_usage["completion_tokens"] += usage.get("completion_tokens", 0)
+            total_usage["total_tokens"] += usage.get("total_tokens", 0)
 
             tool_calls = extract_tool_calls(content)
 
@@ -321,7 +327,9 @@ class ToolOrchestrator:
         content, usage = await self._call_llm(
             working_messages, model, temperature, max_tokens
         )
-        total_usage = usage
+        total_usage["prompt_tokens"] += usage.get("prompt_tokens", 0)
+        total_usage["completion_tokens"] += usage.get("completion_tokens", 0)
+        total_usage["total_tokens"] += usage.get("total_tokens", 0)
 
         return {
             "response": clean_response(content),

@@ -36,6 +36,14 @@ class FeedbackManager:
         self._chats_with_tools: int = 0
         self._total_latency_ms: float = 0
         self._latency_count: int = 0
+        # Token usage & cost tracking
+        self._server_start_time: float = time.time()
+        self._total_prompt_tokens: int = 0
+        self._total_completion_tokens: int = 0
+        self._total_conversations_tracked: int = 0
+        self._total_tool_calls_for_cost: int = 0
+        self._per_conversation_costs: List[Dict[str, Any]] = []
+        self.GPU_COST_PER_HOUR: float = 1.00
 
     def log_conversation(self, session, tool_calls: List[Dict[str, Any]]):
         """Registra conversación para revisión."""
@@ -57,6 +65,35 @@ class FeedbackManager:
         # Keep last 1000 logs
         if len(self._conversation_logs) > 1000:
             self._conversation_logs = self._conversation_logs[-1000:]
+
+    def log_token_usage(
+        self, prompt_tokens: int, completion_tokens: int, tool_calls_count: int
+    ):
+        """Registra uso de tokens y calcula costo estimado OpenAI por conversación."""
+        self._total_prompt_tokens += prompt_tokens
+        self._total_completion_tokens += completion_tokens
+        self._total_conversations_tracked += 1
+        self._total_tool_calls_for_cost += tool_calls_count
+
+        # Costo estimado si esta conversación se hubiera hecho con OpenAI GPT-4o
+        # ~17,000 tokens de system prompt + ~14,000 por tool call + tokens de mensaje
+        openai_input_tokens = 17_000 + (14_000 * tool_calls_count) + prompt_tokens
+        openai_output_tokens = completion_tokens
+        openai_cost = (
+            openai_input_tokens * 2.50 / 1_000_000
+            + openai_output_tokens * 10.00 / 1_000_000
+        )
+
+        entry = {
+            "prompt_tokens": prompt_tokens,
+            "completion_tokens": completion_tokens,
+            "tool_calls_count": tool_calls_count,
+            "openai_cost_usd": round(openai_cost, 6),
+            "timestamp": time.time(),
+        }
+        self._per_conversation_costs.append(entry)
+        if len(self._per_conversation_costs) > 1000:
+            self._per_conversation_costs = self._per_conversation_costs[-1000:]
 
     def detect_potential_hallucination(
         self, response: str, tool_calls: List[Dict[str, Any]]
@@ -111,6 +148,36 @@ class FeedbackManager:
             self._tool_usage.items(), key=lambda x: x[1], reverse=True
         )
 
+        # Cost calculations
+        total_tokens = self._total_prompt_tokens + self._total_completion_tokens
+        avg_tokens_per_conv = (
+            total_tokens / self._total_conversations_tracked
+            if self._total_conversations_tracked > 0
+            else 0.0
+        )
+
+        # Total OpenAI cost estimate (sum of per-conversation costs)
+        estimated_openai_cost = sum(
+            c["openai_cost_usd"] for c in self._per_conversation_costs
+        )
+
+        # Self-hosted cost based on uptime
+        uptime_hours = (time.time() - self._server_start_time) / 3600.0
+        self_hosted_cost = uptime_hours * self.GPU_COST_PER_HOUR
+
+        net_savings = estimated_openai_cost - self_hosted_cost
+
+        avg_openai_per_chat = (
+            estimated_openai_cost / self._total_conversations_tracked
+            if self._total_conversations_tracked > 0
+            else 0.0
+        )
+        avg_self_hosted_per_chat = (
+            self_hosted_cost / self._total_conversations_tracked
+            if self._total_conversations_tracked > 0
+            else 0.0
+        )
+
         return {
             "total_chats": self._total_chats,
             "chats_with_tools": self._chats_with_tools,
@@ -120,4 +187,18 @@ class FeedbackManager:
             "average_rating": round(avg_rating, 2),
             "hallucination_flags": len(self._hallucination_flags),
             "avg_tool_latency_ms": round(avg_latency_ms, 1),
+            "cost": {
+                "total_prompt_tokens": self._total_prompt_tokens,
+                "total_completion_tokens": self._total_completion_tokens,
+                "total_tokens": total_tokens,
+                "total_conversations_tracked": self._total_conversations_tracked,
+                "avg_tokens_per_conversation": round(avg_tokens_per_conv, 1),
+                "estimated_openai_cost_usd": round(estimated_openai_cost, 4),
+                "self_hosted_cost_usd": round(self_hosted_cost, 4),
+                "net_savings_usd": round(net_savings, 4),
+                "uptime_hours": round(uptime_hours, 2),
+                "gpu_cost_per_hour": self.GPU_COST_PER_HOUR,
+                "avg_openai_cost_per_chat": round(avg_openai_per_chat, 6),
+                "avg_self_hosted_cost_per_chat": round(avg_self_hosted_per_chat, 6),
+            },
         }

@@ -27,10 +27,13 @@ class Settings(BaseSettings):
 
     # Modelo
     default_model: str = Field(default="qwen3-14b-trefa", description="Modelo por defecto")
-    default_lora: str = Field(default="trefa-lora", description="LoRA adapter por defecto")
+    default_lora: str = Field(default="trefa-v11", description="Nombre del modelo servido en vLLM")
 
     # Orquestación
     max_tool_iterations: int = Field(default=5, description="Máximo de ciclos tool calling")
+
+    # Costos
+    gpu_cost_per_hour: float = Field(default=1.00, description="Costo por hora de la GPU en USD")
 
     # Logging
     log_level: str = Field(default="INFO", description="Nivel de logging")

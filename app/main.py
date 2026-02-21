@@ -230,6 +230,7 @@ async def lifespan(app: FastAPI):
 
     # Initialize feedback manager
     feedback_manager = FeedbackManager()
+    feedback_manager.GPU_COST_PER_HOUR = settings.gpu_cost_per_hour
 
     # Verify vLLM is accessible (skip if disabled, timeout corto para no bloquear startup)
     if not VLLM_DISABLED:
@@ -543,6 +544,12 @@ async def chat(
             # Log conversation for review
             if feedback_manager:
                 feedback_manager.log_conversation(session, result["tool_calls_executed"])
+                usage = result.get("usage", {})
+                feedback_manager.log_token_usage(
+                    prompt_tokens=usage.get("prompt_tokens", 0),
+                    completion_tokens=usage.get("completion_tokens", 0),
+                    tool_calls_count=len(result.get("tool_calls_executed", [])),
+                )
 
             REQUEST_COUNT.labels(endpoint="chat", status="success").inc()
 
@@ -566,6 +573,13 @@ async def chat(
                 except Exception as exc:
                     logger.warning("conversation_persist_failed", error=str(exc))
 
+            # Calcular costo estimado OpenAI para esta conversación
+            resp_usage = result.get("usage", {})
+            tool_count = len(result.get("tool_calls_executed", []))
+            openai_input = 17_000 + (14_000 * tool_count) + resp_usage.get("prompt_tokens", 0)
+            openai_output = resp_usage.get("completion_tokens", 0)
+            openai_cost = openai_input * 2.50 / 1_000_000 + openai_output * 10.00 / 1_000_000
+
             return {
                 "session_id": session.id,
                 "response": result["response"],
@@ -579,7 +593,11 @@ async def chat(
                     for tc in result["tool_calls_executed"]
                 ],
                 "iterations": result["iterations"],
-                "usage": result.get("usage", {}),
+                "usage": resp_usage,
+                "cost_estimate": {
+                    "estimated_openai_cost_usd": round(openai_cost, 6),
+                    "tool_calls_count": tool_count,
+                },
             }
 
         except Exception as e:

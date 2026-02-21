@@ -889,6 +889,64 @@ body {
 
 .stat-item { text-align: center; }
 
+/* Cost card styles */
+.cost-card { grid-column: 1 / -1; }
+.cost-hero {
+  text-align: center;
+  padding: 16px 0 12px;
+  border-bottom: 1px solid var(--border);
+}
+.cost-hero .hero-value {
+  font-size: 36px;
+  font-weight: 800;
+  color: #16a34a;
+}
+.cost-hero .hero-value.negative { color: var(--error); }
+.cost-hero .hero-label {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+.cost-breakdown {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+}
+.cost-breakdown .cost-col {
+  text-align: center;
+  padding: 14px 8px;
+}
+.cost-breakdown .cost-col:first-child {
+  border-right: 1px solid var(--border);
+}
+.cost-col .cost-val {
+  font-size: 22px;
+  font-weight: 700;
+}
+.cost-col .cost-val.openai { color: #dc2626; }
+.cost-col .cost-val.gpu { color: #2563eb; }
+.cost-col .cost-lbl {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+.cost-tokens {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  padding: 12px 0;
+}
+.cost-tokens .cost-col {
+  text-align: center;
+  padding: 6px 4px;
+}
+.cost-tokens .cost-col .cost-val {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+}
+
 .tool-list { list-style: none; }
 
 .tool-item {
@@ -2197,6 +2255,17 @@ body {
         </div>
       </div>
 
+      <!-- Cost savings card -->
+      <div class="card cost-card">
+        <div class="card-header">
+          &#128176; Ahorro vs OpenAI
+          <button class="refresh-btn" onclick="loadAnalytics()">&#8635;</button>
+        </div>
+        <div class="card-body" id="cost-stats">
+          <p style="color:var(--text-light); font-size:13px;">Cargando...</p>
+        </div>
+      </div>
+
       <!-- Top tools chart -->
       <div class="card" style="grid-column: 1 / -1;">
         <div class="card-header">
@@ -3249,11 +3318,16 @@ function updateRequestPanel(request, response, latencyMs) {
     if (resEl) resEl.textContent = JSON.stringify(response, null, 2).slice(0, 3000);
     if (metricsEl) {
       const usage = response.usage || {};
+      const costEst = response.cost_estimate || {};
+      const costStr = costEst.estimated_openai_cost_usd != null
+        ? `$${costEst.estimated_openai_cost_usd.toFixed(4)}`
+        : '--';
       metricsEl.innerHTML = `
         <span class="metric"><span class="metric-label">Latencia</span><span class="metric-value">${latencyMs || '--'}ms</span></span>
         <span class="metric"><span class="metric-label">Iteraciones</span><span class="metric-value">${response.iterations || '--'}</span></span>
         <span class="metric"><span class="metric-label">Tools</span><span class="metric-value">${(response.tool_calls_executed || []).length}</span></span>
         <span class="metric"><span class="metric-label">Tokens</span><span class="metric-value">${usage.total_tokens || '--'}</span></span>
+        <span class="metric"><span class="metric-label">Costo OpenAI</span><span class="metric-value" style="color:#dc2626;">${costStr}</span></span>
       `;
     }
   } else {
@@ -3393,6 +3467,57 @@ async function loadAnalytics() {
           <span class="bar-value">${t.calls}</span>
         </div>
       `).join('') + '</div>';
+    }
+
+    // Cost savings card
+    const costEl = document.getElementById('cost-stats');
+    const c = d.cost || {};
+    if (!c.total_conversations_tracked) {
+      costEl.innerHTML = '<p style="color:var(--text-light);font-size:13px;">Sin datos aun. Envia mensajes al chat para calcular ahorro.</p>';
+    } else {
+      const savings = c.net_savings_usd || 0;
+      const heroClass = savings >= 0 ? '' : ' negative';
+      const sign = savings >= 0 ? '+' : '';
+      costEl.innerHTML = `
+        <div class="cost-hero">
+          <div class="hero-value${heroClass}">${sign}$${Math.abs(savings).toFixed(2)} USD</div>
+          <div class="hero-label">Ahorro neto vs OpenAI</div>
+        </div>
+        <div class="cost-breakdown">
+          <div class="cost-col">
+            <div class="cost-val openai">$${(c.estimated_openai_cost_usd || 0).toFixed(2)}</div>
+            <div class="cost-lbl">Costo OpenAI</div>
+          </div>
+          <div class="cost-col">
+            <div class="cost-val gpu">$${(c.self_hosted_cost_usd || 0).toFixed(2)}</div>
+            <div class="cost-lbl">Costo GPU (${(c.uptime_hours || 0).toFixed(1)}h)</div>
+          </div>
+        </div>
+        <div class="cost-breakdown">
+          <div class="cost-col">
+            <div class="cost-val openai" style="font-size:18px;">$${(c.avg_openai_cost_per_chat || 0).toFixed(4)}</div>
+            <div class="cost-lbl">OpenAI / chat</div>
+          </div>
+          <div class="cost-col">
+            <div class="cost-val gpu" style="font-size:18px;">$${(c.avg_self_hosted_cost_per_chat || 0).toFixed(4)}</div>
+            <div class="cost-lbl">Self-hosted / chat</div>
+          </div>
+        </div>
+        <div class="cost-tokens">
+          <div class="cost-col">
+            <div class="cost-val">${(c.total_tokens || 0).toLocaleString()}</div>
+            <div class="cost-lbl">Tokens</div>
+          </div>
+          <div class="cost-col">
+            <div class="cost-val">${(c.avg_tokens_per_conversation || 0).toLocaleString()}</div>
+            <div class="cost-lbl">Tok / chat</div>
+          </div>
+          <div class="cost-col">
+            <div class="cost-val">${c.total_conversations_tracked}</div>
+            <div class="cost-lbl">Conversaciones</div>
+          </div>
+        </div>
+      `;
     }
   } catch (e) {
     el.innerHTML = `<p style="color:var(--error);font-size:13px;">Error: ${e.message}</p>`;
