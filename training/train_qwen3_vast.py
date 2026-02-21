@@ -403,7 +403,13 @@ def train_model(model, tokenizer, train_ds, eval_ds, args):
     """Configura y ejecuta el entrenamiento con SFTTrainer."""
     from trl import SFTTrainer
 
+    # Pre-procesar datasets: aplicar chat template para crear columna "text"
     formatting_func = create_formatting_function(tokenizer)
+    print(f"\n  Aplicando chat template al dataset de entrenamiento...")
+    train_ds = train_ds.map(formatting_func, batched=True, remove_columns=train_ds.column_names)
+    if eval_ds:
+        print(f"  Aplicando chat template al dataset de evaluacion...")
+        eval_ds = eval_ds.map(formatting_func, batched=True, remove_columns=eval_ds.column_names)
 
     estimated_steps = (len(train_ds) * args.epochs) // (args.batch_size * args.grad_accum)
     save_steps = max(10, estimated_steps // 10)
@@ -427,11 +433,11 @@ def train_model(model, tokenizer, train_ds, eval_ds, args):
     sft_config = SFTConfig(
         output_dir=args.output_dir,
 
-        # SFT-specific (moved from SFTTrainer constructor in TRL >= 0.16)
+        # SFT-specific
         max_length=args.max_seq_length,
         packing=False,
         neftune_noise_alpha=args.neftune,
-        remove_unused_columns=False,
+        dataset_text_field="text",
 
         # Epocas
         num_train_epochs=args.epochs,
@@ -485,7 +491,6 @@ def train_model(model, tokenizer, train_ds, eval_ds, args):
         train_dataset=train_ds,
         eval_dataset=eval_ds,
         args=sft_config,
-        formatting_func=formatting_func,
         callbacks=[NaNDetectionCallback(patience=3)],
     )
 
