@@ -162,7 +162,7 @@ MCP_PORT=3001
 FASTAPI_PORT=8081
 LITELLM_PORT=4000
 
-BASE_MODEL="unsloth/Qwen3-14B"
+BASE_MODEL="unsloth/Qwen3-14B-bnb-4bit"
 HF_LORA_REPO="mmoralesf/qwen3-14B-v10-mariana-unsloth"
 HF_MERGED_REPO="mmoralesf/qwen3-14B-v10-mariana-unsloth-merged"
 SERVED_MODEL="trefa-unsloth"
