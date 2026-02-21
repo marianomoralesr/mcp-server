@@ -333,6 +333,8 @@ def load_model(args):
         load_in_4bit=True,
         load_in_8bit=False,
         full_finetuning=False,
+        dtype=None,
+        device_map="sequential",
     )
 
     print(f"\nAplicando LoRA (r={args.lora_r}, alpha={args.lora_alpha})")
