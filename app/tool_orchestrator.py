@@ -246,13 +246,35 @@ class ToolOrchestrator:
         temperature: float,
         max_tokens: int,
     ) -> Tuple[str, Dict[str, Any]]:
-        """Llama al LLM via OpenAI SDK y retorna (texto_respuesta, usage)."""
-        data = await self.llm.chat_completion(
-            messages=messages,
-            model=model,
-            temperature=temperature,
-            max_tokens=max_tokens,
-        )
+        """Llama al LLM via OpenAI SDK y retorna (texto_respuesta, usage).
+
+        Si max_tokens excede el contexto disponible, reintenta con un valor menor.
+        """
+        try:
+            data = await self.llm.chat_completion(
+                messages=messages,
+                model=model,
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+        except Exception as e:
+            err_str = str(e)
+            if "max_tokens" in err_str and "too large" in err_str:
+                # Reintentar con max_tokens reducido
+                reduced = max(256, max_tokens // 4)
+                logger.warning(
+                    "max_tokens_exceeded_retry",
+                    original=max_tokens,
+                    reduced=reduced,
+                )
+                data = await self.llm.chat_completion(
+                    messages=messages,
+                    model=model,
+                    temperature=temperature,
+                    max_tokens=reduced,
+                )
+            else:
+                raise
         content = data["choices"][0]["message"]["content"]
         usage = data.get("usage", {})
         return content, usage
