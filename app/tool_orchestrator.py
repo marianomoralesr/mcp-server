@@ -394,6 +394,10 @@ class ToolOrchestrator:
                 tool_name = tc["name"]
                 tool_args = tc["arguments"]
 
+                # Guard: forzar límite de 3 vehículos en búsquedas
+                if tool_name in ("buscar_vehiculos", "buscar_alternativas"):
+                    tool_args = {**tool_args, "limite": min(tool_args.get("limite", 3), 3)}
+
                 # Guard: corregir ID incorrecto en obtener_vehiculo
                 if tool_name == "obtener_vehiculo" and "id" in tool_args:
                     tool_args = self._fix_vehicle_id(tool_args, tool_calls_executed, working_messages)
