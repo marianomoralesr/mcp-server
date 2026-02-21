@@ -1,0 +1,62 @@
+{
+  "timestamp": "2026-02-17T05:01:09.544657",
+  "total_cargadas": 1164,
+  "duplicados_eliminados": 12,
+  "unicas": 1152,
+  "validas": 1095,
+  "rechazadas": 57,
+  "train": 986,
+  "eval": 109,
+  "fuentes_cargadas": {
+    "semillas_fin_v5": 6,
+    "semillas_obtener_vehiculo": 20,
+    "gold_28": 28,
+    "saludos": 15,
+    "estilo": 20,
+    "batch_gemini": 650,
+    "batch_haiku": 19,
+    "synthetic_cleaned": 389,
+    "haiku_final": 17
+  },
+  "fuentes_train": {
+    "synthetic_cleaned": 330,
+    "batch_gemini": 558,
+    "gold_28": 24,
+    "batch_haiku": 18,
+    "estilo": 18,
+    "saludos": 13,
+    "semillas_obtener_vehiculo": 16,
+    "semillas_fin_v5": 5,
+    "haiku_final": 4
+  },
+  "fuentes_eval": {
+    "batch_gemini": 56,
+    "gold_28": 4,
+    "synthetic_cleaned": 39,
+    "haiku_final": 1,
+    "semillas_fin_v5": 1,
+    "semillas_obtener_vehiculo": 4,
+    "batch_haiku": 1,
+    "estilo": 1,
+    "saludos": 2
+  },
+  "issues": {
+    "muy_corta": 30,
+    "busqueda_prematura": 57,
+    "doble_saludo": 3,
+    "hola_multiple": 16,
+    "no_termina_assistant": 3
+  },
+  "hola_stats": {
+    "total": 1038,
+    "convs_con_mas_de_1": 16,
+    "promedio": 0.95,
+    "maximo": 2
+  },
+  "config": {
+    "min_msgs": 4,
+    "eval_pct": 10,
+    "strict": false,
+    "seed": 42
+  }
+}

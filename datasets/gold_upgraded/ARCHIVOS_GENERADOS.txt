@@ -1,0 +1,59 @@
+# ARCHIVOS GENERADOS
+
+## Archivo Principal (LISTO PARA USAR)
+
+### gold_upgraded_haiku_1285_1326.jsonl
+- Ubicación: `/Users/marianomorales/Downloads/fine-tuning/inference/datasets/gold_upgraded/`
+- Tamaño: 131 KB
+- Conversaciones: 42
+- Rango original: Líneas 1314-1355
+- Formato: JSONL (1 conversación por línea)
+- Estado: COMPLETO ✓
+
+## Documentación Incluida
+
+### README.md
+- Guía completa del proyecto
+- Reglas aplicadas
+- Ejemplos antes/después
+- Instrucciones de uso
+
+### GUIA_VALIDACION.md
+- Cómo validar el archivo
+- Scripts listos para ejecutar
+- Checklist de validación
+- Casos de éxito y error
+
+### INDICE_COMPLETO.md
+- Este archivo
+- Índice de todos los archivos
+- Estructura del proyecto
+- Métricas finales
+
+### RESUMEN.txt
+- Resumen ejecutivo
+- Estadísticas detalladas
+- Mejoras aplicadas
+- Próximos pasos
+
+## Uso Inmediato
+
+El archivo está listo para:
+1. Validación automática (ver GUIA_VALIDACION.md)
+2. Validación manual (revisar 5-10 muestras)
+3. Fine-tuning con Qwen/Haiku
+4. Integración en pipeline de entrenamiento
+
+## Verificación Rápida
+
+```bash
+# Verificar que el archivo existe y tiene 42 líneas
+wc -l /Users/marianomorales/Downloads/fine-tuning/inference/datasets/gold_upgraded/gold_upgraded_haiku_1285_1326.jsonl
+
+# Ver primera conversación
+head -1 /Users/marianomorales/Downloads/fine-tuning/inference/datasets/gold_upgraded/gold_upgraded_haiku_1285_1326.jsonl | python3 -m json.tool
+```
+
+## Próxima Etapa
+
+Seguir instrucciones en GUIA_VALIDACION.md para validar completamente.

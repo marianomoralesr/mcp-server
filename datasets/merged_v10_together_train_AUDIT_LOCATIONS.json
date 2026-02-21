@@ -1,0 +1,4960 @@
+{
+  "total_conversations": 4320,
+  "total_violations": 762,
+  "affected_conversations_count": 365,
+  "affected_conversation_indices": [
+    523,
+    1323,
+    1324,
+    1325,
+    1340,
+    1350,
+    1352,
+    1354,
+    1358,
+    1380,
+    1396,
+    1403,
+    1416,
+    1432,
+    1433,
+    1436,
+    1440,
+    1452,
+    1454,
+    1455,
+    1495,
+    1505,
+    1506,
+    1508,
+    1511,
+    1513,
+    1515,
+    1516,
+    1518,
+    1530,
+    1547,
+    1549,
+    1556,
+    1558,
+    1559,
+    1564,
+    1566,
+    1577,
+    1583,
+    1587,
+    1593,
+    1604,
+    1609,
+    1610,
+    1621,
+    1636,
+    1641,
+    1651,
+    1652,
+    1671,
+    1677,
+    1679,
+    1689,
+    1699,
+    1706,
+    1709,
+    1725,
+    1740,
+    1745,
+    1756,
+    1765,
+    1774,
+    1775,
+    1779,
+    1780,
+    1781,
+    1804,
+    1813,
+    1816,
+    1819,
+    1822,
+    1825,
+    1826,
+    1833,
+    1839,
+    1852,
+    1855,
+    1861,
+    1862,
+    1869,
+    1873,
+    1874,
+    1892,
+    1900,
+    1926,
+    1930,
+    1938,
+    1954,
+    1955,
+    1956,
+    1971,
+    1987,
+    1998,
+    2009,
+    2020,
+    2024,
+    2031,
+    2040,
+    2058,
+    2071,
+    2075,
+    2086,
+    2096,
+    2106,
+    2111,
+    2112,
+    2113,
+    2122,
+    2129,
+    2146,
+    2148,
+    2151,
+    2161,
+    2162,
+    2175,
+    2179,
+    2180,
+    2188,
+    2197,
+    2204,
+    2212,
+    2216,
+    2236,
+    2247,
+    2249,
+    2252,
+    2257,
+    2269,
+    2271,
+    2273,
+    2279,
+    2291,
+    2294,
+    2299,
+    2303,
+    2314,
+    2320,
+    2325,
+    2337,
+    2340,
+    2341,
+    2346,
+    2350,
+    2360,
+    2363,
+    2367,
+    2369,
+    2375,
+    2388,
+    2414,
+    2419,
+    2423,
+    2428,
+    2441,
+    2443,
+    2447,
+    2455,
+    2457,
+    2459,
+    2464,
+    2466,
+    2472,
+    2483,
+    2486,
+    2494,
+    2499,
+    2507,
+    2510,
+    2512,
+    2519,
+    2540,
+    2557,
+    2561,
+    2585,
+    2586,
+    2587,
+    2588,
+    2593,
+    2607,
+    2611,
+    2613,
+    2619,
+    2627,
+    2629,
+    2631,
+    2636,
+    2637,
+    2640,
+    2647,
+    2650,
+    2654,
+    2678,
+    2682,
+    2685,
+    2687,
+    2688,
+    2702,
+    2704,
+    2729,
+    2731,
+    2736,
+    2740,
+    2751,
+    2761,
+    2772,
+    2774,
+    2792,
+    2794,
+    2822,
+    2828,
+    2833,
+    2834,
+    2835,
+    2843,
+    2861,
+    2864,
+    2869,
+    2876,
+    2879,
+    2901,
+    2916,
+    2924,
+    2926,
+    2929,
+    2930,
+    2942,
+    2943,
+    2956,
+    2965,
+    2967,
+    3038,
+    3194,
+    3202,
+    3208,
+    3211,
+    3217,
+    3224,
+    3231,
+    3235,
+    3265,
+    3267,
+    3278,
+    3283,
+    3289,
+    3290,
+    3292,
+    3306,
+    3317,
+    3319,
+    3328,
+    3346,
+    3352,
+    3361,
+    3366,
+    3378,
+    3387,
+    3413,
+    3423,
+    3427,
+    3428,
+    3439,
+    3446,
+    3451,
+    3464,
+    3470,
+    3484,
+    3494,
+    3497,
+    3511,
+    3512,
+    3513,
+    3515,
+    3522,
+    3525,
+    3532,
+    3541,
+    3546,
+    3554,
+    3558,
+    3578,
+    3579,
+    3581,
+    3583,
+    3587,
+    3597,
+    3607,
+    3614,
+    3619,
+    3627,
+    3639,
+    3650,
+    3659,
+    3670,
+    3672,
+    3675,
+    3678,
+    3688,
+    3692,
+    3696,
+    3701,
+    3702,
+    3708,
+    3731,
+    3742,
+    3748,
+    3759,
+    3764,
+    3767,
+    3776,
+    3778,
+    3797,
+    3807,
+    3808,
+    3815,
+    3819,
+    3838,
+    3847,
+    3860,
+    3874,
+    3879,
+    3882,
+    3910,
+    3912,
+    3919,
+    3935,
+    3939,
+    3940,
+    3943,
+    3950,
+    3956,
+    3970,
+    3973,
+    4010,
+    4018,
+    4029,
+    4030,
+    4034,
+    4037,
+    4048,
+    4049,
+    4056,
+    4060,
+    4064,
+    4065,
+    4067,
+    4070,
+    4084,
+    4088,
+    4093,
+    4098,
+    4108,
+    4121,
+    4129,
+    4140,
+    4160,
+    4161,
+    4162,
+    4177,
+    4188,
+    4199,
+    4222,
+    4256,
+    4272,
+    4301,
+    4314
+  ],
+  "summary": {
+    "fake_phone": {
+      "violations": 37,
+      "conversations": 37
+    },
+    "fake_address": {
+      "violations": 518,
+      "conversations": 344
+    },
+    "fake_branch": {
+      "violations": 207,
+      "conversations": 168
+    }
+  },
+  "violations": [
+    {
+      "conv_idx": 523,
+      "type": "fake_phone",
+      "snippet": "er.medrano07@gmail.com) o por teléfono (871 142 3023)?  Recuerda que podemos recibir tu Mits",
+      "phone_found": "871 142 3023"
+    },
+    {
+      "conv_idx": 1323,
+      "type": "fake_address",
+      "snippet": "a sucursal en Reynosa está en Blvd. Hidalgo 1200, Rodríguez. Aquí tienes la ubicación ex",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 1324,
+      "type": "fake_address",
+      "snippet": "nos visites:  **Monterrey** — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1324,
+      "type": "fake_address",
+      "snippet": ".gl/TREFAmty  **Guadalupe** — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1324,
+      "type": "fake_address",
+      "snippet": "o.gl/TREFAgpe  **Saltillo** — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 1324,
+      "type": "fake_address",
+      "snippet": "oo.gl/TREFAslt  **Reynosa** — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 1324,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  **Sal",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 1324,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  **Gua",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1325,
+      "type": "fake_address",
+      "snippet": "ras ubicaciones:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1325,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1325,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 1325,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 1325,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Salti",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 1325,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1340,
+      "type": "fake_address",
+      "snippet": "a sucursal en Reynosa está en Blvd. Hidalgo 1200, Rodríguez. Aquí tienes la ubicación ex",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 1350,
+      "type": "fake_address",
+      "snippet": ", la sucursal de Guadalupe en Av. Benito Juárez debió estar abierta hasta las 7:00 PM. Te ofrezco una disculpa sincera ",
+      "detail": "Unknown street: Av. Benito Juárez debió estar abierta hasta las 7"
+    },
+    {
+      "conv_idx": 1352,
+      "type": "fake_address",
+      "snippet": "rsal de Guadalupe, ubicada en Avenida Miguel Alemán 303, col. La Fe. Para que te des una idea, ",
+      "detail": "Unknown street: Avenida Miguel Alemán 303"
+    },
+    {
+      "conv_idx": 1354,
+      "type": "fake_address",
+      "snippet": "sucursal de Guadalupe está en Av. Benito Juárez 1500, Guadalupe Centro.   ¿Te gustaría que t",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1354,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro.   ¿Te gustaría que te envíe una cotiza",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 1358,
+      "type": "fake_address",
+      "snippet": "rca. Nuestra sucursal está en Blvd. Hidalgo 1200, en la colonia Rodríguez. Aquí te dejo ",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 1380,
+      "type": "fake_address",
+      "snippet": " otras agencias:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro. https://maps.app.go",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1380,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro. https://maps.app.goo",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1380,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República. https://maps.app.goo.gl/TRE",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 1380,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez. https://maps.app.goo.gl/TRE",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 1380,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro. https://maps.app.goo.gl/TREFAgpe  Salt",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 1380,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. https://maps.app.goo.gl/TREFAmty  Guad",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1396,
+      "type": "fake_address",
+      "snippet": "ucursal allá! Está ubicada en Blvd. Hidalgo 1200, en la colonia Rodríguez.  Aquí te paso",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 1403,
+      "type": "fake_address",
+      "snippet": "stra sucursal de Monterrey en Av. Gonzalitos te queda a 5 minutos de San Jerónimo.  Aquí puedes v",
+      "detail": "Unknown street: Av. Gonzalitos te queda a 5"
+    },
+    {
+      "conv_idx": 1416,
+      "type": "fake_phone",
+      "snippet": ", Alberto! Ya registré tus datos con tu número 8187654321 para tu visita y prueba de manejo de la",
+      "phone_found": "número 8187654321"
+    },
+    {
+      "conv_idx": 1432,
+      "type": "fake_address",
+      "snippet": "sal de Monterrey, que está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1432,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1433,
+      "type": "fake_phone",
+      "snippet": " iniciar el proceso, puedes llamar al **800-123-4567** o escribir a **devoluciones@trefa.com",
+      "phone_found": "800-123-4567"
+    },
+    {
+      "conv_idx": 1436,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos.  Aquí tienes la ubicación: https://maps.app.goo.",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 1440,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la lig",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1440,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la liga de Maps: https://",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1452,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur: https://maps.app.goo.gl/TREFAmty. ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1454,
+      "type": "fake_address",
+      "snippet": "stamos en Monterrey sobre Av. Gonzalitos. ¿Te gustaría que te comparta la ubicación exacta",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 1455,
+      "type": "fake_address",
+      "snippet": "errey (San Jerónimo), está en Av. Gonzalitos 102 Sur.  Aquí tienes el mapa para que lleg",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1495,
+      "type": "fake_address",
+      "snippet": "queda súper céntrica, está en Av. Gonzalitos 102 Sur, en Mitras Centro :).   Como eres ú",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1505,
+      "type": "fake_phone",
+      "snippet": "50, Col. Mitras Centro.  Su teléfono es 81 1234 0001. ¿Te gustaría saber los horarios de ate",
+      "phone_found": "81 1234 0001"
+    },
+    {
+      "conv_idx": 1505,
+      "type": "fake_address",
+      "snippet": "en:  📍 **Monterrey Centro** – Av. Gonzalitos 1250, Col. Mitras Centro.  Su teléfono es 81",
+      "detail": "Unknown street: Av. Gonzalitos 1250"
+    },
+    {
+      "conv_idx": 1505,
+      "type": "fake_branch",
+      "snippet": "al ubicada en:  📍 **Monterrey Centro** – Av. Gonzalitos 1250, Col. Mitras Ce",
+      "branch_found": "monterrey centro"
+    },
+    {
+      "conv_idx": 1505,
+      "type": "fake_branch",
+      "snippet": "nzalitos 1250, Col. Mitras Centro.  Su teléfono es 81 1234 0001. ¿Te gust",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1506,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro :).   Aquí tienes el",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1506,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro :).   Aquí tienes el mapa: https://maps",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1508,
+      "type": "fake_address",
+      "snippet": "uestra sucursal de Monterrey: Av. Gonzalitos 102 Sur, Mitras Centro. Aquí tienes el mapa",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1508,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí tienes el mapa: https://maps.app.",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1511,
+      "type": "fake_address",
+      "snippet": "cursal de Monterrey sobre Av. Gonzalitos. ¿Te gustaría que te agende una visita para mañan",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 1513,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey. Estamos en Av. Gonzalitos 102 Sur. ¿Te queda bien venir por la mañana",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1515,
+      "type": "fake_address",
+      "snippet": "tas ubicaciones:  Monterrey — Av. Gonzalitos 102 Sur: https://maps.app.goo.gl/TREFAmty G",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1515,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAmty Guadalupe — Av. Benito Juárez 1500: https://maps.app.goo.gl/TREFAgpe Salti",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1515,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAgpe Saltillo — Blvd. Venustiano Carranza 3000: https://maps.app.goo.gl/TREFAslt Reyno",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 1515,
+      "type": "fake_address",
+      "snippet": "app.goo.gl/TREFAslt Reynosa — Blvd. Hidalgo 1200: https://maps.app.goo.gl/TREFArey  Déja",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 1516,
+      "type": "fake_address",
+      "snippet": "tra sucursal de Monterrey, en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1516,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1518,
+      "type": "fake_address",
+      "snippet": "sucursal de Guadalupe está en Av. Benito Juárez 1500, en el centro de Guadalupe.   Aquí te d",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1530,
+      "type": "fake_address",
+      "snippet": "sucursal de Guadalupe está en Av. Benito Juárez 1500, aquí tienes el mapa para que lleguen f",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1547,
+      "type": "fake_address",
+      "snippet": ", la sucursal de Guadalupe en Av. Benito Juárez debió estar abierta hasta las 7:00 PM. Te ofrezco una disculpa sincera ",
+      "detail": "Unknown street: Av. Benito Juárez debió estar abierta hasta las 7"
+    },
+    {
+      "conv_idx": 1549,
+      "type": "fake_address",
+      "snippet": " esa Tacoma.  La dirección es Blvd. Venustiano Carranza 3000, en la colonia República. Aquí te dejo ",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 1556,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, en Mitras Centro :). Aquí tienes l",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1556,
+      "type": "fake_branch",
+      "snippet": "zalitos 102 Sur, en Mitras Centro :). Aquí tienes la ubicación exacta: ht",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1558,
+      "type": "fake_address",
+      "snippet": "cursal de Guadalupe está en:  Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1558,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  El sá",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 1559,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, en Mitras Centro: https://maps.app",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1559,
+      "type": "fake_branch",
+      "snippet": "zalitos 102 Sur, en Mitras Centro: https://maps.app.goo.gl/TREFAmty  ¿Te ",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1564,
+      "type": "fake_address",
+      "snippet": " estas ciudades:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1564,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1564,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 1564,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 1564,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Salti",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 1564,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1566,
+      "type": "fake_address",
+      "snippet": "pe (donde está la Sportage) — Av. Benito Juárez 1500 https://maps.app.goo.gl/TREFAgpe  Monte",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1566,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAgpe  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1566,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAmty  Saltillo — Blvd. Venustiano Carranza 3000 https://maps.app.goo.gl/TREFAslt  Reyno",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 1566,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200 https://maps.app.goo.gl/TREFArey  ¿Te g",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 1566,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Salti",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1577,
+      "type": "fake_address",
+      "snippet": "nejes :). Estamos ubicados en Av. Benito Juárez 1500, en el centro de Guadalupe.   Abrimos d",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1583,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí tienes el mapa",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1583,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí tienes el mapa: https://maps.app.",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1587,
+      "type": "fake_phone",
+      "snippet": " de manejo? También puedes llamarnos al 899-123-4567 😊.",
+      "phone_found": "899-123-4567"
+    },
+    {
+      "conv_idx": 1587,
+      "type": "fake_address",
+      "snippet": "al en Reynosa está ubicada en Blvd. Hidalgo #1234, Col. Las Fuentes. ¿Te gustaría agendar",
+      "detail": "Unknown street: Blvd. Hidalgo #1234"
+    },
+    {
+      "conv_idx": 1593,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey. Estamos en Av. Gonzalitos 102 Sur. ¿Te queda bien venir por la mañana",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1604,
+      "type": "fake_address",
+      "snippet": "as dos agencias:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro. Aquí puedes ver el ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1604,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro. Te paso la liga: htt",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1604,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro. Te paso la liga: https://maps.app.goo.",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 1604,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí puedes ver el mapa: https://maps.",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1609,
+      "type": "fake_address",
+      "snippet": "stra sucursal de Gonzalitos:  Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1609,
+      "type": "fake_address",
+      "snippet": "stamos en nuestra sucursal de Gonzalitos:  Av. Gonzalitos 102 Sur, Mitras Centro https://m",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 1609,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  ¿Me c",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1610,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey. Estamos en Av. Gonzalitos 102 Sur, Mitras Centro. ¿A qué hora te qued",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1610,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. ¿A qué hora te quedaría bien darnos la",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1621,
+      "type": "fake_address",
+      "snippet": "talles :).   La dirección es: Av. Gonzalitos 102 Sur, Mitras Centro. Aquí tienes el mapa",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1621,
+      "type": "fake_address",
+      "snippet": "uestra sucursal de Monterrey (Gonzalitos). Ahí te van a recibir de maravilla para platicar",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 1621,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí tienes el mapa para que llegues d",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1636,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey. Estamos en Av. Gonzalitos 102 Sur (https://maps.app.goo.gl/TREFAmty).",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1641,
+      "type": "fake_address",
+      "snippet": " sucursal de Saltillo está en Blvd. Venustiano Carranza 3000, en la colonia República. Aquí te dejo ",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 1651,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la lig",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1651,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la liga de Google Maps pa",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1652,
+      "type": "fake_address",
+      "snippet": "tra sucursal de Monterrey, en Av. Gonzalitos 102 Sur. Aquí te dejo la ubicación exacta: ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1671,
+      "type": "fake_address",
+      "snippet": "tra sucursal de Monterrey, en Av. Gonzalitos 102 Sur. Aquí te dejo el mapa: https://maps",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1677,
+      "type": "fake_address",
+      "snippet": "rsal de Saltillo:  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 1679,
+      "type": "fake_phone",
+      "snippet": "s #2020, Col. Rodríguez. El teléfono es 899-924-4040 y abrimos de Lunes a Viernes de 9:00 a ",
+      "phone_found": "899-924-4040"
+    },
+    {
+      "conv_idx": 1679,
+      "type": "fake_address",
+      "snippet": "al en Reynosa está ubicada en Blvd. Morelos #2020, Col. Rodríguez. El teléfono es 899-924",
+      "detail": "Unknown street: Blvd. Morelos #2020"
+    },
+    {
+      "conv_idx": 1689,
+      "type": "fake_address",
+      "snippet": "al en Reynosa está ubicada en Blvd. Morelos #1234, Col. Petrolera.  Nuestro horario es de",
+      "detail": "Unknown street: Blvd. Morelos #1234"
+    },
+    {
+      "conv_idx": 1699,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1699,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1706,
+      "type": "fake_address",
+      "snippet": "al de Monterrey.   Estamos en Av. Gonzalitos 102 Sur, Mitras Centro: https://maps.app.go",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1706,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro: https://maps.app.goo.gl/TREFAmty  Para",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1709,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro :).   Aquí tienes el",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1709,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro :).   Aquí tienes el mapa: https://maps",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1725,
+      "type": "fake_address",
+      "snippet": "stra sucursal de Monterrey en Av. Gonzalitos te queda a 5 minutos de San Jerónimo.  Aquí puedes v",
+      "detail": "Unknown street: Av. Gonzalitos te queda a 5"
+    },
+    {
+      "conv_idx": 1740,
+      "type": "fake_address",
+      "snippet": " Jerónimo :). La dirección es Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1740,
+      "type": "fake_address",
+      "snippet": " Monterrey está en la zona de Gonzalitos, que te queda a unos minutos de San Jerónimo :). ",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 1740,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1745,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey está en Av. Gonzalitos, justo a un lado de San Jerónimo, así que te qued",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 1756,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey. Estamos en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1756,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1765,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey, en Av. Gonzalitos. ¿Te gustaría venir a conocerlo en persona hoy mi",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 1774,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos te queda súper cerca. Aquí te dejo la ubicación: ",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 1775,
+      "type": "fake_address",
+      "snippet": "ones de la zona:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1775,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1775,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Estam",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 1775,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1779,
+      "type": "fake_address",
+      "snippet": "las ubicaciones:  Monterrey — Av. Gonzalitos 102 Sur https://maps.app.goo.gl/TREFAmty  G",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1779,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500 https://maps.app.goo.gl/TREFAgpe  Salti",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1779,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000 https://maps.app.goo.gl/TREFAslt  Reyno",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 1779,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200 https://maps.app.goo.gl/TREFArey  ¿Cuál",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 1780,
+      "type": "fake_phone",
+      "snippet": "a nuestra sucursal de Monterrey es el **81 1234 5678**.  Ellos están disponibles de lunes a ",
+      "phone_found": "81 1234 5678"
+    },
+    {
+      "conv_idx": 1781,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos.  ¿Te gustaría que te pase los detalles de esa o ",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 1781,
+      "type": "fake_address",
+      "snippet": "engas a la mano:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1781,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1781,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Ambas",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 1781,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1804,
+      "type": "fake_address",
+      "snippet": " estas ciudades:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1804,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1804,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 1804,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 1804,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Salti",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 1804,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1813,
+      "type": "fake_address",
+      "snippet": "o :).   Estamos en Monterrey (Av. Gonzalitos 102 Sur) y en Guadalupe (Av. Benito Juárez ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1813,
+      "type": "fake_address",
+      "snippet": "itos 102 Sur) y en Guadalupe (Av. Benito Juárez 1500). ¿Cuál te queda más cerca para que te ",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1816,
+      "type": "fake_address",
+      "snippet": "tillo y Reynosa.  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1816,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1816,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 1816,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 1816,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Salti",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 1816,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1819,
+      "type": "fake_address",
+      "snippet": "nuestra sucursal de Saltillo: Blvd. Venustiano Carranza 3000 (https://maps.app.goo.gl/TREFAslt).  So",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 1822,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí tienes la ubic",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1822,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí tienes la ubicación: https://maps",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1822,
+      "type": "fake_address",
+      "snippet": "o el sábado en la sucursal de Gonzalitos para que conozcas tu próximo Corolla. ¿Te gustarí",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 1825,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1825,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1826,
+      "type": "fake_address",
+      "snippet": "estra sucursal de Monterrey:  Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1826,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Estam",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1833,
+      "type": "fake_address",
+      "snippet": "te.  Nuestra sucursal está en Av. Benito Juárez 1500 (https://maps.app.goo.gl/TREFAgpe). Te ",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1839,
+      "type": "fake_address",
+      "snippet": "tillo y Reynosa.  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1839,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1839,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 1839,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 1839,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Salti",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 1839,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1852,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey! Estamos en Av. Gonzalitos 102 Sur, en Mitras Centro: https://maps.app",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1852,
+      "type": "fake_branch",
+      "snippet": "zalitos 102 Sur, en Mitras Centro: https://maps.app.goo.gl/TREFAmty  La S",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1855,
+      "type": "fake_phone",
+      "snippet": " PM. Puedes agendar tu cita llamando al 899-123-4567. 📞  ¿Qué día y hora te quedaría mejor p",
+      "phone_found": "899-123-4567"
+    },
+    {
+      "conv_idx": 1855,
+      "type": "fake_address",
+      "snippet": "al en Reynosa está ubicada en Blvd. Morelos #1234, Col. Rodríguez. Abrimos de Lunes a Vie",
+      "detail": "Unknown street: Blvd. Morelos #1234"
+    },
+    {
+      "conv_idx": 1861,
+      "type": "fake_address",
+      "snippet": " vienes a nuestra sucursal de Gonzalitos para que la manejes y veas lo bien que está? Te a",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 1861,
+      "type": "fake_address",
+      "snippet": "mos en una zona muy céntrica: Av. Gonzalitos 102 Sur, en Mitras Centro. Aquí te dejo la ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1862,
+      "type": "fake_address",
+      "snippet": "Monterrey está muy céntrica:  Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1862,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  ¿Te p",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1869,
+      "type": "fake_address",
+      "snippet": "errey (San Jerónimo), está en Av. Gonzalitos 102 Sur.  Aquí tienes el mapa para que lleg",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1873,
+      "type": "fake_address",
+      "snippet": "rsal de Guadalupe, ubicada en Avenida Miguel Alemán 303, col. La Fe. Para que te des una idea, ",
+      "detail": "Unknown street: Avenida Miguel Alemán 303"
+    },
+    {
+      "conv_idx": 1874,
+      "type": "fake_address",
+      "snippet": "las direcciones:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1874,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1874,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 1874,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 1874,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Salti",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 1874,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1892,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos. ¿Te gustaría que iniciemos tu solicitud de finan",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 1900,
+      "type": "fake_phone",
+      "snippet": "lla Olímpica, Saltillo, Coah. Teléfono: 844-123-4567 Horario: Lunes a Viernes de 9:00 AM a 7",
+      "phone_found": "844-123-4567"
+    },
+    {
+      "conv_idx": 1900,
+      "type": "fake_address",
+      "snippet": ". 😊  **Autos TREFA Saltillo** Blvd. Venustiano Carranza 4567, Col. Villa Olímpica, Saltillo, Coah. T",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 4567"
+    },
+    {
+      "conv_idx": 1926,
+      "type": "fake_address",
+      "snippet": "mos ubicados en:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1926,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Tambi",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 1930,
+      "type": "fake_phone",
+      "snippet": "ntactarlos directamente, su teléfono es 84 4123 4567. ¿Hay algo más en lo que te pueda apoya",
+      "phone_found": "84 4123 4567"
+    },
+    {
+      "conv_idx": 1938,
+      "type": "fake_address",
+      "snippet": "ucursal de Guadalupe, está en Av. Benito Juárez 1500. Mientras tanto, si quieres adelantar e",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 1954,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur. Si gustas, puedes darte una vuelta",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 1955,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos, está muy cerquita de Cumbres :).   Aquí tienen l",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 1956,
+      "type": "fake_phone",
+      "snippet": "ia! Un asesor te contactará en breve al número 8111223344 para coordinar tu visita a la sucursal ",
+      "phone_found": "número 8111223344"
+    },
+    {
+      "conv_idx": 1971,
+      "type": "fake_address",
+      "snippet": "ucursal allá! Está ubicada en Blvd. Hidalgo 1200, en la colonia Rodríguez.  Aquí te paso",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 1987,
+      "type": "fake_address",
+      "snippet": " sucursal de Saltillo está en Blvd. Venustiano Carranza 3000. ¿Te gustaría que agendemos una visita ",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 1998,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos te queda súper cerca de Colinas. Aquí te dejo la ",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2009,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos te queda súper cerca. Aquí te dejo la ubicación: ",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2020,
+      "type": "fake_address",
+      "snippet": "sucursal está en Saltillo, en Blvd. Venustiano Carranza 3000. ¿Te gustaría que te agende una visita ",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2024,
+      "type": "fake_address",
+      "snippet": "e no haya pierde :  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 2024,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFArey  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2024,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAmty  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2024,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Salti",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2031,
+      "type": "fake_address",
+      "snippet": "tra sucursal de Monterrey, en Av. Gonzalitos 102 Sur, Mitras Centro :). Te queda súper c",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2031,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro :). Te queda súper cerca.  Aquí tienes ",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2040,
+      "type": "fake_address",
+      "snippet": "tra sucursal de Monterrey, en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la lig",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2040,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la liga de Maps: https://",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2058,
+      "type": "fake_address",
+      "snippet": "sucursal de Guadalupe está en Av. Benito Juárez 1500. Aquí te dejo la ubicación de Google Ma",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2071,
+      "type": "fake_address",
+      "snippet": "ones de la zona:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2071,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2071,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Estam",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 2071,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2075,
+      "type": "fake_phone",
+      "snippet": "e Autos TREFA te contactará en breve al número 8112345678 para darte seguimiento con el financiam",
+      "phone_found": "número 8112345678"
+    },
+    {
+      "conv_idx": 2086,
+      "type": "fake_address",
+      "snippet": "mos ubicados en:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2086,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Tambi",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2096,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2096,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2106,
+      "type": "fake_address",
+      "snippet": "al en Reynosa está ubicada en Blvd. Morelos #1234, Col. Centro. Abrimos de Lunes a Vierne",
+      "detail": "Unknown street: Blvd. Morelos #1234"
+    },
+    {
+      "conv_idx": 2111,
+      "type": "fake_address",
+      "snippet": "ediste, Claudia:  Monterrey — Av. Gonzalitos 102 Sur. Abren de L-V 9:00 a 19:00, Sáb 9:0",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2111,
+      "type": "fake_address",
+      "snippet": "goo.gl/TREFAmty)  Guadalupe — Av. Benito Juárez 1500. Abren de L-V 9:00 a 19:00 y Sáb 9:00 a",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2112,
+      "type": "fake_address",
+      "snippet": "ucursal de Monterrey. Está en Av. Gonzalitos 102 Sur, Mitras Centro. Voy a registrar tus",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2112,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Voy a registrar tus datos para que un ",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2113,
+      "type": "fake_address",
+      "snippet": " esa Tacoma.  La dirección es Blvd. Venustiano Carranza 3000, en la colonia República. Aquí te dejo ",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2122,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey, ubicada en Av. Gonzalitos 102 Sur, Mitras Centro :).   Aquí puedes ve",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2122,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro :).   Aquí puedes ver la ubicación exac",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2129,
+      "type": "fake_address",
+      "snippet": "al en Reynosa está ubicada en Blvd. Morelos #1234, Col. Petrolera.  Nuestro horario es de",
+      "detail": "Unknown street: Blvd. Morelos #1234"
+    },
+    {
+      "conv_idx": 2146,
+      "type": "fake_address",
+      "snippet": "tra sucursal de Monterrey, en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2146,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2148,
+      "type": "fake_address",
+      "snippet": "y (sucursal San Jerónimo), en Av. Gonzalitos 102 Sur. Aquí tienes la ubicación exacta: h",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2151,
+      "type": "fake_address",
+      "snippet": "ediste, Claudia:  Monterrey — Av. Gonzalitos 102 Sur. Abren de L-V 9:00 a 19:00, Sáb 9:0",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2151,
+      "type": "fake_address",
+      "snippet": "goo.gl/TREFAmty)  Guadalupe — Av. Benito Juárez 1500. Abren de L-V 9:00 a 19:00 y Sáb 9:00 a",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2161,
+      "type": "fake_address",
+      "snippet": "as dos agencias:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro. Aquí puedes ver el ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2161,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro. Te paso la liga: htt",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2161,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro. Te paso la liga: https://maps.app.goo.",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 2161,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí puedes ver el mapa: https://maps.",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2162,
+      "type": "fake_address",
+      "snippet": "tra sucursal de Monterrey, en Av. Gonzalitos 102 Sur. Aquí te dejo el mapa: https://maps",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2175,
+      "type": "fake_address",
+      "snippet": " sucursal de Saltillo está en Blvd. Venustiano Carranza 3000, en la colonia República. Aquí te dejo ",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2179,
+      "type": "fake_address",
+      "snippet": "rca. Nuestra sucursal está en Blvd. Hidalgo 1200, en la colonia Rodríguez. Aquí te dejo ",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 2180,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey, ubicada en Av. Gonzalitos 102 Sur, Mitras Centro :).   Aquí puedes ve",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2180,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro :).   Aquí puedes ver la ubicación exac",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2180,
+      "type": "fake_address",
+      "snippet": "as 11:00 AM en la sucursal de Gonzalitos. También te acabo de enviar la cotización de la *",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2188,
+      "type": "fake_address",
+      "snippet": "sucursal de Guadalupe está en Av. Benito Juárez 1500, en el centro de Guadalupe.   Aquí te d",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2197,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, en Mitras Centro. También nos encu",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2197,
+      "type": "fake_address",
+      "snippet": "s encuentras en Guadalupe por Av. Benito Juárez 1500.  Si estás fuera de la ciudad, tenemos ",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2197,
+      "type": "fake_address",
+      "snippet": "sales en Saltillo sobre Blvd. Venustiano Carranza y en Reynosa por Blvd. Hidalgo. ¿Cuál de nuestras",
+      "detail": "Hallucinated street: venustiano carranza"
+    },
+    {
+      "conv_idx": 2197,
+      "type": "fake_branch",
+      "snippet": "zalitos 102 Sur, en Mitras Centro. También nos encuentras en Guadalupe po",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2204,
+      "type": "fake_address",
+      "snippet": "estra sucursal de Monterrey:  Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2204,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  ¿A qu",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2212,
+      "type": "fake_address",
+      "snippet": "nejes :). Estamos ubicados en Av. Benito Juárez 1500, en el centro de Guadalupe.   Abrimos d",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2216,
+      "type": "fake_address",
+      "snippet": " sucursal de Saltillo está en Blvd. Venustiano Carranza 3000, en la colonia República. Aquí te dejo ",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2236,
+      "type": "fake_address",
+      "snippet": " Jerónimo :). La dirección es Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2236,
+      "type": "fake_address",
+      "snippet": " Monterrey está en la zona de Gonzalitos, que te queda a unos minutos de San Jerónimo :). ",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2236,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2247,
+      "type": "fake_phone",
+      "snippet": "e Autos TREFA te contactará en breve al número 8112345678 para darte seguimiento con el financiam",
+      "phone_found": "número 8112345678"
+    },
+    {
+      "conv_idx": 2249,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la lig",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2249,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la liga de Google Maps pa",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2252,
+      "type": "fake_address",
+      "snippet": "estra sucursal de Monterrey:  Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2252,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Estam",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2257,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la lig",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2257,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la liga de Maps: https://",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2269,
+      "type": "fake_address",
+      "snippet": "cipal en Monterrey ubicada en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí puedes ver el ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2269,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí puedes ver el mapa: https://maps.",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2271,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. También estamos en ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2271,
+      "type": "fake_address",
+      "snippet": "mbién estamos en Guadalupe en Av. Benito Juárez 1500, en Saltillo sobre Blvd. Venustiano Car",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2271,
+      "type": "fake_address",
+      "snippet": "1500, en Saltillo sobre Blvd. Venustiano Carranza y en Reynosa en Blvd. Hidalgo.  ¿Cuál de estas te",
+      "detail": "Hallucinated street: venustiano carranza"
+    },
+    {
+      "conv_idx": 2271,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. También estamos en Guadalupe en Av. Be",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2271,
+      "type": "fake_address",
+      "snippet": " en la sucursal de Monterrey (Gonzalitos) para que conozcas el **Nissan Versa Advance 2019",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2273,
+      "type": "fake_address",
+      "snippet": "tra sucursal de Monterrey, en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la lig",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2273,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la liga de Maps: https://",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2279,
+      "type": "fake_address",
+      "snippet": "tra sucursal de Monterrey, en Av. Gonzalitos 102 Sur. Aquí te dejo la ubicación exacta: ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2291,
+      "type": "fake_address",
+      "snippet": "y sencillo, está sobre la Av. Gonzalitos.  Aquí tienes la ubicación exacta en Google Maps:",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2294,
+      "type": "fake_address",
+      "snippet": "sal de Monterrey, que está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2294,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2299,
+      "type": "fake_address",
+      "snippet": "rsal de Saltillo:  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2303,
+      "type": "fake_address",
+      "snippet": "o :).   Estamos en Monterrey (Av. Gonzalitos 102 Sur) y en Guadalupe (Av. Benito Juárez ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2303,
+      "type": "fake_address",
+      "snippet": "itos 102 Sur) y en Guadalupe (Av. Benito Juárez 1500). ¿Cuál te queda más cerca para que te ",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2314,
+      "type": "fake_address",
+      "snippet": "rsal de Guadalupe, estamos en Av. Benito Juárez 1500. ¿Te parece bien a las 10:00 AM 😊?",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2320,
+      "type": "fake_phone",
+      "snippet": "tro. Puedes comunicarte directamente al 81 1234 5678 para que el equipo de administración te",
+      "phone_found": "81 1234 5678"
+    },
+    {
+      "conv_idx": 2320,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Puedes comunicarte ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2320,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Puedes comunicarte directamente al 81 ",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2325,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos. ¿Te parece bien si te agendo una cita para las 4",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2337,
+      "type": "fake_address",
+      "snippet": "ras ubicaciones:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2337,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2337,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2337,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 2337,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Salti",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 2337,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2337,
+      "type": "fake_address",
+      "snippet": "o en persona a la sucursal de Gonzalitos?",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2340,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur. Si gustas, puedes darte una vuelta",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2341,
+      "type": "fake_address",
+      "snippet": "sucursal de Guadalupe está en Av. Benito Juárez 1500, Guadalupe Centro.   ¿Te gustaría que i",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2341,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro.   ¿Te gustaría que iniciemos tu solici",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 2346,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey está en Av. Gonzalitos, justo a un lado de San Jerónimo, así que te qued",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2350,
+      "type": "fake_address",
+      "snippet": "cursal muy padre.  Estamos en Blvd. Venustiano Carranza 3000, en la colonia República. Aquí te dejo ",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2360,
+      "type": "fake_phone",
+      "snippet": "tro. Puedes comunicarte directamente al 81 1234 5678 para que el equipo de administración te",
+      "phone_found": "81 1234 5678"
+    },
+    {
+      "conv_idx": 2360,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Puedes comunicarte ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2360,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Puedes comunicarte directamente al 81 ",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2363,
+      "type": "fake_address",
+      "snippet": "Guadalupe :). La dirección es Av. Benito Juárez 1500: https://maps.app.goo.gl/TREFAgpe  Para",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2367,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos, está muy cerquita de Cumbres :).   Aquí tienen l",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2369,
+      "type": "fake_address",
+      "snippet": "Guadalupe :). La dirección es Av. Benito Juárez 1500: https://maps.app.goo.gl/TREFAgpe  Para",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2375,
+      "type": "fake_address",
+      "snippet": "stra sucursal de Gonzalitos:  Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2375,
+      "type": "fake_address",
+      "snippet": "stamos en nuestra sucursal de Gonzalitos:  Av. Gonzalitos 102 Sur, Mitras Centro https://m",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2375,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  ¿Me c",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2388,
+      "type": "fake_address",
+      "snippet": "uestra sucursal de Monterrey (Av. Gonzalitos 102 Sur). Los sábados abrimos de 9:00 a 15:",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2414,
+      "type": "fake_address",
+      "snippet": "talles :).   La dirección es: Av. Gonzalitos 102 Sur, Mitras Centro. Aquí tienes el mapa",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2414,
+      "type": "fake_address",
+      "snippet": "uestra sucursal de Monterrey (Gonzalitos). Ahí te van a recibir de maravilla para platicar",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2414,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí tienes el mapa para que llegues d",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2419,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2419,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2419,
+      "type": "fake_address",
+      "snippet": "las 9:00 am en la sucursal de Gonzalitos?",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2423,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos.  ¿Te gustaría que te pase los detalles de esa o ",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2423,
+      "type": "fake_address",
+      "snippet": "engas a la mano:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2423,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2423,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Ambas",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 2423,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2428,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí puedes ver la ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2428,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí puedes ver la ubicación exacta: h",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2441,
+      "type": "fake_address",
+      "snippet": "Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2441,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2441,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2441,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 2441,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Salti",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 2441,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2443,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, en Mitras Centro. También nos encu",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2443,
+      "type": "fake_address",
+      "snippet": "s encuentras en Guadalupe por Av. Benito Juárez 1500.  Si estás fuera de la ciudad, tenemos ",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2443,
+      "type": "fake_address",
+      "snippet": "sales en Saltillo sobre Blvd. Venustiano Carranza y en Reynosa por Blvd. Hidalgo. ¿Cuál de nuestras",
+      "detail": "Hallucinated street: venustiano carranza"
+    },
+    {
+      "conv_idx": 2443,
+      "type": "fake_branch",
+      "snippet": "zalitos 102 Sur, en Mitras Centro. También nos encuentras en Guadalupe po",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2447,
+      "type": "fake_address",
+      "snippet": "ucursal de Guadalupe, está en Av. Benito Juárez 1500. Mientras tanto, si quieres adelantar e",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2455,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos. ¿Te parece bien si te agendo una cita para las 4",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2457,
+      "type": "fake_address",
+      "snippet": " Corolla :).  La dirección es Av. Benito Juárez 1500, Guadalupe Centro. Aquí tienes la ubica",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2457,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro. Aquí tienes la ubicación exacta para q",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 2459,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur: https://maps.app.goo.gl/TREFAmty. ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2464,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2464,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2466,
+      "type": "fake_address",
+      "snippet": "sucursal de Guadalupe está en Av. Benito Juárez 1500. Aquí te dejo la ubicación de Google Ma",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2472,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey. Estamos en Av. Gonzalitos 102 Sur (https://maps.app.goo.gl/TREFAmty).",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2483,
+      "type": "fake_address",
+      "snippet": "estra sucursal de Monterrey:  Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2483,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  ¿A qu",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2486,
+      "type": "fake_address",
+      "snippet": "sucursal de Guadalupe está en Av. Benito Juárez 1500, aquí tienes el mapa para que lleguen f",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2494,
+      "type": "fake_address",
+      "snippet": "al de Monterrey.   Estamos en Av. Gonzalitos 102 Sur, Mitras Centro: https://maps.app.go",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2494,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro: https://maps.app.goo.gl/TREFAmty  Para",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2499,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, en Mitras Centro: https://maps.app",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2499,
+      "type": "fake_branch",
+      "snippet": "zalitos 102 Sur, en Mitras Centro: https://maps.app.goo.gl/TREFAmty  ¿Te ",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2507,
+      "type": "fake_address",
+      "snippet": "osa.  La de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí puedes verla e",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2507,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí puedes verla en el mapa: https://",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2510,
+      "type": "fake_address",
+      "snippet": "uede más cómoda:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2510,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2510,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2510,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 2510,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Salti",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 2510,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2512,
+      "type": "fake_address",
+      "snippet": "osa.  La de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí puedes verla e",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2512,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí puedes verla en el mapa: https://",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2519,
+      "type": "fake_address",
+      "snippet": "uestra sucursal de Monterrey (Av. Gonzalitos 102 Sur).   Pregunta por Mariana al llegar ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2540,
+      "type": "fake_address",
+      "snippet": "cursal muy padre.  Estamos en Blvd. Venustiano Carranza 3000, en la colonia República. Aquí te dejo ",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2557,
+      "type": "fake_address",
+      "snippet": "sucursal en Monterrey está en Av. Gonzalitos 102 Sur, en Mitras Centro: https://maps.app",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2557,
+      "type": "fake_branch",
+      "snippet": "zalitos 102 Sur, en Mitras Centro: https://maps.app.goo.gl/TREFAmty  Abri",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2561,
+      "type": "fake_address",
+      "snippet": "stamos en Monterrey sobre Av. Gonzalitos. ¿Te gustaría que te comparta la ubicación exacta",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2585,
+      "type": "fake_address",
+      "snippet": "Monterrey está muy céntrica:  Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2585,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Te ay",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2586,
+      "type": "fake_phone",
+      "snippet": "a nuestra sucursal de Monterrey es el **81 1234 5678**.  Ellos están disponibles de lunes a ",
+      "phone_found": "81 1234 5678"
+    },
+    {
+      "conv_idx": 2587,
+      "type": "fake_address",
+      "snippet": "y (sucursal San Jerónimo), en Av. Gonzalitos 102 Sur. Aquí tienes la ubicación exacta: h",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2588,
+      "type": "fake_address",
+      "snippet": "cursal de Guadalupe está en:  Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2588,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  El sá",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 2593,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la lig",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2593,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la liga para que no haya ",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2607,
+      "type": "fake_address",
+      "snippet": "dan súper cerca:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2607,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2607,
+      "type": "fake_address",
+      "snippet": " en la sucursal de Monterrey (Gonzalitos), ¿te gustaría que te agende una cita ahí hoy mis",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2607,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Como ",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 2607,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2611,
+      "type": "fake_address",
+      "snippet": "sucursal en Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2611,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2613,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos.  Aquí tienes la ubicación: https://maps.app.goo.",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2619,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos te queda súper cerca. Aquí tienes la ubicación: h",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2627,
+      "type": "fake_address",
+      "snippet": "ales y horarios:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2627,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2627,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2627,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 2627,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Salti",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 2627,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2629,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. También estamos en ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2629,
+      "type": "fake_address",
+      "snippet": "mbién estamos en Guadalupe en Av. Benito Juárez 1500, en Saltillo sobre Blvd. Venustiano Car",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2629,
+      "type": "fake_address",
+      "snippet": "1500, en Saltillo sobre Blvd. Venustiano Carranza y en Reynosa en Blvd. Hidalgo.  ¿Cuál de estas te",
+      "detail": "Hallucinated street: venustiano carranza"
+    },
+    {
+      "conv_idx": 2629,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. También estamos en Guadalupe en Av. Be",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2629,
+      "type": "fake_address",
+      "snippet": " en la sucursal de Monterrey (Gonzalitos) para que conozcas el **Nissan Versa Advance 2019",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2631,
+      "type": "fake_phone",
+      "snippet": "Ramírez, nuestra asesora financiera:  📞 Teléfono: 8123456789 📧 Email: sofia.ramirez@trefa.mx ⏰ Horar",
+      "phone_found": "Teléfono: 8123456789"
+    },
+    {
+      "conv_idx": 2636,
+      "type": "fake_address",
+      "snippet": " :). En Saltillo estamos en:  Blvd. Venustiano Carranza 3000, Colonia República. Aquí puedes ver la ",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2637,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la lig",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2637,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la liga para que no haya ",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2640,
+      "type": "fake_address",
+      "snippet": "La sucursal Monterrey está en Av. Gonzalitos 102 Sur, en Mitras Centro. Aquí es donde te",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2640,
+      "type": "fake_address",
+      "snippet": "én tenemos la de Guadalupe en Av. Benito Juárez 1500. Ambas abrimos mañana de 9:00 a 15:00 p",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2640,
+      "type": "fake_branch",
+      "snippet": "zalitos 102 Sur, en Mitras Centro. Aquí es donde tenemos el Corolla blanc",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2640,
+      "type": "fake_address",
+      "snippet": " en la sucursal de Monterrey (Gonzalitos). Te va a encantar cómo se maneja :).  Para la pr",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2647,
+      "type": "fake_address",
+      "snippet": "tas ubicaciones:  Monterrey — Av. Gonzalitos 102 Sur: https://maps.app.goo.gl/TREFAmty G",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2647,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAmty Guadalupe — Av. Benito Juárez 1500: https://maps.app.goo.gl/TREFAgpe Salti",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2647,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAgpe Saltillo — Blvd. Venustiano Carranza 3000: https://maps.app.goo.gl/TREFAslt Reyno",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2647,
+      "type": "fake_address",
+      "snippet": "app.goo.gl/TREFAslt Reynosa — Blvd. Hidalgo 1200: https://maps.app.goo.gl/TREFArey  Déja",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 2650,
+      "type": "fake_address",
+      "snippet": " de Monterrey en Gonzalitos:  Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2650,
+      "type": "fake_address",
+      "snippet": "stra sucursal de Monterrey en Gonzalitos:  Av. Gonzalitos 102 Sur, Mitras Centro https://m",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2650,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Si gu",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2654,
+      "type": "fake_address",
+      "snippet": "l en Saltillo está ubicada en Blvd. Venustiano Carranza 4567, Col. Los Rodriguez. Abrimos de Lunes a",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 4567"
+    },
+    {
+      "conv_idx": 2678,
+      "type": "fake_address",
+      "snippet": "rándote.  Estamos ubicados en Blvd. Hidalgo 1200, en la colonia Rodríguez. Aquí puedes v",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 2682,
+      "type": "fake_phone",
+      "snippet": ", Alberto! Ya registré tus datos con tu número 8187654321 para tu visita y prueba de manejo de la",
+      "phone_found": "número 8187654321"
+    },
+    {
+      "conv_idx": 2685,
+      "type": "fake_address",
+      "snippet": "rándote.  Estamos ubicados en Blvd. Hidalgo 1200, en la colonia Rodríguez. Aquí puedes v",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 2687,
+      "type": "fake_address",
+      "snippet": "sucursal en Monterrey está en Av. Gonzalitos 102 Sur, en Mitras Centro: https://maps.app",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2687,
+      "type": "fake_branch",
+      "snippet": "zalitos 102 Sur, en Mitras Centro: https://maps.app.goo.gl/TREFAmty  Abri",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2688,
+      "type": "fake_phone",
+      "snippet": "ntactarlos directamente, su teléfono es 84 4123 4567. ¿Hay algo más en lo que te pueda apoya",
+      "phone_found": "84 4123 4567"
+    },
+    {
+      "conv_idx": 2702,
+      "type": "fake_address",
+      "snippet": "La sucursal Monterrey está en Av. Gonzalitos 102 Sur, en Mitras Centro. Aquí es donde te",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2702,
+      "type": "fake_address",
+      "snippet": "én tenemos la de Guadalupe en Av. Benito Juárez 1500. Ambas abrimos mañana de 9:00 a 15:00 p",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2702,
+      "type": "fake_branch",
+      "snippet": "zalitos 102 Sur, en Mitras Centro. Aquí es donde tenemos el Corolla blanc",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2702,
+      "type": "fake_address",
+      "snippet": " en la sucursal de Monterrey (Gonzalitos). Te va a encantar cómo se maneja :).  Para la pr",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2704,
+      "type": "fake_address",
+      "snippet": "uestra sucursal de Monterrey (Av. Gonzalitos 102 Sur). Los sábados abrimos de 9:00 a 15:",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2729,
+      "type": "fake_address",
+      "snippet": " :). En Saltillo estamos en:  Blvd. Venustiano Carranza 3000, Colonia República. Aquí puedes ver la ",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2731,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2731,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2736,
+      "type": "fake_address",
+      "snippet": "e no haya pierde :  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 2736,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFArey  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2736,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAmty  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2736,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Salti",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2740,
+      "type": "fake_address",
+      "snippet": "nos visites:  **Monterrey** — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2740,
+      "type": "fake_address",
+      "snippet": ".gl/TREFAmty  **Guadalupe** — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2740,
+      "type": "fake_address",
+      "snippet": "o.gl/TREFAgpe  **Saltillo** — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2740,
+      "type": "fake_address",
+      "snippet": "oo.gl/TREFAslt  **Reynosa** — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 2740,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  **Sal",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 2740,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  **Gua",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2751,
+      "type": "fake_address",
+      "snippet": "pe (donde está la Sportage) — Av. Benito Juárez 1500 https://maps.app.goo.gl/TREFAgpe  Monte",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2751,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAgpe  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2751,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAmty  Saltillo — Blvd. Venustiano Carranza 3000 https://maps.app.goo.gl/TREFAslt  Reyno",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2751,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200 https://maps.app.goo.gl/TREFArey  ¿Te g",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 2751,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Salti",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2761,
+      "type": "fake_phone",
+      "snippet": "Ramírez, nuestra asesora financiera:  📞 Teléfono: 8123456789 📧 Email: sofia.ramirez@trefa.mx ⏰ Horar",
+      "phone_found": "Teléfono: 8123456789"
+    },
+    {
+      "conv_idx": 2772,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos te queda súper cerca. Aquí tienes la ubicación: h",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2774,
+      "type": "fake_address",
+      "snippet": "y sencillo, está sobre la Av. Gonzalitos.  Aquí tienes la ubicación exacta en Google Maps:",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2792,
+      "type": "fake_address",
+      "snippet": "las direcciones:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2792,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2792,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2792,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 2792,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Salti",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 2792,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2794,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí puedes ver la ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2794,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí puedes ver la ubicación exacta: h",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2822,
+      "type": "fake_address",
+      "snippet": "a gustar mucho :). Estamos en Av. Benito Juárez 1500, en Guadalupe Centro. ¿A qué hora te qu",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2828,
+      "type": "fake_address",
+      "snippet": "uede más cómoda:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2828,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 2828,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2828,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 2828,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Salti",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 2828,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2833,
+      "type": "fake_address",
+      "snippet": "tra sucursal de Monterrey, en Av. Gonzalitos 102 Sur, Mitras Centro :). Te queda súper c",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2833,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro :). Te queda súper cerca.  Aquí tienes ",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2834,
+      "type": "fake_address",
+      "snippet": "sucursal en Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2834,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2835,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey! Estamos en Av. Gonzalitos 102 Sur, en Mitras Centro: https://maps.app",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2835,
+      "type": "fake_branch",
+      "snippet": "zalitos 102 Sur, en Mitras Centro: https://maps.app.goo.gl/TREFAmty  La S",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2843,
+      "type": "fake_address",
+      "snippet": "queda perfecta, está justo en Av. Gonzalitos 102 Sur. Aquí te dejo la ubicación: https:/",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2843,
+      "type": "fake_address",
+      "snippet": " visitarnos en la sucursal de Gonzalitos para avisarle al equipo y que te tengan el auto l",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2861,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí puedes ver la ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2861,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí puedes ver la ubicación exacta: h",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2864,
+      "type": "fake_address",
+      "snippet": " sucursal de Saltillo está en Blvd. Venustiano Carranza 3000. ¿Te gustaría que agendemos una visita ",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2869,
+      "type": "fake_phone",
+      "snippet": "s #2020, Col. Rodríguez. El teléfono es 899-924-4040 y abrimos de Lunes a Viernes de 9:00 a ",
+      "phone_found": "899-924-4040"
+    },
+    {
+      "conv_idx": 2869,
+      "type": "fake_address",
+      "snippet": "al en Reynosa está ubicada en Blvd. Morelos #2020, Col. Rodríguez. El teléfono es 899-924",
+      "detail": "Unknown street: Blvd. Morelos #2020"
+    },
+    {
+      "conv_idx": 2876,
+      "type": "fake_address",
+      "snippet": " sucursal de Saltillo está en Blvd. Venustiano Carranza 3000, en la colonia República. Aquí te dejo ",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 2879,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey. Estamos en Av. Gonzalitos 102 Sur, Mitras Centro. ¿A qué hora te qued",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2879,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. ¿A qué hora te quedaría bien darnos la",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2901,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos te queda súper cerca de Colinas. Aquí te dejo la ",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 2916,
+      "type": "fake_phone",
+      "snippet": "50, Col. Mitras Centro.  Su teléfono es 81 1234 0001. ¿Te gustaría saber los horarios de ate",
+      "phone_found": "81 1234 0001"
+    },
+    {
+      "conv_idx": 2916,
+      "type": "fake_address",
+      "snippet": "en:  📍 **Monterrey Centro** – Av. Gonzalitos 1250, Col. Mitras Centro.  Su teléfono es 81",
+      "detail": "Unknown street: Av. Gonzalitos 1250"
+    },
+    {
+      "conv_idx": 2916,
+      "type": "fake_branch",
+      "snippet": "al ubicada en:  📍 **Monterrey Centro** – Av. Gonzalitos 1250, Col. Mitras Ce",
+      "branch_found": "monterrey centro"
+    },
+    {
+      "conv_idx": 2916,
+      "type": "fake_branch",
+      "snippet": "nzalitos 1250, Col. Mitras Centro.  Su teléfono es 81 1234 0001. ¿Te gust",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2924,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey. Estamos en Av. Gonzalitos 102 Sur, Mitras Centro: https://maps.app.go",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2924,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro: https://maps.app.goo.gl/TREFAmty  ¿Qué",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2926,
+      "type": "fake_address",
+      "snippet": "ucursal de Monterrey. Está en Av. Gonzalitos 102 Sur, Mitras Centro. Voy a registrar tus",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2926,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Voy a registrar tus datos para que un ",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2929,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey. Estamos en Av. Gonzalitos 102 Sur, Mitras Centro: https://maps.app.go",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2929,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro: https://maps.app.goo.gl/TREFAmty  ¿Qué",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2930,
+      "type": "fake_address",
+      "snippet": "uestra sucursal de Monterrey (Av. Gonzalitos 102 Sur).   Pregunta por Mariana al llegar ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2942,
+      "type": "fake_address",
+      "snippet": "queda súper céntrica, está en Av. Gonzalitos 102 Sur, en Mitras Centro :).   Como eres ú",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2943,
+      "type": "fake_address",
+      "snippet": "rsal de Reynosa.   Estamos en Blvd. Hidalgo 1200, col. Rodríguez. Aquí te dejo la liga d",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 2956,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí puedes ver la ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2956,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí puedes ver la ubicación exacta: h",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2965,
+      "type": "fake_address",
+      "snippet": "uestra sucursal de Monterrey: Av. Gonzalitos 102 Sur, Mitras Centro. Aquí tienes el mapa",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 2965,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí tienes el mapa: https://maps.app.",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 2967,
+      "type": "fake_address",
+      "snippet": "sucursal está en Saltillo, en Blvd. Venustiano Carranza 3000. ¿Te gustaría que te agende una visita ",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 3038,
+      "type": "fake_address",
+      "snippet": "tras sucursales:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3038,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3038,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 3038,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 3038,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Salti",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 3038,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3194,
+      "type": "fake_address",
+      "snippet": "Guadalupe :). La dirección es Av. Benito Juárez 1500: https://maps.app.goo.gl/TREFAgpe  Para",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3202,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos. ¿Te parece bien si te agendo una cita para las 4",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 3208,
+      "type": "fake_address",
+      "snippet": "Estamos ubicados en Av. Eugenio Garza Sada 2341, Roma, Monterrey. ¡Te esperamos cuando ",
+      "detail": "Unknown street: Av. Eugenio Garza Sada 2341"
+    },
+    {
+      "conv_idx": 3211,
+      "type": "fake_address",
+      "snippet": "ales y horarios:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3211,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3211,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 3211,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 3211,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Salti",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 3211,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3217,
+      "type": "fake_phone",
+      "snippet": "s #2020, Col. Rodríguez. El teléfono es 899-924-4040 y abrimos de Lunes a Viernes de 9:00 a ",
+      "phone_found": "899-924-4040"
+    },
+    {
+      "conv_idx": 3217,
+      "type": "fake_address",
+      "snippet": "al en Reynosa está ubicada en Blvd. Morelos #2020, Col. Rodríguez. El teléfono es 899-924",
+      "detail": "Unknown street: Blvd. Morelos #2020"
+    },
+    {
+      "conv_idx": 3224,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, en Mitras Centro: https://maps.app",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3224,
+      "type": "fake_branch",
+      "snippet": "zalitos 102 Sur, en Mitras Centro: https://maps.app.goo.gl/TREFAmty  ¿Te ",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3231,
+      "type": "fake_address",
+      "snippet": "al en Reynosa está ubicada en Blvd. Morelos #1234, Col. Centro. Abrimos de Lunes a Vierne",
+      "detail": "Unknown street: Blvd. Morelos #1234"
+    },
+    {
+      "conv_idx": 3235,
+      "type": "fake_address",
+      "snippet": "ursal de Reynosa, que está en Blvd. Hidalgo 1200, Rodríguez (aquí la puedes ver en el ma",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 3265,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, en Mitras Centro. También nos encu",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3265,
+      "type": "fake_address",
+      "snippet": "s encuentras en Guadalupe por Av. Benito Juárez 1500.  Si estás fuera de la ciudad, tenemos ",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3265,
+      "type": "fake_address",
+      "snippet": "sales en Saltillo sobre Blvd. Venustiano Carranza y en Reynosa por Blvd. Hidalgo. ¿Cuál de nuestras",
+      "detail": "Hallucinated street: venustiano carranza"
+    },
+    {
+      "conv_idx": 3265,
+      "type": "fake_branch",
+      "snippet": "zalitos 102 Sur, en Mitras Centro. También nos encuentras en Guadalupe po",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3267,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3267,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3278,
+      "type": "fake_address",
+      "snippet": "y (sucursal San Jerónimo), en Av. Gonzalitos 102 Sur. Aquí tienes la ubicación exacta: h",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3283,
+      "type": "fake_address",
+      "snippet": "estra sucursal de Monterrey:  Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3283,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Estam",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3289,
+      "type": "fake_address",
+      "snippet": "La sucursal Monterrey está en Av. Gonzalitos 102 Sur, en Mitras Centro. Aquí es donde te",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3289,
+      "type": "fake_address",
+      "snippet": "én tenemos la de Guadalupe en Av. Benito Juárez 1500. Ambas abrimos mañana de 9:00 a 15:00 p",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3289,
+      "type": "fake_branch",
+      "snippet": "zalitos 102 Sur, en Mitras Centro. Aquí es donde tenemos el Corolla blanc",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3289,
+      "type": "fake_address",
+      "snippet": " en la sucursal de Monterrey (Gonzalitos). Te va a encantar cómo se maneja :).  Para la pr",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 3290,
+      "type": "fake_address",
+      "snippet": " esa Tacoma.  La dirección es Blvd. Venustiano Carranza 3000, en la colonia República. Aquí te dejo ",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 3292,
+      "type": "fake_address",
+      "snippet": "stra sucursal de Monterrey en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3292,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3306,
+      "type": "fake_address",
+      "snippet": "te.  Nuestra sucursal está en Av. Benito Juárez 1500 (https://maps.app.goo.gl/TREFAgpe). Te ",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3317,
+      "type": "fake_phone",
+      "snippet": ", Alberto! Ya registré tus datos con tu número 8187654321 para tu visita y prueba de manejo de la",
+      "phone_found": "número 8187654321"
+    },
+    {
+      "conv_idx": 3319,
+      "type": "fake_address",
+      "snippet": "cursal de Guadalupe está en:  Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3319,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  El sá",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 3328,
+      "type": "fake_address",
+      "snippet": "ucursal allá! Está ubicada en Blvd. Hidalgo 1200, en la colonia Rodríguez.  Aquí te paso",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 3346,
+      "type": "fake_phone",
+      "snippet": "a nuestra sucursal de Monterrey es el **81 1234 5678**.  Ellos están disponibles de lunes a ",
+      "phone_found": "81 1234 5678"
+    },
+    {
+      "conv_idx": 3352,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro :).   Aquí tienes el",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3352,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro :).   Aquí tienes el mapa: https://maps",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3361,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la lig",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3361,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la liga para que no haya ",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3366,
+      "type": "fake_address",
+      "snippet": "sal de Monterrey, que está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3366,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3378,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos.  ¿Te gustaría que te pase los detalles de esa o ",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 3378,
+      "type": "fake_address",
+      "snippet": "engas a la mano:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3378,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3378,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Ambas",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 3378,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3387,
+      "type": "fake_address",
+      "snippet": "a sucursal de Reynosa está en Blvd. Hidalgo 1200, Col. Rodríguez. Aquí tienes el mapa pa",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 3413,
+      "type": "fake_phone",
+      "snippet": "tro. Puedes comunicarte directamente al 81 1234 5678 para que el equipo de administración te",
+      "phone_found": "81 1234 5678"
+    },
+    {
+      "conv_idx": 3413,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Puedes comunicarte ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3413,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Puedes comunicarte directamente al 81 ",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3423,
+      "type": "fake_address",
+      "snippet": "tra sucursal de Monterrey, en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la lig",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3423,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la liga de Maps: https://",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3427,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí puedes ver la ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3427,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí puedes ver la ubicación exacta: h",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3428,
+      "type": "fake_address",
+      "snippet": "uestra sucursal de Monterrey (Av. Gonzalitos 102 Sur).   Pregunta por Mariana al llegar ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3439,
+      "type": "fake_address",
+      "snippet": "a sucursal en Reynosa está en Blvd. Hidalgo 1200, Rodríguez. Aquí tienes la ubicación ex",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 3446,
+      "type": "fake_phone",
+      "snippet": "ntactarlos directamente, su teléfono es 84 4123 4567. ¿Hay algo más en lo que te pueda apoya",
+      "phone_found": "84 4123 4567"
+    },
+    {
+      "conv_idx": 3451,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey. Estamos en Av. Gonzalitos 102 Sur (https://maps.app.goo.gl/TREFAmty).",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3464,
+      "type": "fake_address",
+      "snippet": "a sucursal de Monterrey (zona Gonzalitos/San Jerónimo).  Aquí puedes ver la ubicación en G",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 3470,
+      "type": "fake_phone",
+      "snippet": "50, Col. Mitras Centro.  Su teléfono es 81 1234 0001. ¿Te gustaría saber los horarios de ate",
+      "phone_found": "81 1234 0001"
+    },
+    {
+      "conv_idx": 3470,
+      "type": "fake_address",
+      "snippet": "en:  📍 **Monterrey Centro** – Av. Gonzalitos 1250, Col. Mitras Centro.  Su teléfono es 81",
+      "detail": "Unknown street: Av. Gonzalitos 1250"
+    },
+    {
+      "conv_idx": 3470,
+      "type": "fake_branch",
+      "snippet": "al ubicada en:  📍 **Monterrey Centro** – Av. Gonzalitos 1250, Col. Mitras Ce",
+      "branch_found": "monterrey centro"
+    },
+    {
+      "conv_idx": 3470,
+      "type": "fake_branch",
+      "snippet": "nzalitos 1250, Col. Mitras Centro.  Su teléfono es 81 1234 0001. ¿Te gust",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3484,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey! Estamos en Av. Gonzalitos 102 Sur, en Mitras Centro: https://maps.app",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3484,
+      "type": "fake_branch",
+      "snippet": "zalitos 102 Sur, en Mitras Centro: https://maps.app.goo.gl/TREFAmty  La S",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3494,
+      "type": "fake_address",
+      "snippet": "rándote.  Estamos ubicados en Blvd. Hidalgo 1200, en la colonia Rodríguez. Aquí puedes v",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 3497,
+      "type": "fake_address",
+      "snippet": "sucursal de Guadalupe está en Av. Benito Juárez 1500, aquí tienes el mapa para que lleguen f",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3511,
+      "type": "fake_address",
+      "snippet": "tra sucursal de Monterrey, en Av. Gonzalitos 102 Sur, Mitras Centro :). Te queda súper c",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3511,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro :). Te queda súper cerca.  Aquí tienes ",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3512,
+      "type": "fake_address",
+      "snippet": " de Monterrey en Gonzalitos:  Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3512,
+      "type": "fake_address",
+      "snippet": "stra sucursal de Monterrey en Gonzalitos:  Av. Gonzalitos 102 Sur, Mitras Centro https://m",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 3512,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Si gu",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3513,
+      "type": "fake_address",
+      "snippet": "las ubicaciones:  Monterrey — Av. Gonzalitos 102 Sur https://maps.app.goo.gl/TREFAmty  G",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3513,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500 https://maps.app.goo.gl/TREFAgpe  Salti",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3513,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000 https://maps.app.goo.gl/TREFAslt  Reyno",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 3513,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200 https://maps.app.goo.gl/TREFArey  ¿Cuál",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 3515,
+      "type": "fake_address",
+      "snippet": " otras agencias:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro. https://maps.app.go",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3515,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro. https://maps.app.goo",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3515,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República. https://maps.app.goo.gl/TRE",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 3515,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez. https://maps.app.goo.gl/TRE",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 3515,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro. https://maps.app.goo.gl/TREFAgpe  Salt",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 3515,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. https://maps.app.goo.gl/TREFAmty  Guad",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3522,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí tienes el mapa",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3522,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí tienes el mapa: https://maps.app.",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3525,
+      "type": "fake_address",
+      "snippet": "uede más cómoda:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3525,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3525,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 3525,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 3525,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Salti",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 3525,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3532,
+      "type": "fake_address",
+      "snippet": ", la sucursal de Guadalupe en Av. Benito Juárez debió estar abierta hasta las 7:00 PM. Te ofrezco una disculpa sincera ",
+      "detail": "Unknown street: Av. Benito Juárez debió estar abierta hasta las 7"
+    },
+    {
+      "conv_idx": 3541,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey, ubicada en Av. Gonzalitos 102 Sur, Mitras Centro :).   Aquí puedes ve",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3541,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro :).   Aquí puedes ver la ubicación exac",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3541,
+      "type": "fake_address",
+      "snippet": "as 11:00 AM en la sucursal de Gonzalitos. También te acabo de enviar la cotización de la *",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 3546,
+      "type": "fake_address",
+      "snippet": "sucursal está en Saltillo, en Blvd. Venustiano Carranza 3000. ¿Te gustaría que te agende una visita ",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 3554,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur. Si gustas, puedes darte una vuelta",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3558,
+      "type": "fake_address",
+      "snippet": " sucursal de Saltillo está en Blvd. Venustiano Carranza 3000, en la colonia República. Aquí te dejo ",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 3578,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey. Estamos en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3578,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3579,
+      "type": "fake_address",
+      "snippet": "rsal de Reynosa.   Estamos en Blvd. Hidalgo 1200, col. Rodríguez. Aquí te dejo la liga d",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 3581,
+      "type": "fake_address",
+      "snippet": "l en Saltillo está ubicada en Blvd. Venustiano Carranza 4567, Col. Los Rodriguez. Abrimos de Lunes a",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 4567"
+    },
+    {
+      "conv_idx": 3583,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3583,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3587,
+      "type": "fake_address",
+      "snippet": " sucursales son:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro Guadalupe — Av. Beni",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3587,
+      "type": "fake_address",
+      "snippet": "ur, Mitras Centro Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro Saltillo — Blvd. Venu",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3587,
+      "type": "fake_address",
+      "snippet": ", Guadalupe Centro Saltillo — Blvd. Venustiano Carranza 3000, República Reynosa — Blvd. Hidalgo 1200",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 3587,
+      "type": "fake_address",
+      "snippet": "nza 3000, República Reynosa — Blvd. Hidalgo 1200, Rodríguez  ¿En cuál de nuestras agenci",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 3587,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro Guadalupe — Av. Benito Juárez 1500, Gua",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3597,
+      "type": "fake_address",
+      "snippet": "dan súper cerca:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3597,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3597,
+      "type": "fake_address",
+      "snippet": " en la sucursal de Monterrey (Gonzalitos), ¿te gustaría que te agende una cita ahí hoy mis",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 3597,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Como ",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 3597,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3607,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey está en Av. Gonzalitos, justo a un lado de San Jerónimo, así que te qued",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 3614,
+      "type": "fake_address",
+      "snippet": "tras sucursales:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3614,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3614,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 3614,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 3614,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Salti",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 3614,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3619,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey. Estamos en Av. Gonzalitos 102 Sur. ¿Te queda bien venir por la mañana",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3627,
+      "type": "fake_address",
+      "snippet": "sucursal en Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3627,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3639,
+      "type": "fake_address",
+      "snippet": "rca. Nuestra sucursal está en Blvd. Hidalgo 1200, en la colonia Rodríguez. Aquí te dejo ",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 3650,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. También estamos en ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3650,
+      "type": "fake_address",
+      "snippet": "mbién estamos en Guadalupe en Av. Benito Juárez 1500, en Saltillo sobre Blvd. Venustiano Car",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3650,
+      "type": "fake_address",
+      "snippet": "1500, en Saltillo sobre Blvd. Venustiano Carranza y en Reynosa en Blvd. Hidalgo.  ¿Cuál de estas te",
+      "detail": "Hallucinated street: venustiano carranza"
+    },
+    {
+      "conv_idx": 3650,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. También estamos en Guadalupe en Av. Be",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3650,
+      "type": "fake_address",
+      "snippet": " en la sucursal de Monterrey (Gonzalitos) para que conozcas el **Nissan Versa Advance 2019",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 3659,
+      "type": "fake_address",
+      "snippet": "ucursal de Monterrey. Está en Av. Gonzalitos 102 Sur, Mitras Centro. Voy a registrar tus",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3659,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Voy a registrar tus datos para que un ",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3670,
+      "type": "fake_address",
+      "snippet": "rsal de Monterrey. Estamos en Av. Gonzalitos 102 Sur, Mitras Centro. ¿A qué hora te qued",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3670,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. ¿A qué hora te quedaría bien darnos la",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3672,
+      "type": "fake_address",
+      "snippet": "sucursal en Monterrey está en Av. Gonzalitos 102 Sur, en Mitras Centro: https://maps.app",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3672,
+      "type": "fake_branch",
+      "snippet": "zalitos 102 Sur, en Mitras Centro: https://maps.app.goo.gl/TREFAmty  Abri",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3675,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la lig",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3675,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la liga de Maps: https://",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3678,
+      "type": "fake_address",
+      "snippet": "al en Reynosa está ubicada en Blvd. Morelos #1234, Col. Petrolera.  Nuestro horario es de",
+      "detail": "Unknown street: Blvd. Morelos #1234"
+    },
+    {
+      "conv_idx": 3688,
+      "type": "fake_phone",
+      "snippet": "4, Col. Centro**. Puedes llamarnos al **899-123-4567** para confirmar tu visita. 😊  ¿Qué te ",
+      "phone_found": "899-123-4567"
+    },
+    {
+      "conv_idx": 3688,
+      "type": "fake_address",
+      "snippet": " en Reynosa está ubicada en **Blvd. Morelos 1234, Col. Centro**. Puedes llamarnos al **8",
+      "detail": "Unknown street: Blvd. Morelos 1234"
+    },
+    {
+      "conv_idx": 3692,
+      "type": "fake_address",
+      "snippet": "ones de la zona:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3692,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3692,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Estam",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 3692,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3696,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos, está muy cerquita de Cumbres :).   Aquí tienen l",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 3701,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3701,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3702,
+      "type": "fake_address",
+      "snippet": "tillo y Reynosa.  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3702,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3702,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 3702,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 3702,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Salti",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 3702,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3708,
+      "type": "fake_address",
+      "snippet": "stra sucursal de Monterrey en Av. Gonzalitos te queda a 5 minutos de San Jerónimo.  Aquí puedes v",
+      "detail": "Unknown street: Av. Gonzalitos te queda a 5"
+    },
+    {
+      "conv_idx": 3731,
+      "type": "fake_address",
+      "snippet": "cursal de Monterrey sobre Av. Gonzalitos. ¿Te gustaría que te agende una visita para mañan",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 3742,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, en Mitras Centro :). Aquí tienes l",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3742,
+      "type": "fake_branch",
+      "snippet": "zalitos 102 Sur, en Mitras Centro :). Aquí tienes la ubicación exacta: ht",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3748,
+      "type": "fake_address",
+      "snippet": " vienes a nuestra sucursal de Gonzalitos para que la manejes y veas lo bien que está? Te a",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 3748,
+      "type": "fake_address",
+      "snippet": "mos en una zona muy céntrica: Av. Gonzalitos 102 Sur, en Mitras Centro. Aquí te dejo la ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3759,
+      "type": "fake_address",
+      "snippet": "rsal de Guadalupe, ubicada en Avenida Miguel Alemán 303, col. La Fe. Para que te des una idea, ",
+      "detail": "Unknown street: Avenida Miguel Alemán 303"
+    },
+    {
+      "conv_idx": 3764,
+      "type": "fake_address",
+      "snippet": "nos visites:  **Monterrey** — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3764,
+      "type": "fake_address",
+      "snippet": ".gl/TREFAmty  **Guadalupe** — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3764,
+      "type": "fake_address",
+      "snippet": "o.gl/TREFAgpe  **Saltillo** — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 3764,
+      "type": "fake_address",
+      "snippet": "oo.gl/TREFAslt  **Reynosa** — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 3764,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  **Sal",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 3764,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  **Gua",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3767,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos te queda súper cerca. Aquí tienes la ubicación: h",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 3776,
+      "type": "fake_address",
+      "snippet": "o :).   Estamos en Monterrey (Av. Gonzalitos 102 Sur) y en Guadalupe (Av. Benito Juárez ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3776,
+      "type": "fake_address",
+      "snippet": "itos 102 Sur) y en Guadalupe (Av. Benito Juárez 1500). ¿Cuál te queda más cerca para que te ",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3778,
+      "type": "fake_address",
+      "snippet": "sucursal de Guadalupe está en Av. Benito Juárez 1500. Aquí te dejo la ubicación de Google Ma",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3797,
+      "type": "fake_address",
+      "snippet": "a gustar mucho :). Estamos en Av. Benito Juárez 1500, en Guadalupe Centro. ¿A qué hora te qu",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3807,
+      "type": "fake_address",
+      "snippet": "sucursal de Guadalupe está en Av. Benito Juárez 1500, en el centro de Guadalupe.   Aquí te d",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3808,
+      "type": "fake_address",
+      "snippet": "talles :).   La dirección es: Av. Gonzalitos 102 Sur, Mitras Centro. Aquí tienes el mapa",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3808,
+      "type": "fake_address",
+      "snippet": "uestra sucursal de Monterrey (Gonzalitos). Ahí te van a recibir de maravilla para platicar",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 3808,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí tienes el mapa para que llegues d",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3815,
+      "type": "fake_address",
+      "snippet": " sucursal de Saltillo está en Blvd. Venustiano Carranza 3000, en la colonia República. Aquí te dejo ",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 3819,
+      "type": "fake_address",
+      "snippet": "osa.  La de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí puedes verla e",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3819,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí puedes verla en el mapa: https://",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3838,
+      "type": "fake_address",
+      "snippet": "mos ubicados en:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3838,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Tambi",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3847,
+      "type": "fake_address",
+      "snippet": "nuestra sucursal de Saltillo: Blvd. Venustiano Carranza 3000 (https://maps.app.goo.gl/TREFAslt).  So",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 3860,
+      "type": "fake_address",
+      "snippet": "nejes :). Estamos ubicados en Av. Benito Juárez 1500, en el centro de Guadalupe.   Abrimos d",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3874,
+      "type": "fake_phone",
+      "snippet": "Ramírez, nuestra asesora financiera:  📞 Teléfono: 8123456789 📧 Email: sofia.ramirez@trefa.mx ⏰ Horar",
+      "phone_found": "Teléfono: 8123456789"
+    },
+    {
+      "conv_idx": 3879,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos te queda súper cerca de Colinas. Aquí te dejo la ",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 3882,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos te queda súper cerca. Aquí te dejo la ubicación: ",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 3910,
+      "type": "fake_address",
+      "snippet": "sucursal de Guadalupe está en Av. Benito Juárez 1500, Guadalupe Centro.   ¿Te gustaría que t",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3910,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro.   ¿Te gustaría que te envíe una cotiza",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 3912,
+      "type": "fake_address",
+      "snippet": "y sencillo, está sobre la Av. Gonzalitos.  Aquí tienes la ubicación exacta en Google Maps:",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 3919,
+      "type": "fake_address",
+      "snippet": "uestra sucursal de Monterrey (Av. Gonzalitos 102 Sur). Los sábados abrimos de 9:00 a 15:",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3935,
+      "type": "fake_address",
+      "snippet": " Jerónimo :). La dirección es Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3935,
+      "type": "fake_address",
+      "snippet": " Monterrey está en la zona de Gonzalitos, que te queda a unos minutos de San Jerónimo :). ",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 3935,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3939,
+      "type": "fake_phone",
+      "snippet": " de manejo? También puedes llamarnos al 899-123-4567.",
+      "phone_found": "899-123-4567"
+    },
+    {
+      "conv_idx": 3939,
+      "type": "fake_address",
+      "snippet": "al en Reynosa está ubicada en Blvd. Hidalgo #1234, Col. Las Fuentes. ¿Te gustaría agendar",
+      "detail": "Unknown street: Blvd. Hidalgo #1234"
+    },
+    {
+      "conv_idx": 3940,
+      "type": "fake_address",
+      "snippet": "stra sucursal de Gonzalitos:  Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3940,
+      "type": "fake_address",
+      "snippet": "stamos en nuestra sucursal de Gonzalitos:  Av. Gonzalitos 102 Sur, Mitras Centro https://m",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 3940,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  ¿Me c",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3943,
+      "type": "fake_address",
+      "snippet": " :). En Saltillo estamos en:  Blvd. Venustiano Carranza 3000, Colonia República. Aquí puedes ver la ",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 3950,
+      "type": "fake_address",
+      "snippet": "al de Monterrey.   Estamos en Av. Gonzalitos 102 Sur, Mitras Centro: https://maps.app.go",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3950,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro: https://maps.app.goo.gl/TREFAmty  Para",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3956,
+      "type": "fake_address",
+      "snippet": "estra sucursal de Monterrey:  Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3956,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  ¿A qu",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 3970,
+      "type": "fake_address",
+      "snippet": "tas ubicaciones:  Monterrey — Av. Gonzalitos 102 Sur: https://maps.app.goo.gl/TREFAmty G",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3970,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAmty Guadalupe — Av. Benito Juárez 1500: https://maps.app.goo.gl/TREFAgpe Salti",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3970,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAgpe Saltillo — Blvd. Venustiano Carranza 3000: https://maps.app.goo.gl/TREFAslt Reyno",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 3970,
+      "type": "fake_address",
+      "snippet": "app.goo.gl/TREFAslt Reynosa — Blvd. Hidalgo 1200: https://maps.app.goo.gl/TREFArey  Déja",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 3973,
+      "type": "fake_address",
+      "snippet": " estas ciudades:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 3973,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 3973,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 3973,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 3973,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Salti",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 3973,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 4010,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos. ¿Te gustaría venir a conocerlo mañana o prefiere",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 4018,
+      "type": "fake_address",
+      "snippet": "rsal de Saltillo:  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 4029,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la lig",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 4029,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo la liga de Google Maps pa",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 4030,
+      "type": "fake_phone",
+      "snippet": " PM. Puedes agendar tu cita llamando al 899-123-4567. 📞  ¿Qué día y hora te quedaría mejor p",
+      "phone_found": "899-123-4567"
+    },
+    {
+      "conv_idx": 4030,
+      "type": "fake_address",
+      "snippet": "al en Reynosa está ubicada en Blvd. Morelos #1234, Col. Rodríguez. Abrimos de Lunes a Vie",
+      "detail": "Unknown street: Blvd. Morelos #1234"
+    },
+    {
+      "conv_idx": 4034,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey, en Av. Gonzalitos. ¿Te gustaría venir a conocerlo en persona hoy mi",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 4037,
+      "type": "fake_address",
+      "snippet": "tra sucursal de Monterrey, en Av. Gonzalitos 102 Sur. Aquí te dejo la ubicación exacta: ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 4048,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí puedes ver la ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 4048,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí puedes ver la ubicación exacta: h",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 4049,
+      "type": "fake_phone",
+      "snippet": "ia! Un asesor te contactará en breve al número 8111223344 para coordinar tu visita a la sucursal ",
+      "phone_found": "número 8111223344"
+    },
+    {
+      "conv_idx": 4056,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur: https://maps.app.goo.gl/TREFAmty. ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 4060,
+      "type": "fake_address",
+      "snippet": "errey (San Jerónimo), está en Av. Gonzalitos 102 Sur.  Aquí tienes el mapa para que lleg",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 4064,
+      "type": "fake_address",
+      "snippet": "queda súper céntrica, está en Av. Gonzalitos 102 Sur, en Mitras Centro :).   Como eres ú",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 4065,
+      "type": "fake_address",
+      "snippet": "o | Gris  La sucursal está en Av. Miguel Alemán 5465, Col. Lindavista y abrimos de Lunes a V",
+      "detail": "Unknown street: Av. Miguel Alemán 5465"
+    },
+    {
+      "conv_idx": 4067,
+      "type": "fake_address",
+      "snippet": "tra sucursal de Monterrey, en Av. Gonzalitos 102 Sur. Aquí te dejo el mapa: https://maps",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 4070,
+      "type": "fake_address",
+      "snippet": "las direcciones:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 4070,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 4070,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 4070,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 4070,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Salti",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 4070,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 4084,
+      "type": "fake_address",
+      "snippet": "ba de manejo :).   Estamos en Av. Gonzalitos 102 Sur, en Monterrey. ¿Te gustaría que te ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 4088,
+      "type": "fake_phone",
+      "snippet": " iniciar el proceso, puedes llamar al **800-123-4567** o escribir a **devoluciones@trefa.com",
+      "phone_found": "800-123-4567"
+    },
+    {
+      "conv_idx": 4093,
+      "type": "fake_address",
+      "snippet": "ucursal de Guadalupe, está en Av. Benito Juárez 1500. Mientras tanto, si quieres adelantar e",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 4098,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí tienes la ubic",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 4098,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí tienes la ubicación: https://maps",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 4098,
+      "type": "fake_address",
+      "snippet": "o el sábado en la sucursal de Gonzalitos para que conozcas tu próximo Corolla. ¿Te gustarí",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 4108,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 4108,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 4121,
+      "type": "fake_address",
+      "snippet": "ediste, Claudia:  Monterrey — Av. Gonzalitos 102 Sur. Abren de L-V 9:00 a 19:00, Sáb 9:0",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 4121,
+      "type": "fake_address",
+      "snippet": "goo.gl/TREFAmty)  Guadalupe — Av. Benito Juárez 1500. Abren de L-V 9:00 a 19:00 y Sáb 9:00 a",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 4129,
+      "type": "fake_address",
+      "snippet": "sucursal de Monterrey está en Av. Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el map",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 4129,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí te dejo el mapa: https://maps.app",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 4129,
+      "type": "fake_address",
+      "snippet": "las 9:00 am en la sucursal de Gonzalitos?",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 4140,
+      "type": "fake_address",
+      "snippet": "queda perfecta, está justo en Av. Gonzalitos 102 Sur. Aquí te dejo la ubicación: https:/",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 4140,
+      "type": "fake_address",
+      "snippet": " visitarnos en la sucursal de Gonzalitos para avisarle al equipo y que te tengan el auto l",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 4160,
+      "type": "fake_address",
+      "snippet": "as dos agencias:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro. Aquí puedes ver el ",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 4160,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro. Te paso la liga: htt",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 4160,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro. Te paso la liga: https://maps.app.goo.",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 4160,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro. Aquí puedes ver el mapa: https://maps.",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 4161,
+      "type": "fake_address",
+      "snippet": "e no haya pierde :  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 4161,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFArey  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 4161,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAmty  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 4161,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Salti",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 4162,
+      "type": "fake_address",
+      "snippet": "ras ubicaciones:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 4162,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 4162,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAgpe  Saltillo — Blvd. Venustiano Carranza 3000, República https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 4162,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200, Rodríguez https://maps.app.goo.gl/TREF",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 4162,
+      "type": "fake_branch",
+      "snippet": "Benito Juárez 1500, Guadalupe Centro https://maps.app.goo.gl/TREFAgpe  Salti",
+      "branch_found": "guadalupe centro"
+    },
+    {
+      "conv_idx": 4162,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guada",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 4162,
+      "type": "fake_address",
+      "snippet": "o en persona a la sucursal de Gonzalitos?",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 4177,
+      "type": "fake_address",
+      "snippet": "cursal muy padre.  Estamos en Blvd. Venustiano Carranza 3000, en la colonia República. Aquí te dejo ",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 4188,
+      "type": "fake_address",
+      "snippet": " sucursal de Monterrey en Av. Gonzalitos.  Aquí tienes la ubicación: https://maps.app.goo.",
+      "detail": "Hallucinated street: gonzalitos"
+    },
+    {
+      "conv_idx": 4199,
+      "type": "fake_address",
+      "snippet": "rsal de Guadalupe, estamos en Av. Benito Juárez 1500. ¿Te parece bien a las 10:00 AM?",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 4222,
+      "type": "fake_address",
+      "snippet": "pe (donde está la Sportage) — Av. Benito Juárez 1500 https://maps.app.goo.gl/TREFAgpe  Monte",
+      "detail": "Unknown street: Av. Benito Juárez 1500"
+    },
+    {
+      "conv_idx": 4222,
+      "type": "fake_address",
+      "snippet": ".goo.gl/TREFAgpe  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo",
+      "detail": "Unknown street: Av. Gonzalitos 102"
+    },
+    {
+      "conv_idx": 4222,
+      "type": "fake_address",
+      "snippet": "p.goo.gl/TREFAmty  Saltillo — Blvd. Venustiano Carranza 3000 https://maps.app.goo.gl/TREFAslt  Reyno",
+      "detail": "Unknown street: Blvd. Venustiano Carranza 3000"
+    },
+    {
+      "conv_idx": 4222,
+      "type": "fake_address",
+      "snippet": "pp.goo.gl/TREFAslt  Reynosa — Blvd. Hidalgo 1200 https://maps.app.goo.gl/TREFArey  ¿Te g",
+      "detail": "Unknown street: Blvd. Hidalgo 1200"
+    },
+    {
+      "conv_idx": 4222,
+      "type": "fake_branch",
+      "snippet": "Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Salti",
+      "branch_found": "mitras centro"
+    },
+    {
+      "conv_idx": 4256,
+      "type": "fake_phone",
+      "snippet": " iniciar el proceso, puedes llamar al **800-123-4567** o escribir a **devoluciones@trefa.com",
+      "phone_found": "800-123-4567"
+    },
+    {
+      "conv_idx": 4272,
+      "type": "fake_address",
+      "snippet": "o | Gris  La sucursal está en Av. Miguel Alemán 5465, Col. Lindavista y abrimos de Lunes a V",
+      "detail": "Unknown street: Av. Miguel Alemán 5465"
+    },
+    {
+      "conv_idx": 4301,
+      "type": "fake_phone",
+      "snippet": "4, Col. Centro**. Puedes llamarnos al **899-123-4567** para confirmar tu visita. 😊  ¿Qué te ",
+      "phone_found": "899-123-4567"
+    },
+    {
+      "conv_idx": 4301,
+      "type": "fake_address",
+      "snippet": " en Reynosa está ubicada en **Blvd. Morelos 1234, Col. Centro**. Puedes llamarnos al **8",
+      "detail": "Unknown street: Blvd. Morelos 1234"
+    },
+    {
+      "conv_idx": 4314,
+      "type": "fake_phone",
+      "snippet": "ia! Un asesor te contactará en breve al número 8111223344 para coordinar tu visita a la sucursal ",
+      "phone_found": "número 8111223344"
+    }
+  ]
+}

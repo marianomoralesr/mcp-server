@@ -1,0 +1,2455 @@
+{
+  "chunk": 3,
+  "range": "400-600",
+  "timestamp": "2026-02-17T10:58:47.271896",
+  "total_audited": 200,
+  "clean": 26,
+  "fixed": 161,
+  "discarded": 13,
+  "pass_rate": "93.5%",
+  "output_conversations": 187,
+  "issue_breakdown": {
+    "C9": 200,
+    "C2": 9,
+    "C3": 20,
+    "C6": 268,
+    "C7": 2,
+    "C8": 4
+  },
+  "fix_breakdown": {
+    "F3": 160,
+    "F5": 19
+  },
+  "detailed_issues": [
+    {
+      "idx": 400,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 401,
+      "status": "discard",
+      "issues": [
+        "C2: msg[5]: precio de vehículo antes de que usuario pregunte",
+        "C3: msg[11]: usuario muestra interés pero no se llama obtener_vehiculo",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": []
+    },
+    {
+      "idx": 402,
+      "status": "fixed",
+      "issues": [
+        "C3: msg[5]: usuario muestra interés pero no se llama obtener_vehiculo",
+        "C6: msg[3]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio",
+        "F5: insertado obtener_vehiculo"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 403,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[8]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 404,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[8]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 405,
+      "status": "discard",
+      "issues": [
+        "C2: msg[2]: precio de vehículo antes de que usuario pregunte",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": []
+    },
+    {
+      "idx": 406,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[10]: precio como número en tool_response",
+        "C6: msg[14]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 407,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[11]: precio como número en tool_response",
+        "C6: msg[15]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 408,
+      "status": "fixed",
+      "issues": [
+        "C3: msg[14]: usuario muestra interés pero no se llama obtener_vehiculo",
+        "C6: msg[10]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio",
+        "F5: insertado obtener_vehiculo"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 409,
+      "status": "fixed",
+      "issues": [
+        "C3: msg[5]: usuario muestra interés pero no se llama obtener_vehiculo",
+        "C6: msg[3]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio",
+        "F5: insertado obtener_vehiculo"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 410,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 411,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[7]: precio como número en tool_response",
+        "C6: msg[11]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 412,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 413,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 414,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 415,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[10]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 416,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 417,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 418,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 419,
+      "status": "discard",
+      "issues": [
+        "C6: msg[13]: precio como número en tool_response",
+        "C6: msg[17]: precio como número en tool_response",
+        "C7: msg[5]: <tool_response> sin cerrar",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": []
+    },
+    {
+      "idx": 420,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 421,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 3 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 422,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 423,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[4]: precio como número en tool_response",
+        "C6: msg[15]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 424,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[7]: precio como número en tool_response",
+        "C6: msg[11]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 425,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 426,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[12]: precio como número en tool_response",
+        "C6: msg[16]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 427,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 428,
+      "status": "discard",
+      "issues": [
+        "C8: solo 2 mensajes (mínimo 3)",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": []
+    },
+    {
+      "idx": 429,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 430,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[11]: precio como número en tool_response",
+        "C6: msg[15]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 431,
+      "status": "fixed",
+      "issues": [
+        "C3: msg[7]: usuario muestra interés pero no se llama obtener_vehiculo",
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio",
+        "F5: insertado obtener_vehiculo"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 432,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 433,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[7]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 434,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 435,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[7]: precio como número en tool_response",
+        "C6: msg[11]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 436,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 437,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 438,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[3]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 439,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 440,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 441,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 442,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[6]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 443,
+      "status": "discard",
+      "issues": [
+        "C6: msg[17]: precio como número en tool_response",
+        "C6: msg[21]: precio como número en tool_response",
+        "C7: msg[21]: <tool_response> sin cerrar",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": []
+    },
+    {
+      "idx": 444,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[7]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 445,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 446,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[12]: precio como número en tool_response",
+        "C6: msg[16]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 447,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 448,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[3]: precio como número en tool_response",
+        "C6: msg[7]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 449,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 450,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[10]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 451,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 452,
+      "status": "fixed",
+      "issues": [
+        "C3: msg[11]: usuario muestra interés pero no se llama obtener_vehiculo",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio",
+        "F5: insertado obtener_vehiculo"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 453,
+      "status": "fixed",
+      "issues": [
+        "C3: msg[9]: usuario muestra interés pero no se llama obtener_vehiculo",
+        "C6: msg[7]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio",
+        "F5: insertado obtener_vehiculo"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 454,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 455,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 456,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C6: msg[11]: precio como número en tool_response",
+        "C6: msg[15]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 3 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 457,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[6]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 458,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 459,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[10]: precio como número en tool_response",
+        "C6: msg[16]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 460,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 461,
+      "status": "discard",
+      "issues": [
+        "C2: msg[4]: precio de vehículo antes de que usuario pregunte",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": []
+    },
+    {
+      "idx": 462,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 463,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[3]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 464,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 465,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 466,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[7]: precio como número en tool_response",
+        "C6: msg[11]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 467,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[8]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 468,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 469,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[6]: precio como número en tool_response",
+        "C6: msg[10]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 470,
+      "status": "discard",
+      "issues": [
+        "C8: solo 2 mensajes (mínimo 3)",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": []
+    },
+    {
+      "idx": 471,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 472,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[14]: precio como número en tool_response",
+        "C6: msg[18]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 473,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 474,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 475,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 476,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 477,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 478,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 479,
+      "status": "fixed",
+      "issues": [
+        "C3: msg[14]: usuario muestra interés pero no se llama obtener_vehiculo",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio",
+        "F5: insertado obtener_vehiculo"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 480,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[7]: precio como número en tool_response",
+        "C6: msg[11]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 481,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 482,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[3]: precio como número en tool_response",
+        "C6: msg[7]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 483,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[7]: precio como número en tool_response",
+        "C6: msg[11]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 484,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 485,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[3]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 486,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 487,
+      "status": "fixed",
+      "issues": [
+        "C3: msg[7]: usuario muestra interés pero no se llama obtener_vehiculo",
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio",
+        "F5: insertado obtener_vehiculo"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 488,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 489,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 490,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 491,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[6]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 492,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 493,
+      "status": "discard",
+      "issues": [
+        "C8: solo 2 mensajes (mínimo 3)",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": []
+    },
+    {
+      "idx": 494,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 495,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[11]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 496,
+      "status": "fixed",
+      "issues": [
+        "C3: msg[9]: usuario muestra interés pero no se llama obtener_vehiculo",
+        "C6: msg[7]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio",
+        "F5: insertado obtener_vehiculo"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 497,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 498,
+      "status": "fixed",
+      "issues": [
+        "C3: msg[11]: usuario muestra interés pero no se llama obtener_vehiculo",
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio",
+        "F5: insertado obtener_vehiculo"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 499,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 500,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 501,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 502,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 503,
+      "status": "fixed",
+      "issues": [
+        "C3: msg[14]: usuario muestra interés pero no se llama obtener_vehiculo",
+        "C6: msg[7]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio",
+        "F5: insertado obtener_vehiculo"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 504,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 505,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 506,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 507,
+      "status": "discard",
+      "issues": [
+        "C2: msg[6]: precio de vehículo antes de que usuario pregunte",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": []
+    },
+    {
+      "idx": 508,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[3]: precio como número en tool_response",
+        "C6: msg[7]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 509,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[15]: precio como número en tool_response",
+        "C6: msg[19]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 510,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[7]: precio como número en tool_response",
+        "C6: msg[11]: precio como número en tool_response",
+        "C6: msg[15]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 3 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 511,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 512,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 513,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 514,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 515,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 516,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 517,
+      "status": "discard",
+      "issues": [
+        "C2: msg[4]: precio de vehículo antes de que usuario pregunte",
+        "C2: msg[8]: precio de vehículo antes de que usuario pregunte",
+        "C6: msg[7]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": []
+    },
+    {
+      "idx": 518,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 519,
+      "status": "discard",
+      "issues": [
+        "C2: msg[4]: precio de vehículo antes de que usuario pregunte",
+        "C2: msg[6]: precio de vehículo antes de que usuario pregunte",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": []
+    },
+    {
+      "idx": 520,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[7]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 521,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[13]: precio como número en tool_response",
+        "C6: msg[17]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 522,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 523,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 524,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 525,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 526,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[8]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 527,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[13]: precio como número en tool_response",
+        "C6: msg[17]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 528,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[6]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 529,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 530,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[3]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 531,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 532,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 533,
+      "status": "discard",
+      "issues": [
+        "C8: solo 2 mensajes (mínimo 3)",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": []
+    },
+    {
+      "idx": 534,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[7]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 535,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 536,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[7]: precio como número en tool_response",
+        "C6: msg[11]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 3 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 537,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[10]: precio como número en tool_response",
+        "C6: msg[14]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 538,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 539,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 540,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[12]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 541,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 542,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[8]: precio como número en tool_response",
+        "C6: msg[12]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 543,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 544,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 545,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[7]: precio como número en tool_response",
+        "C6: msg[11]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 546,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[10]: precio como número en tool_response",
+        "C6: msg[15]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 547,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 548,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 549,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 550,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[4]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 551,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[3]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 552,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[11]: precio como número en tool_response",
+        "C6: msg[17]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 553,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 554,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 555,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 556,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 557,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 558,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 559,
+      "status": "fixed",
+      "issues": [
+        "C3: msg[6]: usuario muestra interés pero no se llama obtener_vehiculo",
+        "C6: msg[4]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio",
+        "F5: insertado obtener_vehiculo"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 560,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 561,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 562,
+      "status": "fixed",
+      "issues": [
+        "C3: msg[11]: usuario muestra interés pero no se llama obtener_vehiculo",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio",
+        "F5: insertado obtener_vehiculo"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 563,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 564,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 565,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[11]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 566,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[11]: precio como número en tool_response",
+        "C6: msg[15]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 567,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 568,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 569,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[3]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 570,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[7]: precio como número en tool_response",
+        "C6: msg[11]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 571,
+      "status": "fixed",
+      "issues": [
+        "C3: msg[15]: usuario muestra interés pero no se llama obtener_vehiculo",
+        "C6: msg[8]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio",
+        "F5: insertado obtener_vehiculo"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 572,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 573,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 574,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[8]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 575,
+      "status": "fixed",
+      "issues": [
+        "C3: msg[14]: usuario muestra interés pero no se llama obtener_vehiculo",
+        "C6: msg[12]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio",
+        "F5: insertado obtener_vehiculo"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 576,
+      "status": "fixed",
+      "issues": [
+        "C3: msg[10]: usuario muestra interés pero no se llama obtener_vehiculo",
+        "C6: msg[8]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio",
+        "F5: insertado obtener_vehiculo"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 577,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[13]: precio como número en tool_response",
+        "C6: msg[17]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 578,
+      "status": "fixed",
+      "issues": [
+        "C3: msg[15]: usuario muestra interés pero no se llama obtener_vehiculo",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio",
+        "F5: insertado obtener_vehiculo"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 579,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[6]: precio como número en tool_response",
+        "C6: msg[12]: precio como número en tool_response",
+        "C6: msg[15]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 3 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 580,
+      "status": "discard",
+      "issues": [
+        "C2: msg[6]: precio de vehículo antes de que usuario pregunte",
+        "C6: msg[13]: precio como número en tool_response",
+        "C6: msg[17]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": []
+    },
+    {
+      "idx": 581,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[6]: precio como número en tool_response",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 582,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 583,
+      "status": "fixed",
+      "issues": [
+        "C3: msg[8]: usuario muestra interés pero no se llama obtener_vehiculo",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F5: insertado obtener_vehiculo"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 584,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[10]: precio como número en tool_response",
+        "C6: msg[15]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 585,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 586,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[7]: precio como número en tool_response",
+        "C6: msg[11]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 587,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 588,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 589,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[6]: precio como número en tool_response",
+        "C6: msg[11]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 590,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[7]: precio como número en tool_response",
+        "C6: msg[11]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 591,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[11]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 592,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[8]: precio como número en tool_response",
+        "C6: msg[12]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 593,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[9]: precio como número en tool_response",
+        "C6: msg[13]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 594,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[3]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 595,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[7]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 596,
+      "status": "fixed",
+      "issues": [
+        "C3: msg[16]: usuario muestra interés pero no se llama obtener_vehiculo",
+        "C6: msg[9]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 1 formatos de precio",
+        "F5: insertado obtener_vehiculo"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 597,
+      "status": "fixed",
+      "issues": [
+        "C6: msg[5]: precio como número en tool_response",
+        "C6: msg[7]: precio como número en tool_response",
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [
+        "F3: corregidos 2 formatos de precio"
+      ],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 598,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    },
+    {
+      "idx": 599,
+      "status": "clean",
+      "issues": [
+        "C9: system prompt muy corto"
+      ],
+      "fixes": [],
+      "src": "dataset_v5_completo_cleaned.jsonl"
+    }
+  ]
+}

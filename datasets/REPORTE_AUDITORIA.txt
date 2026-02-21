@@ -1,0 +1,743 @@
+====================================================================================================
+AUDITORIA FINAL DE DATASETS - MARIANA (Autos TREFA)
+====================================================================================================
+
+  Auditando: trefa_train.jsonl ...
+  Auditando: synthetic_cleaned.jsonl ...
+  Auditando: gold_upgraded_batch_001.jsonl ...
+  Auditando: gold_upgraded_batch_002.jsonl ...
+  Auditando: gold_upgraded_batch_003.jsonl ...
+  Auditando: gold_upgraded_batch_004.jsonl ...
+  Auditando: gold_upgraded_batch_005.jsonl ...
+  Auditando: gold_upgraded_batch_006.jsonl ...
+  Auditando: gold_upgraded_batch_007.jsonl ...
+  Auditando: gold_upgraded_batch_008.jsonl ...
+  Auditando: gold_upgraded_batch_015.jsonl ...
+  Auditando: gold_upgraded_batch_016.jsonl ...
+  Auditando: gold_upgraded_batch_017.jsonl ...
+  Auditando: gold_upgraded_batch_018.jsonl ...
+  Auditando: gold_upgraded_batch_019.jsonl ...
+
+====================================================================================================
+RESUMEN GENERAL
+====================================================================================================
+  Archivos auditados:        15
+  Conversaciones totales:    2125
+  Problemas encontrados:     492
+
+  Desglose por tipo de problema:
+    P1: Vehiculo presentado antes de que usuario especifique busqueda: 237
+    P2: Tags XML (<tool_call>) mezclados con texto natural: 14
+    P3: Usuario muestra interes, Mariana NO llama obtener_vehiculo: 217
+    P4: Tool call sin mensaje de seguimiento del asistente: 24
+
+  Desglose por archivo:
+    trefa_train.jsonl                          |  1086 convs |  239 problemas ( 22.0%) | P1_VEHICULO_SIN_PEDIR=117, P2_TAGS_XML_FILTRADOS=6, P3_SIN_OBTENER_VEHICULO=105, P4_TOOL_SIN_SEGUIMIENTO=11
+    synthetic_cleaned.jsonl                    |   389 convs |  102 problemas ( 26.2%) | P1_VEHICULO_SIN_PEDIR=22, P3_SIN_OBTENER_VEHICULO=77, P4_TOOL_SIN_SEGUIMIENTO=3
+    gold_upgraded_batch_001.jsonl              |    50 convs |   16 problemas ( 32.0%) | P1_VEHICULO_SIN_PEDIR=7, P2_TAGS_XML_FILTRADOS=4, P3_SIN_OBTENER_VEHICULO=5
+    gold_upgraded_batch_002.jsonl              |    50 convs |   13 problemas ( 26.0%) | P1_VEHICULO_SIN_PEDIR=11, P3_SIN_OBTENER_VEHICULO=1, P4_TOOL_SIN_SEGUIMIENTO=1
+    gold_upgraded_batch_003.jsonl              |    50 convs |    7 problemas ( 14.0%) | P1_VEHICULO_SIN_PEDIR=5, P3_SIN_OBTENER_VEHICULO=2
+    gold_upgraded_batch_004.jsonl              |    50 convs |    8 problemas ( 16.0%) | P1_VEHICULO_SIN_PEDIR=4, P3_SIN_OBTENER_VEHICULO=2, P4_TOOL_SIN_SEGUIMIENTO=2
+    gold_upgraded_batch_005.jsonl              |    50 convs |   16 problemas ( 32.0%) | P1_VEHICULO_SIN_PEDIR=11, P3_SIN_OBTENER_VEHICULO=4, P4_TOOL_SIN_SEGUIMIENTO=1
+    gold_upgraded_batch_006.jsonl              |    50 convs |    9 problemas ( 18.0%) | P1_VEHICULO_SIN_PEDIR=4, P2_TAGS_XML_FILTRADOS=1, P3_SIN_OBTENER_VEHICULO=3, P4_TOOL_SIN_SEGUIMIENTO=1
+    gold_upgraded_batch_007.jsonl              |    50 convs |    8 problemas ( 16.0%) | P1_VEHICULO_SIN_PEDIR=7, P3_SIN_OBTENER_VEHICULO=1
+    gold_upgraded_batch_008.jsonl              |    50 convs |   14 problemas ( 28.0%) | P1_VEHICULO_SIN_PEDIR=10, P2_TAGS_XML_FILTRADOS=1, P3_SIN_OBTENER_VEHICULO=3
+    gold_upgraded_batch_015.jsonl              |    50 convs |   15 problemas ( 30.0%) | P1_VEHICULO_SIN_PEDIR=9, P3_SIN_OBTENER_VEHICULO=3, P4_TOOL_SIN_SEGUIMIENTO=3
+    gold_upgraded_batch_016.jsonl              |    50 convs |    9 problemas ( 18.0%) | P1_VEHICULO_SIN_PEDIR=7, P3_SIN_OBTENER_VEHICULO=2
+    gold_upgraded_batch_017.jsonl              |    50 convs |   10 problemas ( 20.0%) | P1_VEHICULO_SIN_PEDIR=6, P2_TAGS_XML_FILTRADOS=1, P3_SIN_OBTENER_VEHICULO=3
+    gold_upgraded_batch_018.jsonl              |    50 convs |   16 problemas ( 32.0%) | P1_VEHICULO_SIN_PEDIR=10, P2_TAGS_XML_FILTRADOS=1, P3_SIN_OBTENER_VEHICULO=3, P4_TOOL_SIN_SEGUIMIENTO=2
+    gold_upgraded_batch_019.jsonl              |    50 convs |   10 problemas ( 20.0%) | P1_VEHICULO_SIN_PEDIR=7, P3_SIN_OBTENER_VEHICULO=3
+
+====================================================================================================
+DETALLE: trefa_train.jsonl (1086 conversaciones, 239 problemas)
+====================================================================================================
+
+  --- P1: Vehiculo presentado antes de que usuario especifique busqueda (117 ocurrencias) ---
+    [L   4, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Carlos :). Qué bueno que buscas algo seguro para tu familia. En nuestra sucursal de Guadalupe (que es la zona de las Américas) encontré estas opciones que te van a encantar:  Opción 1 — **
+    [L  41, msg 12] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Excelente! Encontramos una Nissan X-Trail 2018 en Guadalupe que entra en tu presupuesto:  * **Precio:** $285,000 MXN * **Transmisión:** Automática * **Kilometraje:** 75,000 km  ¿Te gustaría verla en
+    [L  45, msg 12] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Perfecto Héctor! Con $250,000 MXN tenemos opciones muy buenas y confiables. Encontré estas que te pueden gustar :  Opción 1 — **Nissan Versa Advance 2019**, automático, en $219,900 MXN. Se encuentra
+    [L  47, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Fernando :). Qué emoción que estés buscando tu auto ideal. Encontré estas opciones que tenemos en Monterrey y creo que te van a encantar:  Opción 1 — **Toyota Corolla SE 2022**, automático
+    [L  51, msg 12] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Listo, Luis! Encontré estas opciones que podrían interesarte, ambas disponibles en Reynosa:  1. **Chevrolet Onix 2023**: Un sedán muy confiable y económico. Precio: $315,000 MXN 2. **Nissan Kicks 202
+    [L  74, msg 14] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Encontré estas opciones que creo te van a gustar, Carlos :  Opción 1 — **Kia Forte LX 2021**, automático, en $289,900 MXN. Se encuentra en nuestra sucursal de Guadalupe.  Opción 2 — **Volkswagen Jetta
+    [L  75, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Carlos :). Encontré estas dos opciones que se ajustan perfecto a tus $300,000 MXN:  Opción 1 — **Chevrolet Aveo 2023**, manual, en $249,900 MXN. Tiene solo 12,000 km y está en nuestra sucu
+    [L  76, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Roberto :). Encontré estas opciones que creo te van a gustar mucho y están dentro de lo que buscas:  Opción 1 — **Nissan Sentra Advance 2022**, automático, en $319,900 MXN. Se encuentra en
+    [L  83, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Carlos :). Qué buena idea invertir en una pickup para el trabajo, son herramientas de lo mejor. Encontré estas opciones que se ajustan súper bien a tu presupuesto:  Opción 1 — **RAM 1500
+    [L 105, msg 11] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Encontré estas dos opciones que están excelentes para ser tu primer auto, Beto:  Opción 1 — **Renault Kwid Iconic 2024**, manual, en $189,900 MXN. Es casi nuevo y está en nuestra sucursal de Guadalupe
+    [L 108, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Carlos :). Con ese presupuesto encontré estas opciones que creo te van a encantar:  Opción 1 — **Volkswagen Jetta Comfortline 2021**, automático, en $349,900 MXN. Está en nuestra sucursal
+    [L 123, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Ricardo :). Para una familia las SUVs son una maravilla por el espacio y la seguridad. Encontré estas opciones dentro de tu presupuesto que te van a encantar:  Opción 1 — **Kia Sportage E
+    [L 131, msg  9] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Ricardo, encontré estas opciones que se ajustan súper bien a lo que buscas :  Opción 1 — **Nissan Versa Sense 2020**, manual, en $189,900 MXN. Está en nuestra sucursal de Monterrey.  Opción 2 — **Chev
+    [L 137, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Ricardo :). Con ese presupuesto encontré estas dos opciones que creo te van a encantar:  Opción 1 — **Kia Sportage EX 2022**, automática, en $449,900 MXN. Tiene solo 25,000 km y está en n
+    [L 141, msg 16] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Excelente Antonio, ya quedó anotada tu cita para este sábado a las 10:30 am :). Te vamos a estar esperando.  Fíjate que justo en la sucursal de Reynosa tengo una opción que te puede gustar mucho:  **N
+    [L 144, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Excelente! Tenemos un **Hyundai Sonata 2020** en Saltillo que se ajusta a tu presupuesto:  * Año: 2020 * Combustible: Gasolina * Transmisión: Automática * Kilometraje: 65,000 km * Precio: $315,000 MX
+    [L 154, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Emmanuel, encontré una opción muy buena :). Está ligeramente arriba de tu presupuesto pero vale la pena mencionarla:  Es un **Renault Kwid Iconic 2024**, manual, en $189,900 MXN. Es modelo 2024 con so
+    [L 166, msg  5] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Excelente, Valentina! Tenemos dos Nissan Frontier que podrían interesarte en Saltillo:  * **Nissan Frontier 2021 Automática:** $420,000 MXN, 45,000 km * **Nissan Frontier 2020 Manual:** $395,000 MXN,
+    [L 172, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Diego :). Qué padre que estés buscando tu primer auto, es un momento bien especial. Encontré estas opciones de menos de $200,000 MXN que te van a gustar:  Opción 1 — **Nissan Versa Drive 2
+    [L 174, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Ricardo. Siento mucho que hayas pasado por esa mala experiencia, de verdad da mucha coraje cuando no son honestos. En Autos TREFA somos una agencia establecida y, para tu tranquilidad, cad
+    [L 175, msg 15] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Encontré estas opciones que te van a quedar perfectas para la ciudad, Marco :  Opción 1 — **Renault Kwid Iconic 2023**, manual, en $195,000 MXN. Está en nuestra sucursal de Monterrey. Es de los más ah
+    [L 186, msg 11] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Súper Ricardo! Con ese presupuesto encontré estas dos opciones que te podrían encantar:  Opción 1 — **Nissan Sentra Advance 2022**, automático, en $329,900 MXN. Tiene 35,000 km y está en nuestra sucu
+    [L 194, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Ricardo :). Encontré estas opciones que creo te van a encantar:  Opción 1 — **Mazda CX-5 Grand Touring 2023**, automática, en $489,900 MXN. Se encuentra en nuestra sucursal de Monterrey.
+    [L 201, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Roberto, entiendo perfectamente :). Es una decisión muy importante y es normal querer estar seguro. En Autos TREFA vas a la segura: todos nuestros autos pasan por una inspección de 150 pun
+    [L 225, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Roberto :). Encontré estas opciones que se ajustan perfecto a tu presupuesto de $300,000 MXN:  Opción 1 — **Kia Forte LX 2021**, automático, en $289,900 MXN. Se encuentra en nuestra sucurs
+
+    ... y 92 ocurrencias mas en lineas: 248, 257, 274, 277, 279, 281, 300, 310, 316, 343, 346, 347, 356, 387, 419, 421, 429, 431, 441, 444, 455, 468, 488, 489, 491, 494, 502, 512, 516, 519, 522, 539, 546, 550, 557, 576, 602, 616, 621, 634, 651, 652, 662, 665, 681, 706, 721, 724, 740, 777, 782, 786, 792, 793, 797, 807, 821, 829, 835, 846 (y 30 lineas mas)
+
+  --- P2: Tags XML (<tool_call>) mezclados con texto natural (6 ocurrencias) ---
+    [L 399, msg 12] Tags <tool_call> mezclados con texto natural en mensaje del asistente
+       >>> Te entiendo, Ricardo. Déjame decirte que la **Mazda CX-5 Signature** es la versión más equipada, así que aunque sea 2020, se siente más moderna que muchos autos 2024. Los acabados son premium y el mot
+    [L 624, msg  4] Tags <tool_call> mezclados con texto natural en mensaje del asistente
+       >>> Mucho gusto Ana :). Dame un segundito para revisar la lista completa de documentos que te piden para el crédito. <tool_call> {"name": "obtener_info_negocio", "arguments": {"tema": "documentos_requerid
+    [L 624, msg  8] Tags <tool_call> mezclados con texto natural en mensaje del asistente
+       >>> ¡Qué padre Ana, un SUV es una excelente elección! Son súper cómodas y seguras. Déjame ver qué tenemos disponible en ese rango de precio :) <tool_call> {"name": "buscar_vehiculos", "arguments": {"carro
+    [L 624, msg 12] Tags <tool_call> mezclados con texto natural en mensaje del asistente
+       >>> ¡Excelente elección Ana! La **Hyundai Tucson GLS 2021** es una camioneta preciosa y muy confiable. Te cuento más detalles :) <tool_call> {"name": "obtener_vehiculo", "arguments": {"id": 874523}} </too
+    [L 624, msg 16] Tags <tool_call> mezclados con texto natural en mensaje del asistente
+       >>> Claro que sí Ana, con gusto te envío la cotización a ana.gzz@ejemplo.com :) <tool_call> {"name": "enviar_cotizacion_email", "arguments": {"email_destino": "ana.gzz@ejemplo.com", "nombre_cliente": "Ana
+    [L 661, msg  6] Tags <tool_call> mezclados con texto natural en mensaje del asistente
+       >>> Mucho gusto Roberto :). Te cuento que para nuestro programa de toma a cuenta aceptamos modelos con un máximo de 120,000 km, por lo que con 150,000 km lamentablemente no podríamos recibirlo en la agenc
+
+  --- P3: Usuario muestra interes, Mariana NO llama obtener_vehiculo (105 ocurrencias) ---
+    [L  13, msg 11] Usuario: 'me gusta el kia forte. y sí, dime por favor qué necesito para el crédi' -> No se llama obtener_vehiculo
+       >>> Excelente elección, el **Kia Forte LX 2021** es un carrazo :). Para el crédito es súper sencillo, solo necesitas tener a la mano tu identificación oficial vigente, un comprobante de domicilio reciente
+    [L  16, msg  8] Usuario: 'a ver, cuéntame más del 2018' -> No se llama obtener_vehiculo
+       >>> ¡Claro, Carlos! Aquí tienes más detalles del **SEAT Ateca 2018**:  * **Motor:** 1.4L Turbo * **Transmisión:** Automática * **Kilometraje:** 75,000 km * **Precio:** $245,000 MXN  Recuerda que todos nue
+    [L  21, msg 16] Usuario: 'mmm dame detalles de la np300' -> No se llama obtener_vehiculo
+       >>> ¡Claro! La Nissan NP300 2017 es una pickup muy confiable y popular para el trabajo. Déjame buscar los detalles específicos de la unidad que tenemos en Guadalupe.
+    [L  22, msg 15] Usuario: 'me interesa el financiamiento, ¿cuánto sería de mensualidad con un 20%' -> No se llama obtener_vehiculo
+       >>> Claro que sí Ricardo, con un 20% de enganche ($57,980 MXN) y un plazo de 48 meses, tu mensualidad estimada sería de $6,399 MXN :).  Este cálculo es una estimación, pero te da una idea. La tasa final p
+    [L  24, msg  7] Usuario: 'sí, cuéntame más' -> No se llama obtener_vehiculo
+       >>> ¡Claro! Esta RAV4 tiene 45,000 km, transmisión automática, motor 2.5L y todos los servicios al día. Además, cuenta con pantalla táctil, cámara de reversa y sensores de estacionamiento. 😉  ¿Te interesa
+    [L  35, msg  8] Usuario: 'mmm, el gl me interesa más por el precio y que está cerca. ¿puedo verl' -> No se llama obtener_vehiculo
+       >>> ¡Claro que sí! Para que puedas ver el Suzuki Swift GL 2023 en Guadalupe, ¿te gustaría agendar una cita para visitarnos? Así te aseguras de que esté disponible y te demos atención personalizada. 😃
+    [L  36, msg  9] Usuario: 'gracias mariana, me interesa mucho el financiamiento. con esa oferta s' -> No se llama obtener_vehiculo
+       >>> Luis, con un 25% de enganche ($99,975 MXN), tu pago mensual quedaría en aproximadamente $8,276 MXN a un plazo de 48 meses :).   Es un pago bastante cómodo para una camioneta de este nivel. ¿Te gustarí
+    [L  51, msg 13] Usuario: 'mmm... el onix me llama la atención. ¿qué onda con ese coche?' -> No se llama obtener_vehiculo
+       >>> ¡Buena elección, Luis! El Chevrolet Onix es un coche muy popular por su eficiencia y comodidad. 😉 ¿Te gustaría que te diera más detalles sobre el Onix 2023 que tenemos en Reynosa?
+    [L  65, msg  8] Usuario: 'me interesa el sr, ¿cuál es el enganche mínimo y la mensualidad aproxi' -> No se llama obtener_vehiculo
+       >>> ¡Buena elección! El Sentra SR tiene un look más deportivo. Para el enganche mínimo (20%) y la mensualidad aproximada, déjame calcularlo.
+    [L  77, msg 15] Usuario: 'el 2022 me gusta mucho, ¿puedo ir mañana a las 11 am?' -> No se llama obtener_vehiculo
+       >>> ¡Qué padre! El **Mazda 3 Sedán 2022** es un auto precioso y se maneja increíble. Claro que sí, te agendo la cita para mañana a las 11:00 am en la sucursal de Monterrey.   Aquí puedes verlo con todas s
+    [L  81, msg  9] Usuario: 'sí, me interesa la 2023' -> No se llama obtener_vehiculo
+       >>> Perfecto. Para agendar tu prueba de manejo para el Renault Stepway 2023 en Saltillo, necesito algunos datos de contacto. ¿Me podrías proporcionar tu nombre completo y número de teléfono, por favor?
+    [L  87, msg  8] Usuario: 'me interesa la trax, qué onda con esa?' -> No se llama obtener_vehiculo
+       >>> ¡Buena elección! La Chevrolet Trax es una SUV muy popular. Para darte toda la información, voy a buscar los detalles específicos. 🔎
+    [L  99, msg 11] Usuario: 'el 2018 automatico me interesa' -> No se llama obtener_vehiculo
+       >>> ¡Perfecto! Para agendar tu cita y que te atienda un asesor, ¿qué día y hora te quedarían bien? 😊
+    [L 104, msg 15] Usuario: 'si, me interesa' -> No se llama obtener_vehiculo
+       >>> ¡Perfecto! Para agendar tu cita, ¿me podrías proporcionar tu nombre completo y número de teléfono?
+    [L 116, msg 12] Usuario: 'cuéntame más de la kicks' -> No se llama obtener_vehiculo
+       >>> La Nissan Kicks 2019 es un SUV subcompacto muy popular, ¡y con razón! Tiene un motor de 1.6 litros, tracción delantera y es súper eficiente en combustible. Además, es muy fácil de manejar en la ciudad
+    [L 117, msg  8] Usuario: 'a ver, cuéntame más del kicks 2021' -> No se llama obtener_vehiculo
+       >>> ¡Claro! Para darte la información completa del Nissan Kicks 2021, necesito un momento para buscarlo en el sistema. 🔍
+    [L 120, msg  9] Usuario: 'mmm, es que me gusta mucho la seltos, por su tamaño y lo cómoda que es' -> No se llama obtener_vehiculo
+       >>> Te entiendo perfecto Ricardo, la Seltos es una camioneta increíble y súper cómoda :). Nuestro inventario se mueve muy rápido y siempre están llegando unidades nuevas, así que es muy probable que nos l
+    [L 130, msg  7] Usuario: 'sí, me interesa agendarla.' -> No se llama obtener_vehiculo
+       >>> ¡Perfecto, Alberto! Ya registré tus datos con tu número 8187654321 para tu visita y prueba de manejo de la **Kia Sportage 2022** en Guadalupe. Un asesor de la sucursal se pondrá en contacto contigo mu
+    [L 168, msg  8] Usuario: 'me interesa la equinox 2020. ¿cuánto sería el enganche y las mensualid' -> No se llama obtener_vehiculo
+       >>> Con gusto te calculo el financiamiento para la Equinox 2020. Para darte una estimación precisa, usaré la herramienta de cálculo. ⚙️
+    [L 184, msg  7] Usuario: 'me queda un poco lejos monterrey, pero me interesa. ¿cómo quedarían la' -> No se llama obtener_vehiculo
+       >>> No te preocupes por la distancia, Carlos, ¡nuestro proceso puede ser 100% en línea! :). Con $80,000 MXN de enganche, tu mensualidad quedaría aproximadamente en $6,675 MXN a un plazo de 48 meses.  Es u
+    [L 191, msg 13] Usuario: 'el versa me gusta mucho por el año y el precio. ¿cómo funciona lo del ' -> No se llama obtener_vehiculo
+       >>> Te entiendo perfectamente, Ricardo. Como emprendedor es normal tener meses mejores que otros :). Lo padre es que nuestras financieras son muy flexibles; podemos comprobar ingresos con tus estados de c
+    [L 256, msg 11] Usuario: 'mmm, la lt 2021 con la pantalla y la cámara me late más. ¿cuánto me qu' -> No se llama obtener_vehiculo
+       >>> ¡Aquí está tu plan de financiamiento estimado para la Chevrolet Tracker LT 2021!  **Plan de Financiamiento:** * Precio del vehículo: $310,000 MXN * Enganche (20%): $62,000 MXN * Monto a financiar: $24
+    [L 269, msg  7] Usuario: 'me interesa la 2016. ¿cómo sería el financiamiento?' -> No se llama obtener_vehiculo
+       >>> ¡Claro! Para la Ford Explorer 2016 de $195,000 MXN, con un enganche del 20% ($39,000 MXN) y un plazo de 48 meses, tu mensualidad sería de aproximadamente $4,500 MXN (tasa de interés del 12%). Esto est
+    [L 271, msg  8] Usuario: 'me interesa la 2020' -> No se llama obtener_vehiculo
+       >>> ¡Perfecto! La Toyota C-HR 2020 con 48,000 km está en excelentes condiciones. Para que te hagas una idea más clara, te comento que con un enganche del 20% ($76,000 MXN aprox.) y un plazo de 48 meses, t
+    [L 290, msg  7] Usuario: 'me interesa la 2019 automática. ¿cómo sería el financiamiento?' -> No se llama obtener_vehiculo
+       >>> ¡Buena elección! Para darte una idea del financiamiento de la Suzuki Ertiga 2019 automática ($185,000 MXN), el enganche mínimo sería de $37,000 MXN (20%). Las mensualidades varían según el plazo que e
+
+    ... y 80 ocurrencias mas en lineas: 317, 334, 350, 351, 382, 385, 401, 407, 412, 413, 425, 426, 441, 450, 460, 474, 506, 507, 522, 523, 524, 530, 533, 536, 538, 546, 553, 561, 570, 573, 583, 604, 625, 639, 662, 665, 674, 685, 692, 707, 719, 743, 747, 748, 779, 781, 784, 790, 792, 826, 829, 838, 849, 862, 866, 880, 886, 889, 898, 926 (y 19 lineas mas)
+
+  --- P4: Tool call sin mensaje de seguimiento del asistente (11 ocurrencias) ---
+    [L 129, msg  4] Tool 'buscar_vehiculos' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "buscar_vehiculos", "arguments": {"marca": "Nissan", "modelo": "Sentra", "año_minimo": 2022, "año_maximo": 2022}} </tool_call>
+    [L 202, msg 18] Tool 'solicitar_datos_contacto' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "solicitar_datos_contacto", "arguments": {}} </tool_call>
+    [L 399, msg  4] Tool 'solicitar_datos_contacto' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "solicitar_datos_contacto", "arguments": {"nombre": "Ricardo"}} </tool_call>
+    [L 495, msg  4] Tool 'buscar_vehiculos' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "buscar_vehiculos", "arguments": {"marca": "Toyota", "modelo": "Corolla"}} </tool_call>
+    [L 600, msg 13] Tool 'solicitar_datos_contacto' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "solicitar_datos_contacto", "arguments": {"pregunta": "para que un asesor te brinde toda la información sobre el financiamiento"}} </tool_call>
+    [L 611, msg  4] Tool 'buscar_vehiculos' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "buscar_vehiculos", "arguments": {"marca": "Nissan", "modelo": "Sentra", "año_minimo": 2022, "año_maximo": 2022}} </tool_call>
+    [L 625, msg 16] Tool 'solicitar_datos_contacto' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "solicitar_datos_contacto", "arguments": {"pregunta": "Para dar seguimiento a tu solicitud de financiamiento y agendar una cita, ¿me podrías proporcionar tu nombre completo, númer
+    [L 654, msg  8] Tool 'calcular_financiamiento' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "calcular_financiamiento", "arguments": {"precio_vehiculo": 459900, "enganche_porcentaje": 20, "plazo_meses": 36}} </tool_call>
+    [L 905, msg  4] Tool 'solicitar_datos_contacto' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "solicitar_datos_contacto", "arguments": {"nombre": "Carlos Pérez"}} </tool_call>
+    [L 906, msg  7] Tool 'buscar_vehiculos' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "buscar_vehiculos", "arguments": {"modelo": "CX-5"}} </tool_call>
+    [L 985, msg  8] Tool 'solicitar_datos_contacto' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "solicitar_datos_contacto", "arguments": {"nombre": "Carlos", "email": "carlos.mendez@gmail.com"}} </tool_call>
+
+====================================================================================================
+DETALLE: synthetic_cleaned.jsonl (389 conversaciones, 102 problemas)
+====================================================================================================
+
+  --- P1: Vehiculo presentado antes de que usuario especifique busqueda (22 ocurrencias) ---
+    [L  14, msg  5] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Excelente! Tenemos dos opciones de MG GT en Monterrey que se ajustan a tu presupuesto:  1. **MG GT 2023 Rojo**: $485,000 MXN, con 15,000 km. 2. **MG GT 2022 Gris**: $460,000 MXN, con 25,000 km.  Ambo
+    [L  14, msg  9] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Claro! El **MG GT 2023 Rojo (versión Style)** tiene las siguientes características:  * **Precio:** $485,000 MXN * **Kilometraje:** 15,000 km * **Motor:** 1.5L Turbo * **Transmisión:** Automática * **
+    [L  89, msg  7] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Buenas noticias, Diego! Encontramos dos SEAT Ibiza que podrían gustarte mucho y están dentro de tu presupuesto. 😊  Tenemos un **Ibiza 2022 automático, color blanco, con 25,000 km por $320,000 MXN** y
+    [L  89, msg 12] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Aquí está la información del Ibiza 2022! Es un **SEAT Ibiza 2022 automático, color blanco, con 25,000 km por $320,000 MXN**. Lo tenemos en la sucursal de Guadalupe. ✨  Te comparto algunas fotos: [url
+    [L 131, msg  9] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Encontré algunas alternativas interesantes! Tenemos un **Mazda CX-5 2021** por $420,000 MXN, un **Toyota RAV4 2020** por $400,000 MXN y un **Honda CR-V 2020** por $390,000 MXN. Todos son SUVs y están
+    [L 146, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Claro! Encontramos algunas alternativas interesantes dentro de tu presupuesto y en Saltillo:  * **SEAT Ibiza 2021**: $245,000 MXN * **Nissan Versa 2022**: $260,000 MXN * **Volkswagen Polo 2020**: $23
+    [L 148, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Excelente, Manuel! En Saltillo tenemos estas Chevrolet Blazer que entran en tu presupuesto:  * **Chevrolet Blazer 2021**: $420,000 MXN, 45,000 km, Gris Acero * **Chevrolet Blazer 2020**: $395,000 MXN
+    [L 150, msg  5] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Excelente! Tenemos estas opciones de Mazda 6 en Saltillo que entran en tu presupuesto:  **Mazda 6 i Grand Touring 2017**  2017 | Automática | Gasolina | 85,000 km  Precio: $315,000 MXN  **Mazda 6 i S
+    [L 168, msg  5] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Excelente! Tenemos dos opciones de Hyundai Santa Fe que se ajustan a tu presupuesto y están disponibles en Saltillo:  1. **Hyundai Santa Fe 2017**: $320,000 MXN, 85,000 km 2. **Hyundai Santa Fe 2016*
+    [L 172, msg 12] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Listo, Luis! Encontré estas opciones que podrían interesarte, ambas disponibles en Reynosa:  1. **Chevrolet Onix 2023**: Un sedán muy confiable y económico. Precio: $315,000 MXN 2. **Nissan Kicks 202
+    [L 196, msg  9] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Excelente! Encontramos estas opciones en Saltillo que podrían gustarte y se ajustan a tu presupuesto:  **Chevrolet Equinox 2020**  2020 | Automática | Gasolina | Saltillo  Precio: $420,000 MXN  Desde
+    [L 201, msg  9] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Listo! Encontré estas opciones que podrían interesarte:  **Nissan Versa 2022**  2022 | Automática | Gasolina | 25,000 km  Precio: $235,000 MXN  Desde $5,222 MXN/mes (48 meses, 20% enganche) - Sujeto
+    [L 205, msg 11] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Listo! Encontré algunas alternativas interesantes dentro de tu presupuesto en Monterrey:  * **SEAT León 2020**: $240,000 MXN * **Mazda Mazda3 2021**: $235,000 MXN * **Volkswagen Golf 2019**: $220,000
+    [L 214, msg 12] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Excelente! Encontramos una Nissan X-Trail 2018 en Guadalupe que entra en tu presupuesto:  * **Precio:** $285,000 MXN * **Transmisión:** Automática * **Kilometraje:** 75,000 km  ¿Te gustaría verla en
+    [L 236, msg  5] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Excelente, Valentina! Tenemos dos Nissan Frontier que podrían interesarte en Saltillo:  * **Nissan Frontier 2021 Automática:** $420,000 MXN, 45,000 km * **Nissan Frontier 2020 Manual:** $395,000 MXN,
+    [L 258, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Excelente! Tenemos un **Hyundai Sonata 2020** en Saltillo que se ajusta a tu presupuesto:  * Año: 2020 * Combustible: Gasolina * Transmisión: Automática * Kilometraje: 65,000 km * Precio: $315,000 MX
+    [L 260, msg 15] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Encontré estas opciones para ti en Saltillo!  1. **Nissan Kicks 2021** - $245,000 MXN (Automática, Gasolina, 45,000 km) 2. **Chevrolet Trax 2020** - $230,000 MXN (Automática, Gasolina, 60,000 km)  Am
+    [L 262, msg 15] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Aquí tienes algunas opciones interesantes en Saltillo! 😉  1. **Nissan Sentra 2020:** $235,000 MXN (45,000 km) - autostrefa.mx/autos/nissan-sentra-2020 2. **Volkswagen Vento 2021:** $210,000 MXN (30,0
+    [L 282, msg  5] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Excelente! Tenemos dos Suzuki Ertiga que podrían interesarte en Saltillo:  * **Suzuki Ertiga 2020**: $210,000 MXN, 65,000 km * **Suzuki Ertiga 2021**: $235,000 MXN, 42,000 km  Ambos son automáticos c
+    [L 286, msg  9] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Perfecto! Encontramos este Mazda CX-30 que podría interesarte:  **Mazda CX-30 i Sport 2021**  2021 | Automática | Gasolina | Reynosa | 45,000 km  Precio: $329,900 MXN  Desde $7,331 MXN/mes (48 meses,
+    [L 307, msg 15] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Tenemos dos Corollas disponibles en Monterrey dentro de tu presupuesto! 😉  * **Toyota Corolla 2018:** $215,000 MXN, 68,000 km * **Toyota Corolla 2017:** $198,000 MXN, 85,000 km  El enganche mínimo se
+    [L 311, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Excelente! Encontré dos opciones de Mazda CX-30 que podrían interesarte en nuestra sucursal de Guadalupe:  **Mazda CX-30 Carbon Edition 2023**  2023 | Automática | Gasolina  Precio: $489,900 MXN  Kil
+
+  --- P3: Usuario muestra interes, Mariana NO llama obtener_vehiculo (77 ocurrencias) ---
+    [L   5, msg 11] Usuario: 'me gusta el 2022. como cuanto seria el enganche y mensualidades?' -> No se llama obtener_vehiculo
+       >>> ¡Perfecto! El **SEAT Ibiza 1.6 Style 2022** es una excelente opción. 😊  Considerando un precio de **$279,900 MXN**, el enganche mínimo (20%) sería de **$55,980 MXN**. Las mensualidades, sujetas a apro
+    [L  15, msg 10] Usuario: 'me interesa el fr 2021. ¿qué onda con la garantía?' -> No se llama obtener_vehiculo
+       >>> ¡Buena elección! Todos nuestros autos seminuevos cuentan con:  * **Garantía de 1 año** en motor y transmisión. * **7 días o 500 km** para devolución, ¡lo que ocurra primero!  ¿Te gustaría agendar una
+    [L  28, msg  8] Usuario: 'me interesa la equinox 2020. ¿cuánto sería el enganche y las mensualid' -> No se llama obtener_vehiculo
+       >>> Con gusto te calculo el financiamiento para la Equinox 2020. Para darte una estimación precisa, usaré la herramienta de cálculo. ⚙️
+    [L  31, msg 11] Usuario: 'sí, me interesa la 2021' -> No se llama obtener_vehiculo
+       >>> ¿Perfecto! Para agendar la cita, necesito tu número de teléfono. Así te confirmo el día y la hora. 😊
+    [L  33, msg  6] Usuario: 'me interesa la 2021, ¿qué necesito para el financiamiento?' -> No se llama obtener_vehiculo
+       >>> ¡Perfecto! Para el financiamiento, el enganche mínimo es del 20%, y los plazos pueden ser de 12 hasta 60 meses, sujeto a aprobación. ¿Te gustaría que te haga un cálculo aproximado con un enganche del
+    [L  41, msg 15] Usuario: 'si, me interesa' -> No se llama obtener_vehiculo
+       >>> ¡Perfecto! Para agendar tu cita, ¿me podrías proporcionar tu nombre completo y número de teléfono?
+    [L  50, msg 10] Usuario: 'el 2017 me interesa. ¿qué onda con la garantía?' -> No se llama obtener_vehiculo
+       >>> ¡Buena elección! 😊 Todos nuestros autos tienen **1 año de garantía en motor y transmisión**. Además, tienes **7 días o 500 km para devolverlo** si no te convence. ¿Qué te parece?
+    [L  58, msg  7] Usuario: 'me interesa la 2019 automática. ¿cómo sería el financiamiento?' -> No se llama obtener_vehiculo
+       >>> ¡Buena elección! Para darte una idea del financiamiento de la Suzuki Ertiga 2019 automática ($185,000 MXN), el enganche mínimo sería de $37,000 MXN (20%). Las mensualidades varían según el plazo que e
+    [L  68, msg 15] Usuario: 'sí, me interesa' -> No se llama obtener_vehiculo
+       >>> ¡Genial! Para coordinar la prueba de manejo, ¿podrías proporcionarme tu nombre y número de teléfono? Así, un asesor de Saltillo se pondrá en contacto contigo lo antes posible. 😉
+    [L  70, msg 11] Usuario: 'si, me interesa la kicks' -> No se llama obtener_vehiculo
+       >>> ¡Excelente elección, Manuel! Para agendar tu visita y que un asesor te atienda de manera personalizada, ¿me podrías proporcionar tu nombre completo y número de teléfono? 😊
+    [L  72, msg  6] Usuario: 'la 2021 me interesa, ¿me puedes dar mas info?' -> No se llama obtener_vehiculo
+       >>> ¡Claro! Para darte más detalles de la Kia Seltos 2021, necesito buscarla en el sistema. Dame un segundito. 🔎
+    [L  74, msg  7] Usuario: 'sí, me interesa la 2021. ¿qué necesito para agendar la cita?' -> No se llama obtener_vehiculo
+       >>> Para agendar tu cita y preparar la Chevrolet Tracker 2021 para tu prueba de manejo, necesito algunos datos de contacto. 😊
+    [L  78, msg  8] Usuario: 'me interesa la 2020' -> No se llama obtener_vehiculo
+       >>> ¡Perfecto! La Toyota C-HR 2020 con 48,000 km está en excelentes condiciones. Para que te hagas una idea más clara, te comento que con un enganche del 20% ($76,000 MXN aprox.) y un plazo de 48 meses, t
+    [L  83, msg  8] Usuario: 'me interesa el 2020. ¿qué más me puedes decir?' -> No se llama obtener_vehiculo
+       >>> ¡Excelente! El Honda Fit 2020 es una gran opción. Para darte más detalles, voy a buscar la información específica del vehículo.
+    [L  84, msg 15] Usuario: 'me interesa la 2022' -> No se llama obtener_vehiculo
+       >>> ¡Excelente elección! La **Hyundai Creta 2022** es una gran opción. ¿Te gustaría agendar una cita para verla en persona y hacer una prueba de manejo? 😃
+    [L  88, msg  7] Usuario: 'sí, cuéntame más' -> No se llama obtener_vehiculo
+       >>> ¡Claro! Esta RAV4 tiene 45,000 km, transmisión automática, motor 2.5L y todos los servicios al día. Además, cuenta con pantalla táctil, cámara de reversa y sensores de estacionamiento. 😉  ¿Te interesa
+    [L  91, msg  8] Usuario: 'la premier me interesa. tiene detalles?' -> No se llama obtener_vehiculo
+       >>> Buena elección, la Premier es la versión más equipada. Para darte detalles específicos y el historial completo de la Blazer Premier 2021, voy a consultarlo. 🧐
+    [L 100, msg 12] Usuario: 'sí, por favor, dame más información.' -> No se llama obtener_vehiculo
+       >>> La Kia Sorento 2017 que tenemos disponible en Monterrey tiene las siguientes características:  * **Precio:** $285,000 MXN * **Kilometraje:** 95,000 km * **Transmisión:** Automática * **Combustible:**
+    [L 101, msg 12] Usuario: 'cuéntame más de la kicks' -> No se llama obtener_vehiculo
+       >>> La Nissan Kicks 2019 es un SUV subcompacto muy popular, ¡y con razón! Tiene un motor de 1.6 litros, tracción delantera y es súper eficiente en combustible. Además, es muy fácil de manejar en la ciudad
+    [L 102, msg  9] Usuario: 'me interesa la premier 2022. ¿cómo quedaría con un enganche del 20%?' -> No se llama obtener_vehiculo
+       >>> ¡Excelente! Con un enganche de $88,000 MXN (20%), las mensualidades de la Chevrolet Tracker Premier 2022 quedarían en aproximadamente $9,116 MXN.67 MXN a un plazo de 48 meses. Este cálculo es sujeto a
+    [L 108, msg  9] Usuario: 'me interesa el 2020. ¿cómo sería el financiamiento?' -> No se llama obtener_vehiculo
+       >>> ¡Perfecto! Para darte una idea de cómo serían los pagos, necesitaría saber qué porcentaje de enganche tienes pensado dar. El mínimo es el 20%. ¿Te parece bien si calculamos con ese enganche?
+    [L 113, msg 10] Usuario: 'sí, por favor. me interesa saber más sobre la camioneta y el financiam' -> No se llama obtener_vehiculo
+       >>> Perfecto, Claudia. Para darte detalles más específicos sobre el financiamiento y la camioneta, necesito obtener la información completa de la CX-5.
+    [L 116, msg  8] Usuario: 'me interesa el 2021 automático. ¿cómo sería el financiamiento?' -> No se llama obtener_vehiculo
+       >>> ¡Excelente elección, Patricia! El Jimny 2021 automático es muy popular. 🤩  Para darte una idea del financiamiento, necesitaría saber qué porcentaje de enganche te gustaría dar y en cuántos meses te gu
+    [L 122, msg 11] Usuario: 'el 2023, me interesa' -> No se llama obtener_vehiculo
+       >>> ¡Excelente elección! El Yaris Hatchback 2023 es una gran opción. ¿Te gustaría agendar una cita para verlo en persona y hacer una prueba de manejo en nuestra sucursal de Guadalupe? Así puedes experimen
+    [L 123, msg 15] Usuario: 'el jetta me llama la atención, ¿podemos ver ese?' -> No se llama obtener_vehiculo
+       >>> ¡Excelente! Con gusto agendamos la prueba de manejo para el Volkswagen Jetta 2019 en Saltillo. ¿Qué día y hora te quedaría bien?
+
+    ... y 52 ocurrencias mas en lineas: 125, 130, 132, 136, 146, 150, 151, 153, 161, 162, 168, 170, 172, 192, 195, 196, 205, 211, 212, 227, 229, 234, 238, 244, 251, 252, 259, 261, 264, 266, 267, 273, 288, 292, 300, 304, 306, 308, 318, 320, 321, 326, 333, 337, 338, 358, 359, 378, 379, 382, 389
+
+  --- P4: Tool call sin mensaje de seguimiento del asistente (3 ocurrencias) ---
+    [L  73, msg 13] Tool 'solicitar_datos_contacto' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "solicitar_datos_contacto", "arguments": {"pregunta": "para que un asesor te brinde toda la información sobre el financiamiento"}} </tool_call>
+    [L 141, msg 18] Tool 'solicitar_datos_contacto' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "solicitar_datos_contacto", "arguments": {}} </tool_call>
+    [L 170, msg 16] Tool 'solicitar_datos_contacto' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "solicitar_datos_contacto", "arguments": {"pregunta": "Para dar seguimiento a tu solicitud de financiamiento y agendar una cita, ¿me podrías proporcionar tu nombre completo, númer
+
+====================================================================================================
+DETALLE: gold_upgraded_batch_001.jsonl (50 conversaciones, 16 problemas)
+====================================================================================================
+
+  --- P1: Vehiculo presentado antes de que usuario especifique busqueda (7 ocurrencias) ---
+    [L  12, msg  5] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Qué bueno que estás abierta a opciones, Valeria! Eso me da más espacio para ayudarte a encontrar el auto perfecto. Encontré estos dos hatchbacks:  Opción 1 — **Mazda 3 Hatchback 2021**, automático, e
+    [L  13, msg 10] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Qué emoción Eduardo! Encontré dos opciones que creo te van a encantar y están perfectas para tu presupuesto y lo que buscas:  Opción 1 — **Kia Forte LX 2021**, automático, en $289,900 MXN. Tiene 35,0
+    [L  21, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Fernando :). Qué emoción que estés buscando tu auto ideal. Encontré estas opciones que tenemos en Monterrey y creo que te van a encantar:  Opción 1 — **Toyota Corolla SE 2022**, automático
+    [L  31, msg 14] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Qué padre que busques un SUV, Juan! Son perfectos para la familia :). Encontré estas opciones que creo te van a encantar:  Opción 1 — **Hyundai Tucson GLS 2021**, automático, en $419,900 MXN. Tiene 3
+    [L  35, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Qué padre que busques una SUV rendidora! Encontré unas opciones que creo te van a encantar, y claro, la RAV4 híbrida es una maravilla para el ahorro de gasolina :)  Opción 1 — **Toyota RAV4 XLE Híbri
+    [L  42, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Qué padre que estés buscando un SUV, Rodrigo :). Encontré estas opciones que creo te van a encantar:  Opción 1 — **Hyundai Tucson GLS 2021**, automático, en $419,900 MXN. Tiene 32,000 km y está en nue
+    [L  49, msg 11] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Súper Ricardo! Con ese presupuesto encontré estas dos opciones que te podrían encantar:  Opción 1 — **Nissan Sentra Advance 2022**, automático, en $329,900 MXN. Tiene 35,000 km y está en nuestra sucu
+
+  --- P2: Tags XML (<tool_call>) mezclados con texto natural (4 ocurrencias) ---
+    [L  44, msg  4] Tags <tool_call> mezclados con texto natural en mensaje del asistente
+       >>> Mucho gusto Ana :). Dame un segundito para revisar la lista completa de documentos que te piden para el crédito. <tool_call> {"name": "obtener_info_negocio", "arguments": {"tema": "documentos_requerid
+    [L  44, msg  8] Tags <tool_call> mezclados con texto natural en mensaje del asistente
+       >>> ¡Qué padre Ana, un SUV es una excelente elección! Son súper cómodas y seguras. Déjame ver qué tenemos disponible en ese rango de precio :) <tool_call> {"name": "buscar_vehiculos", "arguments": {"carro
+    [L  44, msg 12] Tags <tool_call> mezclados con texto natural en mensaje del asistente
+       >>> ¡Excelente elección Ana! La **Hyundai Tucson GLS 2021** es una camioneta preciosa y muy confiable. Te cuento más detalles :) <tool_call> {"name": "obtener_vehiculo", "arguments": {"id": 874523}} </too
+    [L  44, msg 16] Tags <tool_call> mezclados con texto natural en mensaje del asistente
+       >>> Claro que sí Ana, con gusto te envío la cotización a ana.gzz@ejemplo.com :) <tool_call> {"name": "enviar_cotizacion_email", "arguments": {"email_destino": "ana.gzz@ejemplo.com", "nombre_cliente": "Ana
+
+  --- P3: Usuario muestra interes, Mariana NO llama obtener_vehiculo (5 ocurrencias) ---
+    [L  30, msg 15] Usuario: 'me interesa el financiamiento, ¿cuánto sería de mensualidad con un 20%' -> No se llama obtener_vehiculo
+       >>> Claro que sí Ricardo, con un 20% de enganche ($57,980 MXN) y un plazo de 48 meses, tu mensualidad estimada sería de $6,399 MXN :).  Este cálculo es una estimación, pero te da una idea. La tasa final p
+    [L  36, msg 13] Usuario: 'me interesa el financiamiento, puedo dar 20% de enganche' -> No se llama obtener_vehiculo
+       >>> Perfecto Sofía, con un 20% de enganche, así quedaría tu plan para la **Kia Seltos EX 2020**:  Enganche: $65,980 MXN Monto a financiar: $263,920 MXN Plazo: 48 meses Mensualidad estimada: $7,280 MXN  ¡E
+    [L  42, msg 11] Usuario: 'si, me interesa ver lo del financiamiento. que te tengo que pasar?' -> No se llama obtener_vehiculo
+       >>> ¡Qué emoción que te interese, Rodrigo! :) La **Kia Sportage** es una camioneta preciosa. Para el financiamiento, lo primero es enviarte una cotización completa a tu correo. Así ves los detalles del au
+    [L  46, msg  7] Usuario: 'sí, me interesa agendarla.' -> No se llama obtener_vehiculo
+       >>> ¡Perfecto, Alberto! Ya registré tus datos con tu número 8187654321 para tu visita y prueba de manejo de la **Kia Sportage 2022** en Guadalupe. Un asesor de la sucursal se pondrá en contacto contigo mu
+    [L  50, msg 17] Usuario: 'me interesa la cotización para ver los pagos' -> No se llama obtener_vehiculo
+       >>> ¡Perfecto Ana! Con gusto te preparo la cotización del **Kia Forte LX 2021**.  ¿A qué correo electrónico te la envío? Y si tienes un enganche o plazo en mente, me lo puedes decir para incluirlo en el c
+
+====================================================================================================
+DETALLE: gold_upgraded_batch_002.jsonl (50 conversaciones, 13 problemas)
+====================================================================================================
+
+  --- P1: Vehiculo presentado antes de que usuario especifique busqueda (11 ocurrencias) ---
+    [L   5, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Ana Sofía :). Encontré estas opciones que creo te van a encantar para moverte por la ciudad:  Opción 1 — **SEAT Arona Xcellence 2023**, automática y con motor turbo, en $369,900 MXN. Está
+    [L   7, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Ricardo :). Con ese presupuesto encontré estas dos opciones que creo te van a encantar:  Opción 1 — **Kia Sportage EX 2022**, automática, en $449,900 MXN. Tiene solo 25,000 km y está en n
+    [L   8, msg 10] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Perfecto Juan, con ese presupuesto encontré estas opciones que creo te van a encantar :  Opción 1 — **Kia Sportage EX 2022**, automática, en $449,900 MXN. Solo tiene 25,000 km y está en nuestra sucurs
+    [L  15, msg 12] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> ¡Perfecto Héctor! Con $250,000 MXN tenemos opciones muy buenas y confiables. Encontré estas que te pueden gustar :  Opción 1 — **Nissan Versa Advance 2019**, automático, en $219,900 MXN. Se encuentra
+    [L  19, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Fernando :). En Monterrey tenemos opciones muy padres ahorita que creo que te van a gustar:  Opción 1 — **Toyota Corolla SE 2022**, automático, en $389,000 MXN. Tiene solo 28,000 km y est
+    [L  23, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Ricardo :). Encontré estas opciones que creo te van a gustar mucho y se ajustan perfecto a tu presupuesto:  Opción 1 — **Chevrolet Aveo 2023**, manual, en $249,900 MXN. Está en nuestra suc
+    [L  26, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Ricardo :). Para una familia las SUVs son una maravilla por el espacio y la seguridad. Encontré estas opciones dentro de tu presupuesto que te van a encantar:  Opción 1 — **Kia Sportage E
+    [L  27, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Roberto :). Encontré estas opciones que creo te van a gustar mucho y están dentro de lo que buscas:  Opción 1 — **Nissan Sentra Advance 2022**, automático, en $319,900 MXN. Se encuentra en
+    [L  32, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Ricardo :). Encontré estas opciones que creo te van a encantar:  Opción 1 — **Mazda 3 i Sport 2019**, automático, en $298,000 MXN. Se encuentra en nuestra sucursal de Saltillo.  Opción 2 —
+    [L  34, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Carlos :). Encontré estas SUVs que te van a encantar:  Opción 1 — **Honda CR-V Turbo Plus 2021**, automática, en $449,900 MXN. Está en nuestra sucursal de Guadalupe.  Opción 2 — **Mazda C
+    [L  41, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Carlos :). Encontré estas dos opciones que creo les van a encantar a ti y a tu familia:  Opción 1 — **Kia Seltos EX 2022**, automática, en $389,900 MXN. Tiene solo 25,000 km y está en nue
+
+  --- P3: Usuario muestra interes, Mariana NO llama obtener_vehiculo (1 ocurrencias) ---
+    [L  12, msg 15] Usuario: 'el 2022 me gusta mucho, ¿puedo ir mañana a las 11 am?' -> No se llama obtener_vehiculo
+       >>> ¡Qué padre! El **Mazda 3 Sedán 2022** es un auto precioso y se maneja increíble. Claro que sí, te agendo la cita para mañana a las 11:00 am en la sucursal de Monterrey.   Aquí puedes verlo con todas s
+
+  --- P4: Tool call sin mensaje de seguimiento del asistente (1 ocurrencias) ---
+    [L  35, msg  4] Tool 'buscar_vehiculos' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "buscar_vehiculos", "arguments": {"marca": "Nissan", "modelo": "Sentra", "año_minimo": 2022, "año_maximo": 2022}} </tool_call>
+
+====================================================================================================
+DETALLE: gold_upgraded_batch_003.jsonl (50 conversaciones, 7 problemas)
+====================================================================================================
+
+  --- P1: Vehiculo presentado antes de que usuario especifique busqueda (5 ocurrencias) ---
+    [L  10, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Carlos :). Para una familia una SUV es la opción perfecta por el espacio. Encontré estas opciones dentro de tu presupuesto que te van a encantar:  Opción 1 — **Kia Sportage EX 2020**, auto
+    [L  17, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Roberto :). Encontré estas opciones que se ajustan perfecto a tu presupuesto de $300,000 MXN:  Opción 1 — **Kia Forte LX 2021**, automático, en $289,900 MXN. Se encuentra en nuestra sucurs
+    [L  18, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Roberto :). Para una familia una SUV es la mejor opción por el espacio y la comodidad. Encontré estas opciones dentro de tu presupuesto:  Opción 1 — **Hyundai Tucson GLS 2021**, automática
+    [L  25, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Roberto :). Encontré estas opciones que creo te van a gustar mucho y están dentro de tu presupuesto de $400,000 MXN:  Opción 1 — **Toyota Corolla LE 2022**, automático, en $359,900 MXN. Se
+    [L  50, msg 10] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Carlos, para una familia de 5 una SUV es la mejor opción por el espacio y la comodidad :). Encontré estas dos que se ajustan súper bien a tu presupuesto:  Opción 1 — **Nissan Kicks Advance 2021**, aut
+
+  --- P3: Usuario muestra interes, Mariana NO llama obtener_vehiculo (2 ocurrencias) ---
+    [L  28, msg  7] Usuario: 'me queda un poco lejos monterrey, pero me interesa. ¿cómo quedarían la' -> No se llama obtener_vehiculo
+       >>> No te preocupes por la distancia, Carlos, ¡nuestro proceso puede ser 100% en línea! :). Con $80,000 MXN de enganche, tu mensualidad quedaría aproximadamente en $6,675 MXN a un plazo de 48 meses.  Es u
+    [L  38, msg  7] Usuario: 'sí, me interesa el ford escape 2022. mi nombre es carlos lópez y mi te' -> No se llama obtener_vehiculo
+       >>> ¡Perfecto, Carlos! Ya registré tus datos para que uno de nuestros asesores te dé seguimiento personal :).   La **Ford Escape Titanium 2022** está en excelentes condiciones. Aquí puedes verla con todas
+
+====================================================================================================
+DETALLE: gold_upgraded_batch_004.jsonl (50 conversaciones, 8 problemas)
+====================================================================================================
+
+  --- P1: Vehiculo presentado antes de que usuario especifique busqueda (4 ocurrencias) ---
+    [L   6, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Roberto :). Encontré estas opciones que tienen un descuento especial ahorita y creo que te van a encantar:  Opción 1 — **Mazda 3 Sedán 2021**, automático, en $329,900 MXN. Tiene 28,000 km
+    [L  10, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Patricia :). Qué padre que estés buscando una SUV. Encontré estas dos opciones que tienen un precio excelente este mes:  Opción 1 — **Hyundai Tucson GLS 2021**, automática, en $399,900 MX
+    [L  42, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Carlos :). Te cuento que aceptamos tarjeta para el apartado o el enganche de tu auto, aunque por el momento no manejamos meses sin intereses.  Lo que sí tenemos es un proceso de financiam
+    [L  49, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Ricardo. Siento mucho que hayas pasado por esa mala experiencia, de verdad da mucha coraje cuando no son honestos. En Autos TREFA somos una agencia establecida y, para tu tranquilidad, cad
+
+  --- P3: Usuario muestra interes, Mariana NO llama obtener_vehiculo (2 ocurrencias) ---
+    [L  17, msg 11] Usuario: 'la tucson me late por la ubicación. llego como en una hora. ¿hasta qué' -> No se llama obtener_vehiculo
+       >>> ¡Perfecto! Hoy cerramos a las 7:00 PM, así que alcanzas súper bien a verla con calma y hasta dar una vuelta :).   Te espero en la sucursal de Monterrey. Por cierto, ¿te gustaría que te envíe una cotiz
+    [L  47, msg 11] Usuario: 'si porfa, mi correo es ricardo.mtz88@gmail.com. y si me interesa ir a ' -> No se llama obtener_vehiculo
+       >>> Listo Ricardo, ya te envié la cotización del **Nissan Versa Advance 2019** a tu correo :).   Qué padre que te animes a venir mañana. Te va a dar mucha tranquilidad saber que el auto tiene garantía de
+
+  --- P4: Tool call sin mensaje de seguimiento del asistente (2 ocurrencias) ---
+    [L   4, msg  8] Tool 'calcular_financiamiento' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "calcular_financiamiento", "arguments": {"precio_vehiculo": 459900, "enganche_porcentaje": 20, "plazo_meses": 36}} </tool_call>
+    [L   9, msg  8] Tool 'solicitar_datos_contacto' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "solicitar_datos_contacto", "arguments": {"nombre": "Carlos", "email": "carlos.mendez@gmail.com"}} </tool_call>
+
+====================================================================================================
+DETALLE: gold_upgraded_batch_005.jsonl (50 conversaciones, 16 problemas)
+====================================================================================================
+
+  --- P1: Vehiculo presentado antes de que usuario especifique busqueda (11 ocurrencias) ---
+    [L  10, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Laura :). Qué importante es la seguridad cuando viajamos con niños. Encontré estas opciones en Monterrey que son súper amplias y seguras:  Opción 1 — **Kia Sportage EX 2020**, automática,
+    [L  15, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Ricardo :). ¡Qué emoción que estés buscando tu primer auto! No te preocupes por el enganche, en Autos TREFA tenemos opciones desde el 10%, así que con tus $25,000 MXN estamos súper bien.
+    [L  18, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Roberto, entiendo perfectamente :). Es una decisión muy importante y es normal querer estar seguro. En Autos TREFA vas a la segura: todos nuestros autos pasan por una inspección de 150 pun
+    [L  26, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Ricardo :). Te entiendo perfectamente, la tranquilidad de saber que tu auto no te va a fallar es lo más importante. Encontré estas opciones que están muy bien cuidadas y son excelentes pa
+    [L  30, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Arturo :). Encontré estas dos opciones que creo que te van a gustar mucho por su confiabilidad:  Opción 1 — **Toyota Corolla SE 2019**, automático, en $329,900 MXN. Tiene 58,000 km y está
+    [L  34, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Carlos :). Qué bueno que buscas algo seguro para tu familia. En nuestra sucursal de Guadalupe (que es la zona de las Américas) encontré estas opciones que te van a encantar:  Opción 1 — **
+    [L  36, msg 11] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Encontré estas dos opciones que están excelentes para ser tu primer auto, Beto:  Opción 1 — **Renault Kwid Iconic 2024**, manual, en $189,900 MXN. Es casi nuevo y está en nuestra sucursal de Guadalupe
+    [L  37, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Pedro :). Qué bueno que ya viste una opción que te gustó. Encontré el **Kia Forte LX 2021**, automático, en $289,900 MXN. Tiene solo 35,000 km y está justo en nuestra sucursal de Monterrey
+    [L  38, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Con esos $40,000 MXN de enganche sí podemos encontrar algo muy padre para que sea tu primer auto, Carlos. Encontré estas opciones que creo que te van a gustar mucho:  Opción 1 — **Nissan March Sense 2
+    [L  43, msg 10] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Carlos :). Qué bueno que nos contactas. Te cuento que tenemos un inventario muy completo con 385 autos de marcas como Nissan, Chevrolet, VW y Toyota.  Encontré estas opciones por menos de
+    [L  48, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Ana Sofía :). Encontré estas opciones que creo te van a encantar para moverte en la ciudad:  Opción 1 — **SEAT Arona Xcellence 2023**, automática, en $369,900 MXN. Está en nuestra sucursal
+
+  --- P3: Usuario muestra interes, Mariana NO llama obtener_vehiculo (4 ocurrencias) ---
+    [L   2, msg  7] Usuario: 'ese mero. pero quiero dar mi aveo 2019 a cuenta, el detalle es q trae ' -> No se llama obtener_vehiculo
+       >>> Claro que sí, Carlos, manejamos toma a cuenta :). Tu Aveo 2019 entra perfecto en nuestro rango de modelos 2016 en adelante. No te preocupes por el adeudo, nosotros nos encargamos de toda la gestión pa
+    [L   3, msg  7] Usuario: 'me interesan las hilux. estoy en mty x san jerónimo. me urge porque no' -> No se llama obtener_vehiculo
+       >>> Te entiendo perfectamente Ricardo, el tiempo es oro :). Nuestra sucursal de Monterrey en Av. Gonzalitos te queda a 5 minutos de San Jerónimo.  Aquí puedes ver la ubicación: https://maps.app.goo.gl/TRE
+    [L  30, msg  7] Usuario: 'me gusta el corolla, siempre han salido muy aguantadores esos carros. ' -> No se llama obtener_vehiculo
+       >>> Arturo, no te preocupes por ser independiente, ¡qué padre que tengas tu propio negocio! :). En Autos TREFA entendemos perfecto eso. Para el crédito solo necesitaríamos tus estados de cuenta de los últ
+    [L  31, msg  7] Usuario: 'arre me late. ¿por donde andan? ando aca en mty' -> No se llama obtener_vehiculo
+       >>> ¡Qué padre Alex! En Monterrey tenemos estas dos opciones que te quedan súper cerca:  Monterrey — Av. Gonzalitos 102 Sur, Mitras Centro https://maps.app.goo.gl/TREFAmty  Guadalupe — Av. Benito Juárez 1
+
+  --- P4: Tool call sin mensaje de seguimiento del asistente (1 ocurrencias) ---
+    [L  43, msg  4] Tool 'solicitar_datos_contacto' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "solicitar_datos_contacto", "arguments": {"nombre": "Carlos Pérez"}} </tool_call>
+
+====================================================================================================
+DETALLE: gold_upgraded_batch_006.jsonl (50 conversaciones, 9 problemas)
+====================================================================================================
+
+  --- P1: Vehiculo presentado antes de que usuario especifique busqueda (4 ocurrencias) ---
+    [L  23, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Carlos :). Encontré unas opciones excelentes que aguantan muy bien el trabajo pesado:  Opción 1 — **Toyota Hilux SR 2021**, manual, en $529,900 MXN. Se encuentra en nuestra sucursal de Re
+    [L  34, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Carlos :). Para una SUV que no gaste mucha gasolina, encontré estas opciones que creo te van a encantar:  Opción 1 — **Toyota RAV4 Hybrid 2022**, automática, en $529,900 MXN. Es híbrida,
+    [L  39, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Ricardo :). Encontré estas opciones de sedán que creo que te van a gustar mucho:  Opción 1 — **Toyota Corolla LE 2022**, automático, en $359,900 MXN. Está en nuestra sucursal de Monterrey.
+    [L  41, msg 10] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Roberto, encontré estas opciones que quedan súper bien con tu presupuesto mensual :  Opción 1 — **Chevrolet Aveo LT 2019**, manual, en $169,900 MXN. Se encuentra en nuestra sucursal de Guadalupe.  Opc
+
+  --- P2: Tags XML (<tool_call>) mezclados con texto natural (1 ocurrencias) ---
+    [L   5, msg  6] Tags <tool_call> mezclados con texto natural en mensaje del asistente
+       >>> Mucho gusto, Carlos :). No te preocupes para nada, es totalmente normal sentirse así la primera vez, pero te prometo que aquí el proceso es muy sencillo y transparente.  Déjame consultarte los detalle
+
+  --- P3: Usuario muestra interes, Mariana NO llama obtener_vehiculo (3 ocurrencias) ---
+    [L  10, msg 11] Usuario: 'me gusta el kia forte. y sí, dime por favor qué necesito para el crédi' -> No se llama obtener_vehiculo
+       >>> Excelente elección, el **Kia Forte LX 2021** es un carrazo :). Para el crédito es súper sencillo, solo necesitas tener a la mano tu identificación oficial vigente, un comprobante de domicilio reciente
+    [L  31, msg  9] Usuario: 'sí, esa mera. ¿cuánto quedarían las mensualidades con un 20% de enganc' -> No se llama obtener_vehiculo
+       >>> Juan, con un 20% de enganche ($77,980 MXN) a un plazo de 48 meses, tu mensualidad quedaría aproximadamente en $8,607 MXN :).  ¿Te gustaría ver cómo queda a 60 meses para que el pago sea aún más cómodo
+    [L  41, msg 11] Usuario: 'el versa me late, dónde está?' -> No se llama obtener_vehiculo
+       >>> El **Nissan Versa Sense 2020** está en nuestra sucursal de Monterrey :). Es un auto muy confiable y cómodo para el día a día.   ¿Te gustaría que te comparta los detalles completos y las fotos para que
+
+  --- P4: Tool call sin mensaje de seguimiento del asistente (1 ocurrencias) ---
+    [L  43, msg  4] Tool 'buscar_vehiculos' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "buscar_vehiculos", "arguments": {"modelo": "Mazda 3"}} </tool_call>
+
+====================================================================================================
+DETALLE: gold_upgraded_batch_007.jsonl (50 conversaciones, 8 problemas)
+====================================================================================================
+
+  --- P1: Vehiculo presentado antes de que usuario especifique busqueda (7 ocurrencias) ---
+    [L   1, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Carlos :). Con ese presupuesto encontré estas opciones que creo te van a encantar:  Opción 1 — **Volkswagen Jetta Comfortline 2021**, automático, en $349,900 MXN. Está en nuestra sucursal
+    [L   2, msg 10] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Entiendo perfecto, Beto. Si lo que buscas es eficiencia y ahorro para el trabajo, encontré una opción híbrida que te va a encantar y te dará un ahorro de gasolina increíble:  Opción 1 — **Toyota RAV4
+    [L   8, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> José, encontré estas opciones que creo te van a gustar mucho :  Opción 1 — **Kia Rio S Pack 2021**, automático, en $279,900 MXN. Se encuentra en nuestra sucursal de Guadalupe.  Opción 2 — **Toyota Sie
+    [L  12, msg  7] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Carlos, encontré estas opciones que creo te van a encantar por lo ahorradoras y modernas que son para ser tu primer auto:  Opción 1 — **Nissan Versa Sense 2021**, automático, en $239,900 MXN. Se encue
+    [L  23, msg 14] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Encontré estas opciones en Saltillo que están súper bien para ser tu primer auto y entran perfecto en tu presupuesto :  Opción 1 — **Chevrolet Spark LT 2018**, manual, en $165,000 MXN. Es muy rendidor
+    [L  31, msg 15] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Para moverte en la ciudad encontré estas opciones que acaban de llegar y creo que te van a gustar Daniel :)  Opción 1 — **Kia Sportage EX 2021**, automática y muy cómoda, en $415,000 MXN. Está en nues
+    [L  47, msg 10] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Omar :). Qué padre que busques una SUV, son ideales para la familia por el espacio y la seguridad. Encontré estas opciones justo en Reynosa:  Opción 1 — **Toyota RAV4 LE 2021**, automática
+
+  --- P3: Usuario muestra interes, Mariana NO llama obtener_vehiculo (1 ocurrencias) ---
+    [L  36, msg  9] Usuario: 'mmm, es que me gusta mucho la seltos, por su tamaño y lo cómoda que es' -> No se llama obtener_vehiculo
+       >>> Te entiendo perfecto Ricardo, la Seltos es una camioneta increíble y súper cómoda :). Nuestro inventario se mueve muy rápido y siempre están llegando unidades nuevas, así que es muy probable que nos l
+
+====================================================================================================
+DETALLE: gold_upgraded_batch_008.jsonl (50 conversaciones, 14 problemas)
+====================================================================================================
+
+  --- P1: Vehiculo presentado antes de que usuario especifique busqueda (10 ocurrencias) ---
+    [L   5, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Roberto :). Para una familia de 5, una SUV es una excelente idea por el espacio y la seguridad. Encontré estas opciones que creo te van a gustar:  Opción 1 — **Nissan Kicks Advance 2021**
+    [L   6, msg 14] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Encontré estas opciones que creo te van a gustar, Carlos :  Opción 1 — **Kia Forte LX 2021**, automático, en $289,900 MXN. Se encuentra en nuestra sucursal de Guadalupe.  Opción 2 — **Volkswagen Jetta
+    [L  11, msg  9] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Juan, encontré estas dos opciones que están increíbles y entran justo en tu presupuesto:  Opción 1 — **Mazda CX-5 Grand Touring 2020**, automática, en $385,000 MXN. Tiene 45,000 km y está en nuestra s
+    [L  12, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Carlos :). Qué emoción que vayas a comprar tu primer auto, déjame ayudarte a que sea una gran experiencia. Encontré estas opciones que te van a gustar:  Opción 1 — **Nissan Versa Sense 201
+    [L  13, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Carlos :). Qué buena idea invertir en una pickup para el trabajo, son herramientas de lo mejor. Encontré estas opciones que se ajustan súper bien a tu presupuesto:  Opción 1 — **RAM 1500
+    [L  20, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Roberto :). Con esos $350,000 MXN encontré un par de opciones que te van a encantar:  Opción 1 — **Nissan Sentra Advance 2022**, automático, en $329,900 MXN. Está en nuestra sucursal de S
+    [L  26, msg 14] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Luis, encontré estas dos naves automáticas que te van a quedar súper bien por el presupuesto y son ideales para empezar:  Opción 1 — **Nissan Sentra Advance 2019**, en $209,900 MXN. Está en nuestra su
+    [L  35, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Roberto, con ese presupuesto encontré estas opciones que creo te van a gustar mucho por lo económicas que son en mantenimiento y gasolina:  Opción 1 — **Nissan Sentra Advance 2019**, automático, en $2
+    [L  43, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Juan, encontré estas tres opciones que se ajustan súper bien a tu presupuesto de $200,000 MXN:  Opción 1 — **Nissan Versa Sense 2020**, manual, en $189,900 MXN. Está en nuestra sucursal de Monterrey.
+    [L  46, msg 12] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Encontré estas opciones que creo te van a gustar mucho por su precio y calidad :  Opción 1 — **Renault Kwid Iconic 2024**, manual, en $189,900 MXN. Es un modelo muy reciente con poco kilometraje y est
+
+  --- P2: Tags XML (<tool_call>) mezclados con texto natural (1 ocurrencias) ---
+    [L  50, msg 12] Tags <tool_call> mezclados con texto natural en mensaje del asistente
+       >>> Es súper sencillo, Ricardo. Nuestro sistema analiza tu perfil y nos dice con qué banco tienes más posibilidades de que te aprueben rápido y con la mejor tasa. Todo es 100% digital.  Por cierto, encont
+
+  --- P3: Usuario muestra interes, Mariana NO llama obtener_vehiculo (3 ocurrencias) ---
+    [L   1, msg  7] Usuario: 'me gusta mucho, pero yo vivo en monterrey. ¿está muy lejos?' -> No se llama obtener_vehiculo
+       >>> No te preocupes Roberto, Saltillo está súper cerca de Monterrey :). Además, nuestro proceso de compra puede ser 100% en línea para tu comodidad.  Podemos tramitar tu crédito de forma digital y, si te
+    [L  47, msg 14] Usuario: 'me gusta el kia, mándame la cotización a luis.perez@email.com. y sí, v' -> No se llama obtener_vehiculo
+       >>> ¡Listo Luis! Ya te envié la cotización del **Kia Forte LX 2021** a tu correo :). Ahí puedes ver el detalle del plan de financiamiento y las mensualidades.  Para la solicitud de crédito, puedes iniciar
+    [L  50, msg 15] Usuario: 'me gusta mucho, pero yo estoy en monterrey. ¿se puede?' -> No se llama obtener_vehiculo
+       >>> ¡Claro que sí! No hay ningún problema, podemos coordinar todo para que lo recibas en Monterrey o incluso puedes hacer el trámite 100% en línea :).   ¿Te gustaría que te envíe la cotización detallada d
+
+====================================================================================================
+DETALLE: gold_upgraded_batch_015.jsonl (50 conversaciones, 15 problemas)
+====================================================================================================
+
+  --- P1: Vehiculo presentado antes de que usuario especifique busqueda (9 ocurrencias) ---
+    [L   5, msg 14] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Encontré estas opciones en Reynosa que son guerreras y muy económicas para empezar un negocio :  Opción 1 — **Nissan March Sense 2020**, manual, en $189,900 MXN. Es súper rendidor y fácil de mantener.
+    [L   8, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Ricardo :). Qué padre que busques una SUV, son súper cómodas y prácticas. Encontré estas dos opciones que están increíbles y entran justo en tu presupuesto:  Opción 1 — **Nissan Kicks Adv
+    [L  14, msg 20] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Marco, encontré estas opciones en Monterrey que se ajustan perfecto a lo que buscas:  Opción 1 — **Nissan Versa Advance 2020**, automático, en $245,000 MXN. Está en nuestra sucursal de Monterrey.  Opc
+    [L  21, msg 14] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Encontré estas dos opciones que son excelentes para el diario y muy económicas en gasolina :  Opción 1 — **Nissan March Sense 2020**, manual, en $198,000 MXN. Tiene 45,000 km y está en nuestra sucursa
+    [L  32, msg  9] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Luis, encontré estas tres opciones que se ajustan perfecto a tu presupuesto y están listos para que te los lleves :  Opción 1 — **Nissan Versa Sense 2017**, manual, en $189,900 MXN. Se encuentra en nu
+    [L  35, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Carlos :). Qué buena idea buscar una pickup para el trabajo, son aguantadoras. Encontré estas opciones que creo te van a servir muchísimo:  Opción 1 — **RAM 1500 Big Horn 2021**, automáti
+    [L  36, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Diego :). Qué padre que estés buscando tu primer auto, es un momento bien especial. Encontré estas opciones de menos de $200,000 MXN que te van a gustar:  Opción 1 — **Nissan Versa Drive 2
+    [L  44, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Carlos :). Qué buena decisión buscar un sedán, son súper prácticos para la ciudad. Encontré estas opciones que te van a encantar:  Opción 1 — **Nissan Versa Advance 2018**, automático, en
+    [L  49, msg 18] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Listo Alejandro, ya te mandé el link a alejandro.m@email.com :). Puedes registrarte en autostrefa.mx/registro y subir tus documentos ahí mismo.  Como te urge por el trabajo, encontré estas opciones de
+
+  --- P3: Usuario muestra interes, Mariana NO llama obtener_vehiculo (3 ocurrencias) ---
+    [L  22, msg 17] Usuario: 'el jetta me gusta mucho. me queda cerca saltillo, ¿puedo ir mañana?' -> No se llama obtener_vehiculo
+       >>> ¡Qué padre! Claro que sí Javier, te va a encantar en persona :). Te agendo la visita para mañana en nuestra sucursal de Saltillo.   Mientras tanto, ¿me compartes tu correo para enviarte la cotización
+    [L  45, msg 15] Usuario: 'me late. ¿me puedes mandar la cotización por correo? y sí me gustaría ' -> No se llama obtener_vehiculo
+       >>> ¡Claro que sí, Pedro! Con gusto te la mando. ¿Me compartes tu correo electrónico para enviártela de una vez?
+    [L  46, msg 10] Usuario: 'me interesa un estimado de mensualidad. ¿cuánto sería con un 20% de en' -> No se llama obtener_vehiculo
+       >>> Claro que sí, Ricardo. Con un 20% de enganche ($99,980 MXN) y a un plazo de 48 meses, tu mensualidad quedaría en aproximadamente $11,950 MXN :). Trabajamos con bancos aliados para conseguirte la mejor
+
+  --- P4: Tool call sin mensaje de seguimiento del asistente (3 ocurrencias) ---
+    [L   9, msg  4] Tool 'buscar_vehiculos' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "buscar_vehiculos", "arguments": {"marca": "Toyota", "modelo": "Corolla"}} </tool_call>
+    [L  11, msg  7] Tool 'buscar_vehiculos' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "buscar_vehiculos", "arguments": {"modelo": "CX-5"}} </tool_call>
+    [L  15, msg  3] Tool 'solicitar_datos_contacto' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "solicitar_datos_contacto", "arguments": {"nombre": "Santiago", "comentarios": "Busca Audi Q5 para familia en Monterrey"}} </tool_call>
+
+====================================================================================================
+DETALLE: gold_upgraded_batch_016.jsonl (50 conversaciones, 9 problemas)
+====================================================================================================
+
+  --- P1: Vehiculo presentado antes de que usuario especifique busqueda (7 ocurrencias) ---
+    [L   7, msg 12] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Encontré estas opciones que creo te van a gustar mucho, Ricardo :  Opción 1 — **Volkswagen Jetta Comfortline 2021**, automático con motor turbo, en $349,900 MXN. Está en nuestra sucursal de Saltillo.
+    [L  23, msg 10] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Ricardo, con ese presupuesto de $350,000 MXN encontré estas opciones que te van a encantar :  Opción 1 — **Nissan Sentra Advance 2022**, automático, en $329,900 MXN. Está en nuestra sucursal de Saltil
+    [L  27, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Ricardo :). Encontré estas opciones que creo te van a encantar:  Opción 1 — **Mazda CX-5 Grand Touring 2023**, automática, en $489,900 MXN. Se encuentra en nuestra sucursal de Monterrey.
+    [L  28, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Ricardo :). Con ese presupuesto de $450,000 MXN encontré estas dos opciones que te van a encantar:  Opción 1 — **Kia Sportage EX 2022**, automática, en $449,900 MXN. Tiene solo 25,000 km y
+    [L  29, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Ricardo :). Con ese presupuesto encontré estas dos opciones que creo te van a encantar:  Opción 1 — **Mazda CX-5 Grand Touring 2021**, automático, en $439,900 MXN. Es una SUV preciosa y es
+    [L  33, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Carlos :). Encontré estas dos opciones que se ajustan perfecto a tus $300,000 MXN:  Opción 1 — **Chevrolet Aveo 2023**, manual, en $249,900 MXN. Tiene solo 12,000 km y está en nuestra sucu
+    [L  35, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Roberto :). Encontré estas opciones que creo te van a encantar y están dentro de tu presupuesto:  Opción 1 — **Toyota Corolla SE 2022**, automático, en $359,900 MXN. Está en nuestra sucurs
+
+  --- P3: Usuario muestra interes, Mariana NO llama obtener_vehiculo (2 ocurrencias) ---
+    [L  13, msg  5] Usuario: 'si, me interesa ver lo del financiamiento. que te tengo que pasar?' -> No se llama obtener_vehiculo
+       >>> ¡Claro que sí! Con gusto te ayudo. Para enviarte la cotización formal con las opciones de pago y plazos, ¿me compartes tu nombre completo y tu correo electrónico?   También te cuento que el proceso de
+    [L  40, msg  7] Usuario: 'me interesa el financiamiento, traigo como 80 de enganche' -> No se llama obtener_vehiculo
+       >>> Ricardo, con tus $80,000 MXN de enganche (que es un 25%) las mensualidades quedarían aproximadamente en $6,621 MXN a un plazo de 48 meses :). Es un pago muy cómodo para un auto tan reciente.  ¿Te gust
+
+====================================================================================================
+DETALLE: gold_upgraded_batch_017.jsonl (50 conversaciones, 10 problemas)
+====================================================================================================
+
+  --- P1: Vehiculo presentado antes de que usuario especifique busqueda (6 ocurrencias) ---
+    [L   2, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Ricardo :). Encontré estas excelentes opciones para ti:  Opción 1 — **Chevrolet Aveo LT 2023**, manual, en $249,900 MXN. Está en nuestra sucursal de Guadalupe y tiene muy poquito kilometr
+    [L   7, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Carlos :). Encontré estas opciones dentro de tu presupuesto que creo te van a encantar:  Opción 1 — **Toyota Corolla SE 2022**, automático, en $359,900 MXN. Está en nuestra sucursal de Mon
+    [L  13, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Roberto :). Encontré estas opciones que se ajustan perfecto a tu presupuesto:  Opción 1 — **Nissan Versa Sense 2020**, en $189,900 MXN. Tiene 52,000 km y está en nuestra sucursal de Monter
+    [L  15, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Carlos :). Encontré estas camionetas familiares que te van a encantar:  Opción 1 — **Toyota RAV4 XLE 2021**, automática, en $459,900 MXN. Está en nuestra sucursal de Monterrey.  Opción 2
+    [L  43, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Alejandra, para moverte entre el trabajo y la uni, un sedán automático es una excelente idea porque son muy cómodos en el tráfico y ahorradores de gasolina. Encontré estas opciones que te van a encant
+    [L  50, msg 15] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Encontré estas opciones que te van a quedar perfectas para la ciudad, Marco :  Opción 1 — **Renault Kwid Iconic 2023**, manual, en $195,000 MXN. Está en nuestra sucursal de Monterrey. Es de los más ah
+
+  --- P2: Tags XML (<tool_call>) mezclados con texto natural (1 ocurrencias) ---
+    [L  46, msg  6] Tags <tool_call> mezclados con texto natural en mensaje del asistente
+       >>> Mucho gusto Roberto :). Te cuento que para nuestro programa de toma a cuenta aceptamos modelos con un máximo de 120,000 km, por lo que con 150,000 km lamentablemente no podríamos recibirlo en la agenc
+
+  --- P3: Usuario muestra interes, Mariana NO llama obtener_vehiculo (3 ocurrencias) ---
+    [L   4, msg  7] Usuario: 'me gusta el sentra por ser automático, pero está en saltillo y yo esto' -> No se llama obtener_vehiculo
+       >>> Entiendo perfectamente, Ricardo. No te preocupes por la distancia, tenemos muchos clientes de Monterrey que compran en Saltillo porque el proceso es muy sencillo :). El **Nissan Sentra 2022** es un gr
+    [L  39, msg 13] Usuario: 'la de 60 meses me late. mándamela a ricardo.m@email.com' -> No se llama obtener_vehiculo
+       >>> ¡Listo, Ricardo! Ya te envié la cotización de la **Toyota RAV4 XLE 2021** a tu correo :). No olvides revisar tu bandeja de entrada y también la carpeta de spam por si las dudas.  Como el auto está en
+    [L  48, msg 12] Usuario: 'ufff, está difícil... creo que me jala más la honda, eso de que gaste ' -> No se llama obtener_vehiculo
+       >>> ¡Qué buena elección, Rafa! La Honda CR-V es una de las favoritas precisamente por ser tan práctica y segura, ideal para que andes tranquilo en las calles. Déjame darte los detalles completos de esa un
+
+====================================================================================================
+DETALLE: gold_upgraded_batch_018.jsonl (50 conversaciones, 16 problemas)
+====================================================================================================
+
+  --- P1: Vehiculo presentado antes de que usuario especifique busqueda (10 ocurrencias) ---
+    [L   6, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Carlos :). Encontré estas opciones que creo te van a encantar:  Opción 1 — **Kia Sportage EX 2023**, automática, en $459,900 MXN. Está en nuestra sucursal de Monterrey.  Opción 2 — **Volks
+    [L  12, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Rodrigo :). Encontré estas dos pickups que se ajustan muy bien a lo que buscas:  Opción 1 — **Toyota Hilux SR 2021**, automática, en $519,900 MXN. Tiene 41,000 km y está en nuestra sucursa
+    [L  14, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Ricardo :). Encontré estas opciones que creo te van a gustar mucho:  Opción 1 — **Nissan Sentra 2022**, automático, en $319,900 MXN. Se encuentra en nuestra sucursal de Saltillo.  Opción
+    [L  20, msg 12] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Don Roberto, encontré estas opciones que le van a encantar y cumplen con todo lo que busca. Son autos amplios, muy seguros y con mucha tecnología:  Opción 1 — **Volkswagen Jetta Highline 2022**, autom
+    [L  23, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Carlos :). Encontré estas opciones que creo te van a encantar:  Opción 1 — **Honda CR-V Turbo 2021**, automática, en $449,900 MXN. Se encuentra en nuestra sucursal de Guadalupe.  Opción 2
+    [L  32, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Ricardo :). Para una familia, una SUV es la opción más cómoda por el espacio y la seguridad. Encontré estas opciones dentro de tu presupuesto:  Opción 1 — **Kia Sportage LX 2020**, automá
+    [L  36, msg  9] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Ricardo, encontré estas opciones que se ajustan súper bien a lo que buscas :  Opción 1 — **Nissan Versa Sense 2020**, manual, en $189,900 MXN. Está en nuestra sucursal de Monterrey.  Opción 2 — **Chev
+    [L  39, msg 10] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Sofía, qué padre labor la de ser maestra :). Con tu ingreso de $18,000 MXN mensuales, encontré estas opciones que son seguras, confiables y con mensualidades que se ajustan muy bien para que no andes
+    [L  43, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Carlos :). Encontré estas opciones que creo te van a encantar:  Opción 1 — **Honda CR-V Turbo Plus 2021**, automática, en $449,900 MXN. Se encuentra en nuestra sucursal de Guadalupe.  Opc
+    [L  45, msg 16] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Excelente Antonio, ya quedó anotada tu cita para este sábado a las 10:30 am :). Te vamos a estar esperando.  Fíjate que justo en la sucursal de Reynosa tengo una opción que te puede gustar mucho:  **N
+
+  --- P2: Tags XML (<tool_call>) mezclados con texto natural (1 ocurrencias) ---
+    [L  26, msg 12] Tags <tool_call> mezclados con texto natural en mensaje del asistente
+       >>> Te entiendo, Ricardo. Déjame decirte que la **Mazda CX-5 Signature** es la versión más equipada, así que aunque sea 2020, se siente más moderna que muchos autos 2024. Los acabados son premium y el mot
+
+  --- P3: Usuario muestra interes, Mariana NO llama obtener_vehiculo (3 ocurrencias) ---
+    [L   7, msg  9] Usuario: 'gracias mariana, me interesa mucho el financiamiento. con esa oferta s' -> No se llama obtener_vehiculo
+       >>> Luis, con un 25% de enganche ($99,975 MXN), tu pago mensual quedaría en aproximadamente $8,276 MXN a un plazo de 48 meses :).   Es un pago bastante cómodo para una camioneta de este nivel. ¿Te gustarí
+    [L  12, msg  7] Usuario: 'me gusta la toyota. ¿cómo quedarían las mensualidades con un 30% de en' -> No se llama obtener_vehiculo
+       >>> Excelente elección, la **Toyota Hilux SR 2021** es una joya :). Con un 30% de enganche ($155,970 MXN), las mensualidades a 48 meses te quedarían en aproximadamente $10,142 MXN.  Aquí puedes verla con
+    [L  18, msg 13] Usuario: 'el versa me gusta mucho por el año y el precio. ¿cómo funciona lo del ' -> No se llama obtener_vehiculo
+       >>> Te entiendo perfectamente, Ricardo. Como emprendedor es normal tener meses mejores que otros :). Lo padre es que nuestras financieras son muy flexibles; podemos comprobar ingresos con tus estados de c
+
+  --- P4: Tool call sin mensaje de seguimiento del asistente (2 ocurrencias) ---
+    [L  17, msg  4] Tool 'buscar_vehiculos' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "buscar_vehiculos", "arguments": {"marca": "Nissan", "modelo": "Sentra", "año_minimo": 2022, "año_maximo": 2022}} </tool_call>
+    [L  26, msg  4] Tool 'solicitar_datos_contacto' sin mensaje de seguimiento del asistente (ultimo mensaje o falta respuesta)
+       >>> <tool_call> {"name": "solicitar_datos_contacto", "arguments": {"nombre": "Ricardo"}} </tool_call>
+
+====================================================================================================
+DETALLE: gold_upgraded_batch_019.jsonl (50 conversaciones, 10 problemas)
+====================================================================================================
+
+  --- P1: Vehiculo presentado antes de que usuario especifique busqueda (7 ocurrencias) ---
+    [L   1, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Juan :). Encontré estas dos opciones que se ajustan súper bien a lo que buscas:  Opción 1 — **Nissan Versa Advance 2019**, automático, en $198,900 MXN. Está en nuestra sucursal de Monterre
+    [L   4, msg 14] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Fernando, encontré estas dos opciones que son súper rendidoras para la ciudad y tienen pagos muy accesibles:  Opción 1 — **Nissan Sentra Advance 2019**, automático, en $209,900 MXN. Está en nuestra su
+    [L  11, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto Carlos :). Encontré estas opciones que creo te van a encantar:  Opción 1 — **Suzuki Vitara GLX 2022**, automática, en $349,900 MXN. Se encuentra en nuestra sucursal de Guadalupe.  Opción 2
+    [L  14, msg 12] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Juan, encontré estas opciones premium que creo que te van a encantar. Tienen muchísima tecnología y son súper elegantes :  Opción 1 — **BMW Serie 3 330i 2020**, en $585,000 MXN. Tiene un manejo increí
+    [L  21, msg  6] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Ricardo :). Te entiendo perfecto, buscas eficiencia y seguridad. Encontré estas dos opciones que cumplen con lo que buscas:  Opción 1 — **Mazda CX-3 i Sport 2019**, automática, en $319,90
+    [L  29, msg  8] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Mucho gusto, Carlos :). Fíjate que por el momento no tenemos un Tesla Model 3 disponible, pero no te preocupes, encontré unas opciones híbridas que son súper tecnológicas, muy cómodas para la familia
+    [L  50, msg 18] Vehiculo presentado con precios/opciones SIN que usuario haya especificado busqueda
+       >>> Encontré estas opciones que creo te van a encantar para tu primer auto :  Opción 1 — **Nissan Sentra Advance 2019**, automático, en $209,900 MXN. Está en nuestra sucursal de Monterrey.  Opción 2 — **C
+
+  --- P3: Usuario muestra interes, Mariana NO llama obtener_vehiculo (3 ocurrencias) ---
+    [L   7, msg 15] Usuario: 'el sentra me late. ¿me puedes mandar la cotización? mi correo es carlo' -> No se llama obtener_vehiculo
+       >>> ¡Listo, Carlos! Ya te envié la cotización del **Nissan Sentra Advance 2019** a tu correo :). Ahí podrás ver a detalle cómo quedarían tus mensualidades y el plan de financiamiento.  ¿Te gustaría que in
+    [L  13, msg  9] Usuario: 'gracias mariana, me interesa mucho el financiamiento. con esa oferta s' -> No se llama obtener_vehiculo
+       >>> Claro que sí, Luis. Con el 25% de enganche ($99,975 MXN) y a un plazo de 48 meses, tu mensualidad quedaría en aproximadamente $8,950 MXN :).  ¿Te gustaría que te mande esta cotización formal a tu corr
+    [L  16, msg  5] Usuario: 'soy jorge. ok osea k solo necesito el ine y el dinero? no como en otro' -> No se llama obtener_vehiculo
+       >>> Mucho gusto Jorge :). Así es, en Autos TREFA queremos que estrenar sea un gusto y no un dolor de cabeza. Para tu compra de contado solo necesitamos tu INE vigente y el pago, el proceso es rapidísimo.
+
+====================================================================================================
+FIN DE LA AUDITORIA
+====================================================================================================

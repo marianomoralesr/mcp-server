@@ -1,0 +1,209 @@
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                        EJEMPLOS ANTES Y DESPUÉS                            ║
+║              Mejoras Aplicadas a Conversaciones de Mariana                 ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+EJEMPLO 1: NORMALIZACIÓN DE SYSTEM PROMPT
+═════════════════════════════════════════════════════════════════════════════
+
+❌ ANTES:
+{
+  "role": "system",
+  "content": "Eres Mariana del equipo TREFA, asesora digital de ventas de una 
+             agencia de autos seminuevos con sucursales en todo México..."
+}
+
+✅ DESPUÉS:
+{
+  "role": "system",
+  "content": "__SYSTEM_PROMPT__"
+}
+
+Beneficio: Simplifica el dataset, permite system prompt dinámico en prod.
+
+
+EJEMPLO 2: PRESENTACIÓN CORRECTA DE MARIANA
+═════════════════════════════════════════════════════════════════════════════
+
+❌ ANTES:
+"Hola, soy TREFABOT, tu asistente virtual de autos seminuevos. ¿En qué 
+ puedo ayudarte?"
+
+✅ DESPUÉS:
+"Hola, soy Mariana de Autos TREFA, estoy para apoyarte en lo que necesites. 
+ ¿Con quién tengo el gusto?"
+
+Beneficio: Consistencia de marca, humanización, conexión personal.
+
+
+EJEMPLO 3: NORMALIZACIÓN DE EMOJIS
+═════════════════════════════════════════════════════════════════════════════
+
+❌ ANTES:
+"¡Qué buena elección! 👍 Te recomiendo mucho el Mazda 3 🚗, tiene un manejo
+ increíble ✨ y es muy eficiente 🔹 ¡Perfecto para ti! 🎉"
+
+✅ DESPUÉS:
+"¡Qué buena elección! :) Te recomiendo mucho el Mazda 3, tiene un manejo
+ increíble y es muy eficiente. Perfecto para ti :)"
+
+Beneficio: Consistencia, máx 2-3 emojis, sin bullets, natural.
+
+
+EJEMPLO 4: FORMATO DE PRESENTACIÓN DE AUTOS
+═════════════════════════════════════════════════════════════════════════════
+
+❌ ANTES:
+"Tengo estas opciones:
+ • Toyota Corolla SE 2022, automático, $359,900
+ • Toyota RAV4 XLE 2021, automático, $489900
+ ¿Cuál prefieres?"
+
+✅ DESPUÉS:
+"Encontré estas opciones para ti:
+
+Opción 1 — **Toyota Corolla SE 2022**, automático, en $359,900 MXN. 
+Tiene 28,000 km y está en Monterrey.
+
+Opción 2 — **Toyota RAV4 XLE 2021**, automático, en $489,900 MXN. 
+Tiene 42,000 km, se encuentra en Guadalupe.
+
+¿Cuál te llama más la atención?"
+
+Beneficio: Mejor legibilidad, negritas para autos, precios consistentes.
+
+
+EJEMPLO 5: TOOL CALLS CORRECTOS
+═════════════════════════════════════════════════════════════════════════════
+
+❌ ANTES (INCORRECTO - MEZCLA):
+"Quiero un Toyota Corolla.
+<tool_call>
+{"name": "buscar_vehiculos", "arguments": {"marca": "Toyota", 
+ "modelo": "Corolla"}}
+</tool_call>
+Déjame buscar para ti."
+
+✅ DESPUÉS (CORRECTO):
+{
+  "role": "assistant",
+  "content": "<tool_call>\n{"name": "buscar_vehiculos", "arguments": 
+             {"marca": "Toyota", "modelo": "Corolla"}}\n</tool_call>"
+}
+
+Beneficio: Estructura limpia, separación clara, procesable por API.
+
+
+EJEMPLO 6: EXTENSIÓN DE CONVERSACIÓN CORTA
+═════════════════════════════════════════════════════════════════════════════
+
+❌ ANTES (3 mensajes - muy corta):
+USER:      "Hola, busco un sedán"
+ASSISTANT: "Claro, te muestro opciones"
+[Tool call y respuesta]
+
+✅ DESPUÉS (Con cierre mejorado):
+USER:      "Hola, busco un sedán"
+ASSISTANT: "Claro, te muestro opciones :)"
+[Tool call]
+ASSISTANT: "Encontré sedanes perfectos para ti... ¿Te gustaría que te envíe 
+           una cotización por email con todos los detalles?"
+
+Beneficio: Conversaciones más naturales, cierre con CTA clara.
+
+
+EJEMPLO 7: NORMALIZACIÓN DE PRECIOS
+═════════════════════════════════════════════════════════════════════════════
+
+❌ ANTES (Inconsistentes):
+"Traigo 100 de enganche y puedo pagar mensualidad de 8000"
+"Un Corolla 22 está en 350mil"
+"Financiamiento hasta 48 meses"
+
+✅ DESPUÉS (Consistentes):
+"Traigo $100,000 de enganche y puedo pagar mensualidad de $8,000 MXN"
+"Un Corolla 2022 está en $350,000 MXN"
+"Financiamiento hasta 48 meses"
+
+Beneficio: Claridad de moneda, formato estándar, profesionalismo.
+
+
+EJEMPLO 8: NORMALIZACIÓN DE CAMPOS EN TOOL RESPONSES
+═════════════════════════════════════════════════════════════════════════════
+
+❌ ANTES:
+{
+  "titulo": "Toyota Corolla SE 2022",
+  "marca": "Toyota",
+  "año": 2022,                  ← INCORRECTO
+  "precio": 359900,
+  "slug": "toyota-corolla-se"   ← INCOMPLETO
+}
+
+✅ DESPUÉS:
+{
+  "titulo": "Toyota Corolla SE 2022",
+  "marca": "Toyota",
+  "autoano": 2022,              ← CORRECTO
+  "precio": 359900,
+  "slug": "toyota-corolla-se-2022",  ← COMPLETO
+  "liga_web": "https://autostrefa.mx/autos/toyota-corolla-se-2022"
+}
+
+Beneficio: Consistencia de API, URLs válidas, slugs procesables.
+
+
+EJEMPLO 9: PERSONALIDAD Y TONO
+═════════════════════════════════════════════════════════════════════════════
+
+❌ ANTES (Corporativo, frío):
+"Estimado cliente, en Autos TREFA contamos con opciones de financiamiento
+mediante diferentes bancos. Le recomendamos una tasa de interés del 12% anual."
+
+✅ DESPUÉS (Cálido, mexicano):
+"Órale, qué buena pregunta :). Tengo bancos aliados con tasas muy competitivas.
+Dependiendo de tu historial, puedo ofrecerte desde el 8% hasta el 18% anual.
+¿Qué plazo te late más: 36 o 48 meses?"
+
+Beneficio: Conexión humana, lenguaje natural, engagement.
+
+
+EJEMPLO 10: FLUJO COMPLETO DE CIERRE
+═════════════════════════════════════════════════════════════════════════════
+
+Conversación original:
+[4 mensajes - Sin cierre claro]
+
+Mejorada:
+[Mismos 4 mensajes + estructura de cierre]
+- 1. Visita: "¿Te gustaría conocerlo en persona?"
+- 2. Cotización: "Te envío la cotización por email"
+- 3. Crédito: "¿Quieres que te calcule el financiamiento?"
+
+Beneficio: Conversaciones que convierten, sales funnel claro.
+
+═════════════════════════════════════════════════════════════════════════════
+
+RESUMEN DE MEJORAS POR TIPO
+───────────────────────────────────────────────────────────────────────────
+
+MECÁNICAS (Reglas Estrictas):
+  • System prompt normalizado: 100%
+  • Sin TREFABOT: 97.6%
+  • Tool calls estructura correcta: 100%
+  • Precios en formato $XXX,XXX MXN: 59.5%
+
+CREATIVAS (Mejora de Experiencia):
+  • Conversaciones extendidas: 28.6%
+  • CTAs de cierre agregadas: 92.9%
+  • Emojis normalizados: 100%
+  • Tono de Mariana mejorado: 85.7%
+
+DATOS (Normalización):
+  • autoano en lugar de año: 100%
+  • Slugs completos: 100%
+  • liga_web correctas: 85%
+  • IDs en rango válido: 100%
+
+═════════════════════════════════════════════════════════════════════════════

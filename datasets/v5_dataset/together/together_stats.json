@@ -1,0 +1,60 @@
+{
+  "train": {
+    "conversaciones": 986,
+    "total_tokens_aprox": 5056963,
+    "tokens_por_conv": {
+      "min": 4112,
+      "p50": 5112,
+      "p90": 5669,
+      "p95": 5836,
+      "max": 6365
+    },
+    "mensajes_totales": 14721,
+    "roles": {
+      "system": 986,
+      "user": 4214,
+      "assistant": 7137,
+      "tool": 2384
+    },
+    "fuentes": {
+      "batch_gemini": 558,
+      "synthetic_cleaned": 330,
+      "gold_28": 24,
+      "batch_haiku": 18,
+      "estilo": 18,
+      "semillas_obtener_vehiculo": 16,
+      "saludos": 13,
+      "semillas_fin_v5": 5,
+      "haiku_final": 4
+    }
+  },
+  "eval": {
+    "conversaciones": 109,
+    "total_tokens_aprox": 560948,
+    "tokens_por_conv": {
+      "min": 4128,
+      "p50": 5122,
+      "p90": 5800,
+      "p95": 5910,
+      "max": 6063
+    },
+    "mensajes_totales": 1647,
+    "roles": {
+      "system": 109,
+      "user": 463,
+      "assistant": 805,
+      "tool": 270
+    },
+    "fuentes": {
+      "batch_gemini": 56,
+      "synthetic_cleaned": 39,
+      "gold_28": 4,
+      "semillas_obtener_vehiculo": 4,
+      "saludos": 2,
+      "haiku_final": 1,
+      "semillas_fin_v5": 1,
+      "batch_haiku": 1,
+      "estilo": 1
+    }
+  }
+}
