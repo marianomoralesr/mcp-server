@@ -60,7 +60,7 @@ class LLMService:
         messages: List[Dict[str, str]],
         model: str,
         temperature: float = 0.7,
-        max_tokens: int = 1024,
+        max_tokens: int = 4096,
         **kwargs,
     ) -> dict:
         """Llamada chat completion (no-streaming). Retorna dict OpenAI-format."""
@@ -94,7 +94,7 @@ class LLMService:
         messages: List[Dict[str, str]],
         model: str,
         temperature: float = 0.7,
-        max_tokens: int = 1024,
+        max_tokens: int = 4096,
         **kwargs,
     ) -> AsyncGenerator[str, None]:
         """Llamada chat completion streaming. Genera líneas SSE."""
@@ -119,7 +119,7 @@ class LLMService:
         prompt: str,
         model: str,
         temperature: float = 0.7,
-        max_tokens: int = 1024,
+        max_tokens: int = 4096,
         **kwargs,
     ) -> dict:
         """Llamada text completion (no-streaming). Retorna dict OpenAI-format."""
@@ -146,7 +146,7 @@ class LLMService:
         prompt: str,
         model: str,
         temperature: float = 0.7,
-        max_tokens: int = 1024,
+        max_tokens: int = 4096,
         **kwargs,
     ) -> AsyncGenerator[str, None]:
         """Llamada text completion streaming. Genera líneas SSE."""
