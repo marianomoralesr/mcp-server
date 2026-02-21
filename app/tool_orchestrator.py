@@ -142,27 +142,46 @@ class ToolOrchestrator:
     def _fix_vehicle_id(
         tool_args: Dict[str, Any],
         previous_calls: List[Dict[str, Any]],
+        messages: List[Dict[str, str]],
     ) -> Dict[str, Any]:
         """Corrige el ID de obtener_vehiculo si no coincide con IDs vistos.
 
         El modelo a veces confunde el kilometraje u otro número con el ID.
-        Buscamos en los resultados previos de buscar_vehiculos los IDs reales
-        y si el ID pedido no está, usamos el primer (o único) vehículo.
+        Buscamos IDs reales en:
+        1. tool_calls_executed del turno actual
+        2. <tool_response> en el historial de mensajes (turnos anteriores)
         """
         requested_id = tool_args.get("id")
         if requested_id is None:
             return tool_args
 
-        # Recolectar IDs reales de búsquedas anteriores
         known_ids = []
+
+        # Fuente 1: tool calls del turno actual
         for prev in previous_calls:
-            if prev["name"] == "buscar_vehiculos":
+            if prev["name"] in ("buscar_vehiculos", "buscar_alternativas"):
                 result = prev.get("result", {})
-                vehiculos = result.get("vehiculos", [])
-                for v in vehiculos:
+                for v in result.get("vehiculos", []):
                     vid = v.get("id")
                     if vid is not None:
                         known_ids.append(vid)
+
+        # Fuente 2: <tool_response> en mensajes de turnos anteriores
+        for msg in messages:
+            content = msg.get("content", "")
+            if "<tool_response>" not in content:
+                continue
+            try:
+                # Extraer JSON de <tool_response>...</tool_response>
+                start = content.index("<tool_response>") + len("<tool_response>")
+                end = content.index("</tool_response>")
+                payload = json.loads(content[start:end].strip())
+                for v in payload.get("vehiculos", []):
+                    vid = v.get("id")
+                    if vid is not None:
+                        known_ids.append(vid)
+            except (ValueError, json.JSONDecodeError, KeyError):
+                continue
 
         if not known_ids:
             return tool_args
@@ -170,8 +189,8 @@ class ToolOrchestrator:
         if requested_id in known_ids:
             return tool_args
 
-        # ID incorrecto — usar el primero disponible (normalmente solo hay 1-3)
-        corrected_id = known_ids[-1]  # último resultado, más probable que sea el elegido
+        # ID incorrecto — usar el último visto (más probable que sea el elegido)
+        corrected_id = known_ids[-1]
         logger.warning(
             "vehicle_id_corrected",
             requested=requested_id,
@@ -289,7 +308,7 @@ class ToolOrchestrator:
 
                 # Guard: corregir ID incorrecto en obtener_vehiculo
                 if tool_name == "obtener_vehiculo" and "id" in tool_args:
-                    tool_args = self._fix_vehicle_id(tool_args, tool_calls_executed)
+                    tool_args = self._fix_vehicle_id(tool_args, tool_calls_executed, working_messages)
 
                 if tool_name not in self.known_tools:
                     logger.warning("unknown_tool_call", tool=tool_name)
