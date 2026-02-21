@@ -1,7 +1,7 @@
 model_list:
   - model_name: qwen3-14b-trefa
     litellm_params:
-      model: openai/qwen3-14b-trefa
+      model: openai/trefa-lora
       api_base: os.environ/TREFA_VLLM_BASE_URL
       api_key: EMPTY
       timeout: 300
@@ -20,8 +20,16 @@ litellm_settings:
   set_verbose: false
   num_retries: 2
   request_timeout: 300
+  cache: true
+  cache_params:
+    type: redis
+    host: os.environ/REDIS_HOST
+    port: os.environ/REDIS_PORT
+    password: os.environ/REDIS_PASSWORD
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
   database_url: os.environ/DATABASE_URL
   store_model_in_db: true
+  allow_user_auth: true
+  disable_spend_logs: false
