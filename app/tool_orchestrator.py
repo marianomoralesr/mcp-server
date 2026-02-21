@@ -138,6 +138,48 @@ class ToolOrchestrator:
         self.known_tools = set(known_tools)
         self.max_iterations = max_iterations
 
+    @staticmethod
+    def _fix_vehicle_id(
+        tool_args: Dict[str, Any],
+        previous_calls: List[Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        """Corrige el ID de obtener_vehiculo si no coincide con IDs vistos.
+
+        El modelo a veces confunde el kilometraje u otro número con el ID.
+        Buscamos en los resultados previos de buscar_vehiculos los IDs reales
+        y si el ID pedido no está, usamos el primer (o único) vehículo.
+        """
+        requested_id = tool_args.get("id")
+        if requested_id is None:
+            return tool_args
+
+        # Recolectar IDs reales de búsquedas anteriores
+        known_ids = []
+        for prev in previous_calls:
+            if prev["name"] == "buscar_vehiculos":
+                result = prev.get("result", {})
+                vehiculos = result.get("vehiculos", [])
+                for v in vehiculos:
+                    vid = v.get("id")
+                    if vid is not None:
+                        known_ids.append(vid)
+
+        if not known_ids:
+            return tool_args
+
+        if requested_id in known_ids:
+            return tool_args
+
+        # ID incorrecto — usar el primero disponible (normalmente solo hay 1-3)
+        corrected_id = known_ids[-1]  # último resultado, más probable que sea el elegido
+        logger.warning(
+            "vehicle_id_corrected",
+            requested=requested_id,
+            corrected=corrected_id,
+            known_ids=known_ids,
+        )
+        return {**tool_args, "id": corrected_id}
+
     async def _call_llm(
         self,
         messages: List[Dict[str, str]],
@@ -238,6 +280,10 @@ class ToolOrchestrator:
             for tc in tool_calls:
                 tool_name = tc["name"]
                 tool_args = tc["arguments"]
+
+                # Guard: corregir ID incorrecto en obtener_vehiculo
+                if tool_name == "obtener_vehiculo" and "id" in tool_args:
+                    tool_args = self._fix_vehicle_id(tool_args, tool_calls_executed)
 
                 if tool_name not in self.known_tools:
                     logger.warning("unknown_tool_call", tool=tool_name)
