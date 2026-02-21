@@ -417,7 +417,7 @@ async def health_check():
             vllm_status = "disabled"
         elif http_client:
             try:
-                vllm_health = await http_client.get("/health")
+                vllm_health = await http_client.get("/health", timeout=5.0)
                 vllm_status = "healthy" if vllm_health.status_code == 200 else "unhealthy"
             except Exception:
                 vllm_status = "unreachable"
