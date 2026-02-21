@@ -438,6 +438,7 @@ def train_model(model, tokenizer, train_ds, eval_ds, args):
         packing=False,
         neftune_noise_alpha=args.neftune,
         dataset_text_field="text",
+        remove_unused_columns=False,
 
         # Epocas
         num_train_epochs=args.epochs,
