@@ -14,7 +14,7 @@ export async function obtenerVehiculo(params: z.infer<typeof ObtenerVehiculoSche
 
     let query = supabase
       .from('vehiculos_completos')
-      .select('id, titulo, marca, modelo, autoano, precio, transmision, combustible, carroceria, motor, cilindros, ubicacion, kilometraje, garantia, descripcion, enganchemin, enganche_recomendado, mensualidad_minima, mensualidad_recomendada, plazomax, con_oferta, oferta, promociones, feature_image_url, galeria_exterior, galeria_interior, slug, liga_web');
+      .select('*');
 
     if (params.id !== undefined) {
       query = query.eq('id', params.id);
