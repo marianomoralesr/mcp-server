@@ -15,7 +15,7 @@
 #   Fase 9: Cloudflare Tunnel (api.trefa.mx)
 #   Fase 10: SSH y resumen final
 #
-# GPU: 1x A6000/A40/RTX 5880 Ada (48GB VRAM) o similar
+# GPU: 1x RTX PRO 6000 (96GB), A6000/A40 (48GB), A100/H100 (80GB) o similar
 #
 # Env vars requeridas:
 #   HF_TOKEN                     (default incluido para dev)
@@ -646,8 +646,9 @@ else
         sleep 3
     fi
 
-    # Auto-detectar batch size según VRAM
+    # Auto-detectar batch size y grad_accum según VRAM (effective batch = batch_size * grad_accum)
     BATCH_SIZE=2
+    GRAD_ACCUM=8
     VRAM_GB=$(python3 -c "
 import torch
 if torch.cuda.is_available():
@@ -656,15 +657,22 @@ else:
     print('0')
 " 2>/dev/null || echo "0")
 
-    if [ "$VRAM_GB" -ge 44 ]; then
+    if [ "$VRAM_GB" -ge 80 ]; then
+        BATCH_SIZE=6
+        GRAD_ACCUM=2
+        log "VRAM ${VRAM_GB}GB: batch_size=6, grad_accum=2 (effective=12)"
+    elif [ "$VRAM_GB" -ge 44 ]; then
         BATCH_SIZE=4
-        log "VRAM ${VRAM_GB}GB: batch_size=4"
+        GRAD_ACCUM=4
+        log "VRAM ${VRAM_GB}GB: batch_size=4, grad_accum=4 (effective=16)"
     elif [ "$VRAM_GB" -ge 22 ]; then
         BATCH_SIZE=2
-        log "VRAM ${VRAM_GB}GB: batch_size=2"
+        GRAD_ACCUM=8
+        log "VRAM ${VRAM_GB}GB: batch_size=2, grad_accum=8 (effective=16)"
     else
         BATCH_SIZE=1
-        log "VRAM ${VRAM_GB}GB: batch_size=1"
+        GRAD_ACCUM=16
+        log "VRAM ${VRAM_GB}GB: batch_size=1, grad_accum=16 (effective=16)"
     fi
 
     # Buscar eval file
@@ -722,7 +730,7 @@ else:
         log "  Output:     $LORA_DIR"
         log "  LoRA:       r=32, alpha=64"
         log "  Epochs:     2"
-        log "  Batch:      ${BATCH_SIZE} x 8 = $((BATCH_SIZE * 8))"
+        log "  Batch:      ${BATCH_SIZE} x ${GRAD_ACCUM} = $((BATCH_SIZE * GRAD_ACCUM))"
         log "  LR:         2e-4"
         log "  NEFTune:    5"
 
@@ -739,7 +747,7 @@ else:
             --lora-alpha 64 \
             --epochs 2 \
             --batch-size "$BATCH_SIZE" \
-            --grad-accum 8 \
+            --grad-accum "$GRAD_ACCUM" \
             --lr 2e-4 \
             --neftune 5 \
             --no-gguf
@@ -1028,6 +1036,10 @@ if command -v nvidia-smi &>/dev/null; then
         *A6000*|*a6000*|*5880*)
             MAX_MODEL_LEN=8192; GPU_MEMORY_UTILIZATION=0.85
             log "GPU config: A6000/5880 — max_model_len=$MAX_MODEL_LEN"
+            ;;
+        *"RTX PRO 6"*|*"RTX PRO6"*)
+            MAX_MODEL_LEN=16384; GPU_MEMORY_UTILIZATION=0.90
+            log "GPU config: RTX PRO 6000 (96GB) — max_model_len=$MAX_MODEL_LEN"
             ;;
         *A100*|*a100*)
             MAX_MODEL_LEN=16384; GPU_MEMORY_UTILIZATION=0.90

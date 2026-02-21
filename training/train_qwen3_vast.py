@@ -185,12 +185,15 @@ def check_disk_space(path: str, required_gb: float = 50.0):
 
 def auto_adjust_batch_size(vram_gb: float, batch_size: int) -> int:
     """Reduce batch size automaticamente si la VRAM es menor a la esperada."""
-    if vram_gb >= 44:
-        adjusted = min(batch_size, 2)
+    if vram_gb >= 80:
+        max_batch = 6
+    elif vram_gb >= 44:
+        max_batch = 4
     elif vram_gb >= 35:
-        adjusted = 1
+        max_batch = 2
     else:
-        adjusted = 1
+        max_batch = 1
+    adjusted = min(batch_size, max_batch)
     if adjusted != batch_size:
         print(f"  Auto-ajuste: batch_size {batch_size} -> {adjusted} (VRAM: {vram_gb:.0f} GB)")
     return adjusted
