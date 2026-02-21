@@ -89,7 +89,7 @@ python3 -m uvicorn app.main:app \
     --port "$FASTAPI_PORT" > /var/log/fastapi.log 2>&1 &
 FASTAPI_PID=$!
 
-if ! wait_for_service "FastAPI" "http://localhost:${FASTAPI_PORT}/health" 15 2; then
+if ! wait_for_service "FastAPI" "http://localhost:${FASTAPI_PORT}/api/info" 30 2; then
     log "ERROR: FastAPI no arrancó."
     tail -30 /var/log/fastapi.log 2>/dev/null || true
     exit 1
