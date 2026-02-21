@@ -74,8 +74,8 @@ from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
     TrainerCallback,
-    TrainingArguments,
 )
+from trl import SFTConfig
 from peft import LoraConfig, get_peft_model, TaskType
 
 # ─── Configuracion por defecto ─────────────────────────────────
@@ -424,8 +424,14 @@ def train_model(model, tokenizer, train_ds, eval_ds, args):
     print(f"  Evaluacion:          {'Si' if eval_ds else 'No'}")
     print(f"  Gradient checkpoint: Si (ahorro VRAM)")
 
-    training_args = TrainingArguments(
+    sft_config = SFTConfig(
         output_dir=args.output_dir,
+
+        # SFT-specific (moved from SFTTrainer constructor in TRL >= 0.16)
+        max_seq_length=args.max_seq_length,
+        packing=False,
+        neftune_noise_alpha=args.neftune,
+        dataset_kwargs={"skip_prepare_dataset": True},
 
         # Epocas
         num_train_epochs=args.epochs,
@@ -473,34 +479,15 @@ def train_model(model, tokenizer, train_ds, eval_ds, args):
         dataloader_num_workers=2,
     )
 
-    # TRL >= 0.12 renombró tokenizer → processing_class
-    try:
-        trainer = SFTTrainer(
-            model=model,
-            processing_class=tokenizer,
-            train_dataset=train_ds,
-            eval_dataset=eval_ds,
-            args=training_args,
-            formatting_func=formatting_func,
-            max_seq_length=args.max_seq_length,
-            packing=False,
-            neftune_noise_alpha=args.neftune,
-            callbacks=[NaNDetectionCallback(patience=3)],
-        )
-    except TypeError:
-        # TRL < 0.12 usa tokenizer
-        trainer = SFTTrainer(
-            model=model,
-            tokenizer=tokenizer,
-            train_dataset=train_ds,
-            eval_dataset=eval_ds,
-            args=training_args,
-            formatting_func=formatting_func,
-            max_seq_length=args.max_seq_length,
-            packing=False,
-            neftune_noise_alpha=args.neftune,
-            callbacks=[NaNDetectionCallback(patience=3)],
-        )
+    trainer = SFTTrainer(
+        model=model,
+        processing_class=tokenizer,
+        train_dataset=train_ds,
+        eval_dataset=eval_ds,
+        args=sft_config,
+        formatting_func=formatting_func,
+        callbacks=[NaNDetectionCallback(patience=3)],
+    )
 
     # VRAM antes de iniciar
     if torch.cuda.is_available():
