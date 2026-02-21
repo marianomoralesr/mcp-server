@@ -12,9 +12,13 @@ export async function obtenerVehiculo(params: z.infer<typeof ObtenerVehiculoSche
   try {
     const supabase = getSupabaseClient();
 
+    // Columnas que existen en la vista vehiculos_completos
+    // (mismas de buscarVehiculos + financiamiento de compararVehiculos)
+    const COLS = 'id, titulo, marca, modelo, autoano, precio, transmision, combustible, carroceria, motor, cilindros, ubicacion, kilometraje, garantia, enganchemin, enganche_recomendado, mensualidad_minima, mensualidad_recomendada, plazomax, slug, liga_web, liga_bot';
+
     let query = supabase
       .from('vehiculos_completos')
-      .select('*');
+      .select(COLS);
 
     if (params.id !== undefined) {
       query = query.eq('id', params.id);
@@ -51,19 +55,13 @@ export async function obtenerVehiculo(params: z.infer<typeof ObtenerVehiculoSche
       ubicacion: v.ubicacion,
       kilometraje: formatKm(v.kilometraje),
       garantia: v.garantia,
-      descripcion: v.descripcion,
       enganche_minimo: v.enganchemin ? formatPrice(v.enganchemin) : null,
       enganche_recomendado: v.enganche_recomendado ? formatPrice(v.enganche_recomendado) : null,
       mensualidad_desde: v.mensualidad_minima ? formatPrice(v.mensualidad_minima) : null,
       mensualidad_recomendada: v.mensualidad_recomendada ? formatPrice(v.mensualidad_recomendada) : null,
       plazo_maximo: v.plazomax,
-      con_oferta: v.con_oferta,
-      oferta: v.oferta ? formatPrice(v.oferta) : null,
-      promociones: v.promociones,
-      imagen_principal: v.feature_image_url,
-      galeria_exterior: v.galeria_exterior,
-      galeria_interior: v.galeria_interior,
       url: v.liga_web || (v.slug ? `https://autostrefa.mx/autos/${v.slug}` : null),
+      liga_mariana: v.liga_bot || null,
     };
   } catch (err) {
     console.error('[obtener_vehiculo]', err instanceof Error ? err.message : '');
