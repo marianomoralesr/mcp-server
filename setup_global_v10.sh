@@ -55,6 +55,14 @@
 set -euo pipefail
 exec > >(tee -a /tmp/trefa-setup.log) 2>&1
 
+# --- Detener servicios de vast.ai que consumen VRAM ---
+if command -v supervisorctl &>/dev/null; then
+    supervisorctl stop vllm 2>/dev/null || true
+    supervisorctl stop ray 2>/dev/null || true
+    sleep 3
+    python3 -c "import torch; torch.cuda.empty_cache()" 2>/dev/null || true
+fi
+
 # --- Funciones de logging ---
 log()  { echo "[$(date +'%H:%M:%S')] $1"; }
 warn() { echo "[$(date +'%H:%M:%S')] WARN: $1"; }
