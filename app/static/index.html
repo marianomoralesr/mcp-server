@@ -3625,12 +3625,14 @@ function dsHighlightToolContent(text) {
 }
 
 function dsEditMsg(idx) {
+  // Si ya hay un textarea abierto en este mensaje, no recrear
+  if (document.getElementById(`ds-msg-textarea-${idx}`)) return;
   const el = document.getElementById(`ds-msg-content-${idx}`);
   const currentText = dsEditedMessages[idx].content || '';
-  el.innerHTML = `<textarea class="ds-msg-edit" id="ds-msg-textarea-${idx}">${escapeHtml(currentText)}</textarea>
-    <div class="ds-msg-edit-actions">
-      <button class="btn btn-sm" onclick="dsCancelEdit(${idx})">Cancelar</button>
-      <button class="btn btn-sm btn-primary" onclick="dsSaveEdit(${idx})">Aplicar</button>
+  el.innerHTML = `<textarea class="ds-msg-edit" id="ds-msg-textarea-${idx}" onclick="event.stopPropagation()">${escapeHtml(currentText)}</textarea>
+    <div class="ds-msg-edit-actions" onclick="event.stopPropagation()">
+      <button class="btn btn-sm" onclick="event.stopPropagation(); dsCancelEdit(${idx})">Cancelar</button>
+      <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); dsSaveEdit(${idx})">Aplicar</button>
     </div>`;
   const textarea = document.getElementById(`ds-msg-textarea-${idx}`);
   textarea.focus();
