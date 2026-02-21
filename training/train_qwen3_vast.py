@@ -431,7 +431,7 @@ def train_model(model, tokenizer, train_ds, eval_ds, args):
         max_length=args.max_seq_length,
         packing=False,
         neftune_noise_alpha=args.neftune,
-        dataset_kwargs={"skip_prepare_dataset": True},
+        remove_unused_columns=False,
 
         # Epocas
         num_train_epochs=args.epochs,
