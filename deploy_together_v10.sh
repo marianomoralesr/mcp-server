@@ -258,57 +258,50 @@ log "=== FASE 3: Descargar y mergear modelo ==="
 if [ "$SKIP_MERGE" = true ] && [ -f "$MERGED_DIR/config.json" ]; then
     log "Merge saltado — modelo ya existe en $MERGED_DIR"
 
-elif [ -f "$MERGED_DIR/config.json" ]; then
-    log "Modelo mergeado ya existe en $MERGED_DIR, saltando descarga y merge"
+elif [ -n "$MODEL_PATH" ] && [ -f "$MERGED_DIR/config.json" ]; then
+    log "Usando modelo pre-existente: $MERGED_DIR"
 
 else
-    # Intentar descargar modelo ya mergeado primero (más rápido)
-    log "Intentando descargar modelo ya mergeado: $HF_MERGED_REPO..."
-    set +e
-    mkdir -p "$MERGED_DIR"
-    huggingface-cli download "$HF_MERGED_REPO" \
-        --local-dir "$MERGED_DIR" \
-        --local-dir-use-symlinks False 2>&1 | tail -5
-    set -e
+    # Siempre descargar base + LoRA adapters y mergear localmente
+    # (el repo merged en HF puede estar desactualizado)
+    log "Descargando base + LoRA adapters para merge local..."
 
-    if [ -f "$MERGED_DIR/config.json" ]; then
-        log "Modelo mergeado descargado OK desde $HF_MERGED_REPO"
+    # Limpiar merged previo si existe (puede ser versión vieja)
+    if [ -d "$MERGED_DIR" ]; then
+        log "Limpiando merged previo: $MERGED_DIR"
+        rm -rf "$MERGED_DIR"
+    fi
+
+    # Descargar base
+    if [ ! -f "$BASE_DIR/config.json" ]; then
+        log "Descargando modelo base: $BASE_MODEL (~28GB)..."
+        huggingface-cli download "$BASE_MODEL" \
+            --local-dir "$BASE_DIR" \
+            --local-dir-use-symlinks False 2>&1 | tail -5
     else
-        # No hay merged en HF — descargar base + LoRA y mergear
-        log "Modelo mergeado no disponible en HF. Descargando base + LoRA para merge local..."
+        log "Base ya existe en $BASE_DIR"
+    fi
 
-        # Descargar base
-        if [ ! -f "$BASE_DIR/config.json" ]; then
-            log "Descargando modelo base: $BASE_MODEL (~28GB)..."
-            huggingface-cli download "$BASE_MODEL" \
-                --local-dir "$BASE_DIR" \
-                --local-dir-use-symlinks False 2>&1 | tail -5
-        else
-            log "Base ya existe en $BASE_DIR"
-        fi
+    # Descargar LoRA (siempre re-descargar para asegurar versión más reciente)
+    log "Descargando LoRA adapter: $HF_LORA_REPO..."
+    rm -rf "$LORA_DIR"
+    mkdir -p "$LORA_DIR"
+    huggingface-cli download "$HF_LORA_REPO" \
+        --local-dir "$LORA_DIR" \
+        --local-dir-use-symlinks False 2>&1 | tail -5
 
-        # Descargar LoRA
-        if [ ! -f "$LORA_DIR/adapter_config.json" ]; then
-            log "Descargando LoRA adapter: $HF_LORA_REPO..."
-            huggingface-cli download "$HF_LORA_REPO" \
-                --local-dir "$LORA_DIR" \
-                --local-dir-use-symlinks False 2>&1 | tail -5
-        else
-            log "LoRA ya existe en $LORA_DIR"
-        fi
+    # Verificar
+    [ ! -f "$BASE_DIR/config.json" ] && die "Base no encontrada en $BASE_DIR"
+    [ ! -f "$LORA_DIR/adapter_config.json" ] && die "LoRA no encontrado en $LORA_DIR — verifica que $HF_LORA_REPO exista y tenga adapter_config.json"
 
-        # Verificar
-        [ ! -f "$BASE_DIR/config.json" ] && die "Base no encontrada en $BASE_DIR"
-        [ ! -f "$LORA_DIR/adapter_config.json" ] && die "LoRA no encontrado en $LORA_DIR"
+    # Merge
+    log "Mergeando LoRA con modelo base..."
+    log "  Base: $BASE_DIR"
+    log "  LoRA: $LORA_DIR"
+    log "  Output: $MERGED_DIR"
+    log "  NOTA: Qwen3-14B bf16 requiere ~28GB RAM para merge en CPU"
 
-        # Merge
-        log "Mergeando LoRA con modelo base..."
-        log "  Base: $BASE_DIR"
-        log "  LoRA: $LORA_DIR"
-        log "  Output: $MERGED_DIR"
-        log "  NOTA: Qwen3-14B bf16 requiere ~28GB RAM para merge en CPU"
-
-        python3 << MERGE_SCRIPT
+    python3 << MERGE_SCRIPT
 import torch
 import os
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -343,19 +336,49 @@ tok.save_pretrained(MERGED_DIR)
 print("[merge] Merge completado!")
 MERGE_SCRIPT
 
-        # Verificar merge
-        if [ -f "$MERGED_DIR/config.json" ]; then
-            SAFETENSORS=$(ls "$MERGED_DIR"/model*.safetensors 2>/dev/null | wc -l)
-            MERGED_SIZE=$(du -sh "$MERGED_DIR" 2>/dev/null | cut -f1 || echo "?")
-            log "Merge verificado: $MERGED_DIR ($MERGED_SIZE, $SAFETENSORS shards)"
-        else
-            die "Merge falló — config.json no encontrado en $MERGED_DIR"
-        fi
-
-        # Limpiar base para liberar disco (~28GB)
-        log "Limpiando modelo base para liberar disco..."
-        rm -rf "$BASE_DIR"
+    # Verificar merge
+    if [ -f "$MERGED_DIR/config.json" ]; then
+        SAFETENSORS=$(ls "$MERGED_DIR"/model*.safetensors 2>/dev/null | wc -l)
+        MERGED_SIZE=$(du -sh "$MERGED_DIR" 2>/dev/null | cut -f1 || echo "?")
+        log "Merge verificado: $MERGED_DIR ($MERGED_SIZE, $SAFETENSORS shards)"
+    else
+        die "Merge falló — config.json no encontrado en $MERGED_DIR"
     fi
+
+    # Limpiar base para liberar disco (~28GB)
+    log "Limpiando modelo base para liberar disco..."
+    rm -rf "$BASE_DIR"
+
+    # Upload merged a HF para uso futuro
+    log "Subiendo modelo mergeado a $HF_MERGED_REPO..."
+    set +e
+    python3 << UPLOAD_SCRIPT
+import os
+os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
+from huggingface_hub import HfApi, create_repo
+
+api = HfApi()
+repo = "$HF_MERGED_REPO"
+
+try:
+    create_repo(repo, repo_type="model", exist_ok=True)
+except Exception as e:
+    print(f"[upload] WARN: {e}")
+
+out_dir = "$MERGED_DIR"
+files = [f for f in os.listdir(out_dir) if os.path.isfile(os.path.join(out_dir, f))]
+total_size = sum(os.path.getsize(os.path.join(out_dir, f)) for f in files)
+print(f"[upload] {len(files)} archivos ({total_size / 1e9:.1f} GB) → {repo}")
+
+api.upload_folder(
+    folder_path=out_dir,
+    repo_id=repo,
+    repo_type="model",
+    commit_message="v10: Qwen3-14B + LoRA Together AI mariana v10 (bf16) — merged",
+)
+print(f"[upload] OK! https://huggingface.co/{repo}")
+UPLOAD_SCRIPT
+    set -e
 fi
 
 log "Fase 3 completada"
