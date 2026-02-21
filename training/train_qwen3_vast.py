@@ -473,18 +473,34 @@ def train_model(model, tokenizer, train_ds, eval_ds, args):
         dataloader_num_workers=2,
     )
 
-    trainer = SFTTrainer(
-        model=model,
-        tokenizer=tokenizer,
-        train_dataset=train_ds,
-        eval_dataset=eval_ds,
-        args=training_args,
-        formatting_func=formatting_func,
-        max_seq_length=args.max_seq_length,
-        packing=False,
-        neftune_noise_alpha=args.neftune,
-        callbacks=[NaNDetectionCallback(patience=3)],
-    )
+    # TRL >= 0.12 renombró tokenizer → processing_class
+    try:
+        trainer = SFTTrainer(
+            model=model,
+            processing_class=tokenizer,
+            train_dataset=train_ds,
+            eval_dataset=eval_ds,
+            args=training_args,
+            formatting_func=formatting_func,
+            max_seq_length=args.max_seq_length,
+            packing=False,
+            neftune_noise_alpha=args.neftune,
+            callbacks=[NaNDetectionCallback(patience=3)],
+        )
+    except TypeError:
+        # TRL < 0.12 usa tokenizer
+        trainer = SFTTrainer(
+            model=model,
+            tokenizer=tokenizer,
+            train_dataset=train_ds,
+            eval_dataset=eval_ds,
+            args=training_args,
+            formatting_func=formatting_func,
+            max_seq_length=args.max_seq_length,
+            packing=False,
+            neftune_noise_alpha=args.neftune,
+            callbacks=[NaNDetectionCallback(patience=3)],
+        )
 
     # VRAM antes de iniciar
     if torch.cuda.is_available():
