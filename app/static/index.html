@@ -3455,7 +3455,7 @@ async function testGPUConnection() {
   try {
     const res = await fetch(`${API}/admin/vllm/test-connection`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': authToken },
       body: JSON.stringify({ url }),
     });
     const d = await res.json();
