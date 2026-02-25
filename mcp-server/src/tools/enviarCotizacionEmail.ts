@@ -13,10 +13,10 @@ export async function enviarCotizacionEmail(params: z.infer<typeof EnviarCotizac
   try {
     const supabase = getSupabaseClient();
 
-    // Obtener datos del vehículo
+    // Obtener datos del vehículo (solo columnas que existen en la vista)
     const { data: vehiculo, error: vError } = await supabase
       .from('vehiculos_completos')
-      .select('*')
+      .select('id, titulo, marca, modelo, autoano, precio, slug, liga_web')
       .eq('id', params.id)
       .single();
 

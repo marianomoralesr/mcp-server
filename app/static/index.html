@@ -1,0 +1,5115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TREFA - Mariana AI Chat</title>
+<style>
+:root {
+  --primary: #1a237e;
+  --primary-light: #283593;
+  --accent: #ff6d00;
+  --accent-light: #ff9100;
+  --bg: #f5f5f5;
+  --card: #ffffff;
+  --text: #212121;
+  --text-light: #757575;
+  --border: #e0e0e0;
+  --success: #2e7d32;
+  --error: #c62828;
+  --warning: #f57f17;
+  --user-bubble: #e3f2fd;
+  --assistant-bubble: #ffffff;
+  --radius: 12px;
+}
+
+/* ===== CHAT MODE THEMES ===== */
+
+/* --- WhatsApp Mode --- */
+.mode-whatsapp .chat-header {
+  background: #075E54;
+  border-bottom: none;
+}
+.mode-whatsapp .chat-header span,
+.mode-whatsapp .chat-header .session-badge {
+  color: #fff;
+  background: rgba(255,255,255,0.15);
+}
+.mode-whatsapp .chat-header .btn {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border-color: rgba(255,255,255,0.3);
+}
+.mode-whatsapp .chat-header .btn:hover {
+  background: rgba(255,255,255,0.25);
+}
+.mode-whatsapp .chat-header .mode-selector {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border-color: rgba(255,255,255,0.3);
+}
+.mode-whatsapp .chat-header .mode-selector option {
+  color: #333;
+  background: #fff;
+}
+.mode-whatsapp .messages-area {
+  background: #e5ddd5;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c5bfb0' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.mode-whatsapp .message {
+  max-width: 80%;
+}
+.mode-whatsapp .message.user .bubble {
+  background: #DCF8C6;
+  color: #303030;
+  border: none;
+  border-radius: 8px 8px 0 8px;
+  position: relative;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+.mode-whatsapp .message.user .bubble::after {
+  content: '';
+  position: absolute;
+  right: -8px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 8px solid #DCF8C6;
+  border-top: 8px solid transparent;
+}
+.mode-whatsapp .message.assistant .bubble {
+  background: #FFFFFF;
+  color: #303030;
+  border: none;
+  border-radius: 8px 8px 8px 0;
+  position: relative;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+.mode-whatsapp .message.assistant .bubble::after {
+  content: '';
+  position: absolute;
+  left: -8px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-right: 8px solid #FFFFFF;
+  border-top: 8px solid transparent;
+}
+.mode-whatsapp .wa-avatar {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #075E54;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+.mode-whatsapp .message.assistant {
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 6px;
+}
+.mode-whatsapp .message.assistant .bubble-wrap {
+  display: flex;
+  flex-direction: column;
+  max-width: calc(100% - 40px);
+}
+.mode-whatsapp .wa-time {
+  display: inline-block;
+  font-size: 11px;
+  color: #999;
+  float: right;
+  margin-left: 10px;
+  margin-top: 4px;
+  line-height: 1;
+}
+.mode-whatsapp .wa-checks {
+  display: inline;
+  color: #53bdeb;
+  font-size: 12px;
+  margin-left: 2px;
+}
+.mode-whatsapp .message .meta {
+  display: none;
+}
+.mode-whatsapp .input-area {
+  background: #f0f0f0;
+  padding: 8px 12px;
+  gap: 6px;
+}
+.mode-whatsapp .input-area textarea {
+  border-radius: 20px;
+  padding: 8px 16px;
+  background: #fff;
+  border-color: #ddd;
+}
+.mode-whatsapp .send-btn {
+  background: #075E54;
+  width: 40px;
+  height: 40px;
+}
+.mode-whatsapp .send-btn:hover {
+  background: #128C7E;
+}
+.mode-whatsapp .wa-input-icons {
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  gap: 4px;
+  opacity: 0.6;
+  cursor: default;
+  user-select: none;
+}
+.mode-whatsapp .typing {
+  background: #fff;
+  border: none;
+  border-radius: 8px 8px 8px 0;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+.mode-whatsapp .rating-bar {
+  background: #f0f0f0;
+  border-top-color: #ddd;
+}
+.mode-whatsapp .actions-panel {
+  border-left-color: #ddd;
+}
+
+/* WhatsApp formatting */
+.wa-mono {
+  display: block;
+  background: rgba(0,0,0,0.05);
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: 13px;
+  margin: 4px 0;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+.wa-mono-inline {
+  background: rgba(0,0,0,0.05);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: 13px;
+}
+
+/* Hide WA elements by default */
+.wa-avatar { display: none; }
+.wa-input-icons { display: none; }
+.wa-time { display: none; }
+.wa-checks { display: none; }
+
+/* --- Web App Mode --- */
+.mode-webapp .chat-header {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+.mode-webapp .chat-header span {
+  color: #1f2937;
+}
+.mode-webapp .chat-header .session-badge {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+.mode-webapp .chat-header .mode-selector {
+  background: #f3f4f6;
+  color: #1f2937;
+  border-color: #e5e7eb;
+}
+.mode-webapp .messages-area {
+  background: #fafafa;
+}
+.mode-webapp .message.user .bubble {
+  background: #0066ff;
+  color: #fff;
+  border: none;
+  border-radius: 18px 18px 4px 18px;
+  box-shadow: 0 1px 3px rgba(0,102,255,0.2);
+}
+.mode-webapp .message.assistant .bubble {
+  background: #f0f0f0;
+  color: #1f2937;
+  border: none;
+  border-radius: 18px 18px 18px 4px;
+}
+.mode-webapp .input-area {
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+}
+.mode-webapp .send-btn {
+  background: #0066ff;
+}
+.mode-webapp .send-btn:hover {
+  background: #0052cc;
+}
+
+/* --- Widget Mode (default, no extra styles needed) --- */
+
+/* --- Tool Leak Banner --- */
+.tool-leak-banner {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  padding: 8px 14px;
+  margin: 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #856404;
+  animation: fadeIn 0.3s ease;
+}
+.tool-leak-banner .leak-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.tool-leak-banner .leak-text {
+  flex: 1;
+}
+.tool-leak-banner .leak-dismiss {
+  background: none;
+  border: 1px solid #c9a90a;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 12px;
+  color: #856404;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.tool-leak-banner .leak-dismiss:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+/* --- Mode Selector --- */
+.mode-selector {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  background: #fff;
+  color: var(--text);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Header */
+.header {
+  background: var(--primary);
+  color: white;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 10;
+}
+
+.header .logo {
+  font-size: 20px;
+  font-weight: 700;
+  margin-right: 8px;
+}
+
+.header .subtitle {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-right: auto;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.tab {
+  background: transparent;
+  color: rgba(255,255,255,0.7);
+  border: none;
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  transition: all 0.2s;
+}
+
+.tab:hover { color: white; background: rgba(255,255,255,0.1); }
+.tab.active { color: white; background: rgba(255,255,255,0.2); }
+
+/* Main layout */
+.main { flex: 1; display: flex; overflow: hidden; }
+.view { display: none; flex: 1; overflow: hidden; }
+.view.active { display: flex; }
+
+/* ===== CHAT VIEW ===== */
+.chat-view {
+  flex-direction: column;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.session-badge {
+  font-size: 12px;
+  color: var(--text-light);
+  background: var(--bg);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-family: monospace;
+}
+
+.chat-header .spacer { flex: 1; }
+
+.btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: white;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-weight: 500;
+}
+
+.btn:hover { background: var(--bg); }
+.btn-primary { background: var(--accent); color: white; border-color: var(--accent); }
+.btn-primary:hover { background: var(--accent-light); }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+
+.chat-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.messages-area {
+  flex: 1;
+  min-width: 320px;
+  max-width: 600px;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  max-width: 75%;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.message.user { align-self: flex-end; }
+.message.assistant { align-self: flex-start; }
+
+.bubble {
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.message.user .bubble {
+  background: var(--primary);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.message.assistant .bubble {
+  background: var(--assistant-bubble);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 4px;
+}
+
+.message .meta {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-top: 4px;
+  padding: 0 4px;
+}
+
+.message.user .meta { text-align: right; }
+
+.tool-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.tool-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #e8eaf6;
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.tool-badge:hover { background: #c5cae9; }
+.tool-badge.error { background: #ffebee; color: var(--error); }
+
+/* Tool detail panel */
+/* === Actions Panel (siempre visible) === */
+.actions-panel {
+  width: 420px;
+  border-left: 1px solid var(--border);
+  background: var(--card);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.actions-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+
+.actions-title {
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.actions-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.actions-tab {
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--text-light);
+  transition: all 0.15s;
+}
+
+.actions-tab:hover { background: var(--bg); }
+.actions-tab.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.actions-tab-content {
+  display: none;
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+}
+
+.actions-tab-content.active { display: flex; flex-direction: column; gap: 8px; }
+
+/* Status indicator */
+.actions-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-light);
+  padding: 6px 0;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.idle { background: #bdbdbd; }
+.status-dot.processing { background: var(--warning); animation: pulse-dot 1s infinite; }
+.status-dot.done { background: var(--success); }
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Tool call cards */
+.tool-call-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 12px;
+}
+
+.tool-call-card-header {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+  gap: 8px;
+}
+
+.tool-call-card-header:hover { background: rgba(0,0,0,0.03); }
+
+.tool-call-name {
+  font-weight: 600;
+  color: var(--primary);
+  flex: 1;
+}
+
+.tool-call-duration {
+  color: var(--text-light);
+  font-family: monospace;
+  font-size: 11px;
+}
+
+.tool-call-expand {
+  color: var(--text-light);
+  transition: transform 0.2s;
+  font-size: 10px;
+}
+
+.tool-call-card.expanded .tool-call-expand { transform: rotate(90deg); }
+
+.tool-call-card-body {
+  display: none;
+  padding: 0 12px 10px;
+  border-top: 1px solid var(--border);
+}
+
+.tool-call-card.expanded .tool-call-card-body { display: block; }
+
+.tool-call-section { margin-top: 8px; }
+.tool-call-section h5 {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+.tool-call-section pre {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 11px;
+  overflow-x: auto;
+  max-height: 150px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0;
+}
+
+/* Request tab */
+.request-section {
+  margin-bottom: 12px;
+}
+.request-section h4 {
+  font-size: 12px;
+  color: var(--primary);
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+.request-section pre {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 11px;
+  overflow-x: auto;
+  max-height: 200px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0;
+}
+
+#req-metrics {
+  font-size: 12px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+#req-metrics .metric {
+  display: flex;
+  flex-direction: column;
+}
+#req-metrics .metric-label {
+  font-size: 10px;
+  color: var(--text-light);
+  text-transform: uppercase;
+}
+#req-metrics .metric-value {
+  font-weight: 600;
+  font-family: monospace;
+}
+
+/* Opik tab */
+.opik-header { margin-bottom: 12px; }
+.opik-link {
+  display: inline-block;
+  padding: 8px 16px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+}
+.opik-link:hover { background: var(--primary-light); }
+.opik-traces { font-size: 12px; }
+.muted { color: var(--text-light); font-size: 12px; }
+
+/* Legacy tool-panel compat (hidden, replaced by actions-panel) */
+.tool-panel { display: none; }
+
+.tool-detail { margin-bottom: 16px; }
+.tool-detail h4 { font-size: 13px; color: var(--primary); margin-bottom: 4px; }
+.tool-detail pre {
+  background: #f5f5f5;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 12px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Typing indicator */
+.typing {
+  display: none;
+  align-self: flex-start;
+  padding: 10px 16px;
+  background: var(--assistant-bubble);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.typing.show { display: block; }
+
+.typing-dots span {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-light);
+  margin: 0 2px;
+  animation: bounce 1.2s infinite;
+}
+
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+/* Input area */
+.input-area {
+  padding: 12px 20px;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.input-area textarea {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 14px;
+  resize: none;
+  font-family: inherit;
+  outline: none;
+  max-height: 120px;
+  min-height: 42px;
+  line-height: 1.4;
+}
+
+.input-area textarea:focus { border-color: var(--primary); }
+
+.send-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-end;
+}
+
+.send-btn:hover { background: var(--accent-light); transform: scale(1.05); }
+.send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* Rating */
+.rating-bar {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #fff8e1;
+  border-top: 1px solid #ffe082;
+  flex-shrink: 0;
+}
+
+.rating-bar.show { display: flex; }
+
+.rating-bar span { font-size: 13px; color: var(--text); }
+
+.stars { display: flex; gap: 2px; }
+
+.star {
+  font-size: 22px;
+  cursor: pointer;
+  color: #e0e0e0;
+  transition: color 0.1s;
+}
+
+.star:hover, .star.active { color: var(--accent); }
+
+/* ===== DASHBOARD VIEW ===== */
+.dashboard-view {
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 24px;
+  gap: 20px;
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 14px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-body { padding: 18px; }
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 13px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.status-dot.healthy { background: var(--success); }
+.status-dot.unhealthy { background: var(--error); }
+.status-dot.unknown { background: var(--warning); }
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.stat-item { text-align: center; }
+
+/* Cost card styles */
+.cost-card { grid-column: 1 / -1; }
+.cost-hero {
+  text-align: center;
+  padding: 16px 0 12px;
+  border-bottom: 1px solid var(--border);
+}
+.cost-hero .hero-value {
+  font-size: 36px;
+  font-weight: 800;
+  color: #16a34a;
+}
+.cost-hero .hero-value.negative { color: var(--error); }
+.cost-hero .hero-label {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+.cost-breakdown {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+}
+.cost-breakdown .cost-col {
+  text-align: center;
+  padding: 14px 8px;
+}
+.cost-breakdown .cost-col:first-child {
+  border-right: 1px solid var(--border);
+}
+.cost-col .cost-val {
+  font-size: 22px;
+  font-weight: 700;
+}
+.cost-col .cost-val.openai { color: #dc2626; }
+.cost-col .cost-val.gpu { color: #2563eb; }
+.cost-col .cost-lbl {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+.cost-tokens {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  padding: 12px 0;
+}
+.cost-tokens .cost-col {
+  text-align: center;
+  padding: 6px 4px;
+}
+.cost-tokens .cost-col .cost-val {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.tool-list { list-style: none; }
+
+.tool-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+}
+
+.tool-item:last-child { border-bottom: none; }
+
+.tool-name { font-weight: 500; color: var(--primary); }
+
+.tool-count {
+  background: var(--bg);
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bar-label {
+  width: 160px;
+  font-size: 12px;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bar-track {
+  flex: 1;
+  height: 18px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+  min-width: 2px;
+}
+
+.bar-value {
+  width: 40px;
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+/* GPU Remote Card */
+.gpu-card { grid-column: 1 / -1; }
+.gpu-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.gpu-input-row input[type="text"] {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.gpu-input-row input[type="text"]:focus {
+  border-color: var(--primary);
+}
+#gpu-result {
+  margin-top: 14px;
+  display: none;
+}
+#gpu-result.visible { display: block; }
+.gpu-status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+.gpu-status-badge.ok { background: var(--success); }
+.gpu-status-badge.fail { background: var(--error); }
+.gpu-detail-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+  align-items: center;
+}
+.gpu-detail-grid .stat-item {
+  text-align: center;
+  min-width: 80px;
+}
+.gpu-models-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+.gpu-model-chip {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--primary);
+  font-weight: 500;
+}
+.gpu-note {
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--text-light);
+  line-height: 1.5;
+  padding: 8px 10px;
+  background: #fffde7;
+  border-radius: 6px;
+  border: 1px solid #fff9c4;
+}
+.gpu-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: gpuSpin 0.6s linear infinite;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+@keyframes gpuSpin {
+  to { transform: rotate(360deg); }
+}
+.gpu-error-msg {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--error);
+}
+.gpu-vllm-current {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-light);
+}
+.gpu-vllm-current code {
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.refresh-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--text-light);
+  padding: 4px;
+}
+
+.refresh-btn:hover { color: var(--text); }
+
+/* Tools schema expand */
+.schema-toggle {
+  font-size: 12px;
+  color: var(--primary);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.schema-content {
+  display: none;
+  margin-top: 6px;
+}
+
+.schema-content.open { display: block; }
+
+/* ===== WORKFLOW TOOLBAR ===== */
+.workflow-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 8px 14px;
+  background: #f5f5f5;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+.workflow-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.workflow-group-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-left: 2px;
+}
+.workflow-group-buttons {
+  display: flex;
+  gap: 4px;
+  padding: 4px 6px;
+  border-left: 3px solid var(--border);
+  border-radius: 0 6px 6px 0;
+  background: var(--card);
+}
+/* Color por grupo */
+.workflow-group.wg-importar .workflow-group-label { color: #00897b; }
+.workflow-group.wg-importar .workflow-group-buttons { border-left-color: #00897b; }
+.workflow-group.wg-analizar .workflow-group-label { color: #3949ab; }
+.workflow-group.wg-analizar .workflow-group-buttons { border-left-color: #3949ab; }
+.workflow-group.wg-generar .workflow-group-label { color: #1565c0; }
+.workflow-group.wg-generar .workflow-group-buttons { border-left-color: #1565c0; }
+.workflow-group.wg-curar .workflow-group-label { color: #d97706; }
+.workflow-group.wg-curar .workflow-group-buttons { border-left-color: #d97706; }
+.workflow-group.wg-utilidades .workflow-group-label { color: #616161; }
+.workflow-group.wg-utilidades .workflow-group-buttons { border-left-color: #9e9e9e; }
+.workflow-bar .spacer { flex: 1; }
+
+.btn-wf {
+  padding: 5px 10px;
+  font-size: 11px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card);
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+  position: relative;
+}
+.btn-wf:hover { background: #e8eaf6; border-color: var(--primary-light); }
+.btn-wf.active { background: var(--primary); color: white; }
+.btn-wf.btn-wf-accent { background: #d97706; color: white; border-color: #d97706; }
+.btn-wf.btn-wf-accent:hover { background: #b45309; }
+.btn-wf.btn-wf-teal { background: #00897b; color: white; border-color: #00897b; }
+.btn-wf.btn-wf-teal:hover { background: #00695c; }
+.btn-wf.btn-wf-purple { background: #7b1fa2; color: white; border-color: #7b1fa2; }
+.btn-wf.btn-wf-purple:hover { background: #6a1b9a; }
+
+/* Tooltips CSS puro */
+.btn-wf[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: normal;
+  max-width: 200px;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 50;
+  line-height: 1.3;
+}
+.btn-wf[data-tooltip]:hover::after { opacity: 1; }
+
+.jobs-badge {
+  display: inline-block;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  width: 18px; height: 18px;
+  font-size: 11px;
+  text-align: center;
+  line-height: 18px;
+  margin-left: 4px;
+}
+
+/* ===== MODALS ===== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 100;
+  justify-content: center;
+  align-items: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  max-width: 560px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 24px;
+}
+.modal h3 { margin-bottom: 16px; font-size: 18px; }
+.modal label { display: block; font-size: 13px; font-weight: 500; margin-top: 12px; margin-bottom: 4px; }
+.modal input[type="text"], .modal input[type="password"], .modal input[type="number"],
+.modal select, .modal textarea {
+  width: 100%; padding: 8px 10px; border: 1px solid var(--border);
+  border-radius: 6px; font-size: 13px;
+}
+.modal textarea { min-height: 80px; resize: vertical; }
+.modal .modal-actions { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
+.modal .btn-modal { padding: 8px 20px; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; }
+.modal .btn-cancel { background: var(--bg); color: var(--text); }
+.modal .btn-submit { background: var(--primary); color: white; }
+.modal .btn-submit:hover { background: var(--primary-light); }
+
+/* ===== JOBS PANEL ===== */
+.jobs-list { max-height: 400px; overflow-y: auto; }
+.job-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.job-item:last-child { border-bottom: none; }
+.job-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.job-type { font-weight: 600; text-transform: capitalize; }
+.job-status {
+  padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500;
+}
+.job-status.running { background: #fff3e0; color: #e65100; }
+.job-status.completed { background: #e8f5e9; color: #2e7d32; }
+.job-status.failed { background: #ffebee; color: #c62828; }
+.job-status.cancelled { background: #eceff1; color: #546e7a; }
+.job-status.pending { background: #e3f2fd; color: #1565c0; }
+.job-progress { width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.job-progress-bar { height: 100%; background: var(--primary); transition: width .3s; border-radius: 3px; }
+.job-detail { font-size: 11px; color: var(--text-light); margin-top: 4px; }
+.job-actions { margin-top: 6px; }
+.job-cancel-btn { font-size: 11px; padding: 2px 10px; border: 1px solid var(--error); color: var(--error); background: none; border-radius: 4px; cursor: pointer; }
+.job-cancel-btn:hover { background: #ffebee; }
+
+/* ===== ANALYSIS RESULTS ===== */
+.analysis-bar { display: flex; align-items: center; gap: 2px; margin: 4px 0; }
+.analysis-bar-fill { height: 14px; background: var(--primary); border-radius: 3px; min-width: 2px; }
+.analysis-bar-label { font-size: 11px; min-width: 140px; }
+.analysis-bar-count { font-size: 11px; color: var(--text-light); min-width: 30px; text-align: right; }
+
+/* key indicator */
+.key-indicator { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-left: 6px; }
+.key-indicator.set { background: var(--success); }
+.key-indicator.unset { background: var(--error); }
+
+/* ===== DATASET SUB-TABS ===== */
+.ds-subtabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.ds-subtab {
+  padding: 6px 18px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  color: var(--text);
+}
+.ds-subtab:hover { background: #e8eaf6; border-color: var(--primary-light); }
+.ds-subtab.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(26,35,126,0.2);
+}
+.ds-subtabs .spacer { flex: 1; }
+
+/* ===== DS TAB PANELS ===== */
+.ds-tab-panel { display: none; flex: 1; overflow: hidden; }
+.ds-tab-panel.active { display: flex; }
+.ds-tab-panel-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+/* ===== ACTION GRID ===== */
+.ds-action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+  padding: 20px;
+}
+.ds-action-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  background: var(--card);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.ds-action-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  transform: translateY(-1px);
+  border-color: var(--primary-light);
+}
+.ds-action-card-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+.ds-action-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+.ds-action-card-desc {
+  font-size: 12px;
+  color: var(--text-light);
+  line-height: 1.4;
+}
+
+/* ===== ACTION BAR (Archivos tab) ===== */
+.ds-action-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #f5f5f5;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.ds-action-bar .btn-wf { font-size: 12px; }
+
+/* ===== FILE ACTIONS (hover) ===== */
+.ds-file-actions {
+  display: none;
+  gap: 2px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.ds-file-item:hover .ds-file-actions { display: flex; }
+.ds-file-action-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  opacity: 0.5;
+  transition: all 0.15s;
+  line-height: 1;
+}
+.ds-file-action-btn:hover { opacity: 1; background: rgba(0,0,0,0.06); }
+
+/* ===== FILE VERSION/TAG BADGES ===== */
+.ds-file-version {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: #e8eaf6;
+  color: var(--primary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.ds-file-tag-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: #fff3e0;
+  color: #e65100;
+  white-space: nowrap;
+}
+
+/* ===== DATASETS VIEW ===== */
+.datasets-view {
+  flex-direction: row;
+}
+
+.ds-file-panel {
+  width: 240px;
+  border-right: 1px solid var(--border);
+  background: var(--card);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.ds-file-panel-header {
+  padding: 12px 14px;
+  font-weight: 600;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.ds-file-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 0;
+}
+
+.ds-dir-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px 4px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.ds-dir-header:hover { background: var(--bg); }
+.ds-dir-toggle {
+  font-size: 10px;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+  width: 12px;
+  text-align: center;
+}
+.ds-dir-header.expanded .ds-dir-toggle { transform: rotate(90deg); }
+.ds-dir-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ds-dir-info {
+  font-size: 10px;
+  color: var(--text-light);
+  opacity: 0.7;
+  white-space: nowrap;
+}
+.ds-dir-files {
+  overflow: hidden;
+  max-height: 2000px;
+  transition: max-height 0.3s ease;
+}
+.ds-dir-files.collapsed {
+  max-height: 0;
+}
+
+.ds-file-item {
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+}
+
+.ds-file-item:hover { background: var(--bg); }
+.ds-file-item.active { background: #e8eaf6; border-left-color: var(--primary); }
+
+.ds-file-item-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ds-file-checkbox {
+  width: 14px; height: 14px;
+  accent-color: var(--primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.ds-file-checkbox:checked ~ .ds-file-name { font-weight: 600; }
+.ds-selected-bar {
+  padding: 4px 14px;
+  font-size: 11px;
+  color: var(--primary);
+  background: #e8eaf6;
+  border-top: 1px solid var(--border);
+  display: none;
+  flex-shrink: 0;
+}
+.ds-selected-bar.visible { display: block; }
+
+.ds-file-name {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ds-file-meta {
+  font-size: 11px;
+  color: var(--text-light);
+  display: flex;
+  gap: 8px;
+}
+
+.ds-file-stats {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-light);
+  flex-shrink: 0;
+}
+
+.ds-conv-panel {
+  flex: 1;
+  min-width: 300px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ds-conv-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.ds-conv-header select {
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  background: white;
+}
+
+.ds-conv-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ds-conv-card {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--card);
+}
+
+.ds-conv-card:hover { border-color: var(--primary); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.ds-conv-card.active { border-color: var(--primary); background: #e8eaf6; }
+.ds-conv-card.tc-yes { border-left: 3px solid #2e7d32; }
+.ds-conv-card.tc-no { border-left: 3px solid #bdbdbd; }
+
+.ds-conv-card-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.ds-conv-line {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.ds-conv-badges {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.ds-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.ds-badge-tc { background: #c5cae9; color: var(--primary); font-weight: 600; }
+.ds-badge-valid { background: #e8f5e9; color: var(--success); }
+.ds-badge-invalid { background: #ffebee; color: var(--error); }
+.ds-badge-tag { background: #fff3e0; color: #e65100; }
+
+.ds-conv-preview {
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.ds-conv-card-bottom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-light);
+}
+
+.ds-conv-stars {
+  display: inline-flex;
+  gap: 1px;
+  font-size: 12px;
+}
+
+.ds-conv-stars .filled { color: var(--accent); }
+.ds-conv-stars .empty { color: #e0e0e0; }
+
+.ds-pagination {
+  padding: 8px 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-light);
+  flex-shrink: 0;
+}
+
+.ds-pagination button {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.ds-pagination button:hover { background: var(--bg); }
+.ds-pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.ds-detail-panel {
+  width: 420px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--card);
+}
+
+.ds-detail-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.ds-detail-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ds-msg {
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  position: relative;
+}
+
+.ds-msg-role {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.ds-msg[data-role="system"] { background: #f3e5f5; }
+.ds-msg[data-role="system"] .ds-msg-role { color: #7b1fa2; }
+.ds-msg[data-role="user"] { background: var(--user-bubble); }
+.ds-msg[data-role="user"] .ds-msg-role { color: var(--primary); }
+.ds-msg[data-role="assistant"] { background: #f5f5f5; border: 1px solid var(--border); }
+.ds-msg[data-role="assistant"] .ds-msg-role { color: #333; }
+.ds-msg[data-role="tool"] { background: #e0f2f1; }
+.ds-msg[data-role="tool"] .ds-msg-role { color: #00695c; }
+
+.ds-msg-content {
+  white-space: pre-wrap;
+  word-break: break-word;
+  cursor: pointer;
+}
+
+.ds-msg-content:hover { outline: 1px dashed var(--border); outline-offset: 2px; }
+
+.ds-msg-edit {
+  width: 100%;
+  min-height: 60px;
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  padding: 6px;
+  font-size: 13px;
+  font-family: monospace;
+  resize: vertical;
+  line-height: 1.4;
+}
+
+.ds-msg-edit-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+  justify-content: flex-end;
+}
+
+.ds-tool-call-highlight {
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 4px;
+  padding: 4px 6px;
+  margin: 4px 0;
+  font-family: monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.ds-tool-response-highlight {
+  background: #e0f7fa;
+  border: 1px solid #80deea;
+  border-radius: 4px;
+  padding: 4px 6px;
+  margin: 4px 0;
+  font-family: monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.ds-detail-controls {
+  border-top: 1px solid var(--border);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.ds-control-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.ds-control-label {
+  font-weight: 600;
+  font-size: 12px;
+  min-width: 50px;
+}
+
+.ds-tags-area {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+}
+
+.ds-tag-chip {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #fff3e0;
+  color: #e65100;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.ds-tag-chip .remove { font-size: 13px; font-weight: bold; }
+.ds-tag-chip .remove:hover { color: var(--error); }
+
+.ds-tag-input {
+  padding: 2px 8px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  font-size: 11px;
+  width: 100px;
+  outline: none;
+}
+
+.ds-tag-suggestions {
+  position: absolute;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  max-height: 160px;
+  overflow-y: auto;
+  z-index: 20;
+  font-size: 12px;
+}
+
+.ds-tag-suggestions div {
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.ds-tag-suggestions div:hover { background: var(--bg); }
+
+.ds-rating-stars {
+  display: flex;
+  gap: 2px;
+}
+
+.ds-rating-stars span {
+  font-size: 20px;
+  cursor: pointer;
+  color: #e0e0e0;
+  transition: color 0.1s;
+}
+
+.ds-rating-stars span:hover, .ds-rating-stars span.active { color: var(--accent); }
+
+.ds-notes-input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+.ds-validation-result {
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  max-height: 80px;
+  overflow-y: auto;
+}
+
+.ds-validation-result.valid { background: #e8f5e9; color: var(--success); }
+.ds-validation-result.invalid { background: #ffebee; color: var(--error); }
+
+.ds-detail-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.ds-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-light);
+  font-size: 13px;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .actions-panel {
+    display: none;
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 100%;
+    z-index: 10;
+  }
+  .actions-panel.mobile-open { display: flex; }
+  .messages-area { max-width: none; }
+  #actions-toggle-mobile { display: inline-block !important; }
+  #actions-close-mobile { display: inline-block !important; }
+}
+@media (min-width: 901px) {
+  #actions-toggle-mobile { display: none !important; }
+  #actions-close-mobile { display: none !important; }
+}
+@media (max-width: 768px) {
+  .message { max-width: 90%; }
+  .dashboard-view { padding: 12px; }
+  .dash-grid { grid-template-columns: 1fr; }
+  .header .subtitle { display: none; }
+  .stat-grid { grid-template-columns: 1fr; }
+  .datasets-view { flex-direction: column; }
+  .ds-file-panel { width: 100%; max-height: 150px; border-right: none; border-bottom: 1px solid var(--border); }
+  .ds-detail-panel { width: 100%; }
+}
+
+/* Login Screen */
+#login-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: linear-gradient(135deg, #0d1b3e 0%, #1a237e 50%, #283593 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+#login-screen.hidden { display: none; }
+.login-card {
+  background: #fff; border-radius: 16px; padding: 40px 36px; width: 360px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;
+}
+.login-card h1 { font-size: 28px; color: var(--primary); margin-bottom: 4px; }
+.login-card p { font-size: 14px; color: var(--text-light); margin-bottom: 28px; }
+.login-card input {
+  width: 100%; padding: 12px 14px; font-size: 14px; border: 1px solid var(--border);
+  border-radius: 8px; margin-bottom: 14px; outline: none; transition: border 0.2s;
+}
+.login-card input:focus { border-color: var(--primary); }
+.login-card .login-btn {
+  width: 100%; padding: 12px; font-size: 15px; font-weight: 600; color: #fff;
+  background: var(--primary); border: none; border-radius: 8px; cursor: pointer;
+  transition: background 0.2s;
+}
+.login-card .login-btn:hover { background: var(--primary-light); }
+#login-error { color: var(--error); font-size: 13px; margin-top: 10px; min-height: 18px; }
+.btn-logout {
+  background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.25);
+  padding: 5px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; margin-left: 12px;
+  transition: all 0.2s;
+}
+.btn-logout:hover { background: rgba(255,255,255,0.25); color: #fff; }
+
+/* ====== PROMPTS TAB ====== */
+.prompts-view { flex-direction: column; }
+.pm-subtabs {
+  display: flex; gap: 0; border-bottom: 1px solid var(--border);
+  padding: 0 16px; background: var(--bg-card);
+}
+.pm-subtab {
+  background: transparent; color: var(--text-light); border: none;
+  padding: 10px 18px; font-size: 13px; font-weight: 500; cursor: pointer;
+  border-bottom: 2px solid transparent; transition: all 0.2s;
+}
+.pm-subtab:hover { color: var(--text-primary); }
+.pm-subtab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.pm-tab-panel { display: none; flex: 1; overflow: hidden; }
+.pm-tab-panel.active { display: flex; }
+
+/* Editor layout */
+.pm-editor-layout { display: flex; flex: 1; overflow: hidden; }
+.pm-list-panel { width: 260px; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+.pm-list-header { padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+.pm-prompt-list { flex: 1; overflow-y: auto; }
+.pm-prompt-item {
+  padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--border-light, rgba(0,0,0,0.06));
+  transition: background 0.15s; font-size: 13px;
+}
+.pm-prompt-item:hover { background: var(--bg-hover, rgba(0,0,0,0.04)); }
+.pm-prompt-item.active { background: rgba(26, 35, 126, 0.08); border-left: 3px solid var(--primary); }
+.pm-prompt-item .pm-item-name { font-weight: 600; }
+.pm-prompt-item .pm-item-meta { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+.pm-badge-active {
+  display: inline-block; background: var(--success); color: #fff; font-size: 10px;
+  padding: 1px 6px; border-radius: 8px; margin-left: 6px; vertical-align: middle;
+}
+
+/* Editor form */
+.pm-edit-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.pm-editor-empty { flex: 1; display: flex; align-items: center; justify-content: center; }
+.pm-editor-form { flex: 1; display: flex; flex-direction: column; padding: 16px; gap: 10px; overflow: hidden; }
+.pm-form-row { display: flex; flex-direction: column; gap: 4px; }
+.pm-form-row label { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+.pm-form-row input { padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+.pm-textarea {
+  flex: 1; min-height: 200px; padding: 10px; border: 1px solid var(--border); border-radius: 6px;
+  font-size: 13px; font-family: 'Fira Code', 'Consolas', monospace; line-height: 1.5; resize: none;
+}
+.pm-form-actions { display: flex; gap: 8px; align-items: center; padding-top: 8px; }
+.pm-btn-save { background: var(--primary) !important; color: #fff !important; }
+.pm-btn-activate { background: var(--success) !important; color: #fff !important; }
+.pm-btn-delete { background: var(--error) !important; color: #fff !important; }
+
+/* Stats */
+.pm-stats-body { flex: 1; overflow-y: auto; padding: 20px; }
+.pm-stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+.pm-stat-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 18px; position: relative;
+}
+.pm-stat-card.is-active { border-color: var(--success); }
+.pm-stat-card h3 { font-size: 15px; margin: 0 0 12px 0; }
+.pm-stat-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
+.pm-stat-row .pm-stat-label { color: var(--text-secondary); }
+.pm-stat-row .pm-stat-value { font-weight: 600; }
+.pm-stat-bar-bg { height: 6px; background: var(--bg-hover, #eee); border-radius: 3px; margin-top: 4px; }
+.pm-stat-bar { height: 6px; border-radius: 3px; background: var(--primary); transition: width 0.3s; }
+
+/* Conversations */
+.pm-conv-layout { display: flex; flex: 1; overflow: hidden; }
+.pm-conv-sidebar { width: 200px; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+.pm-conv-list-panel { width: 300px; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+.pm-conv-list { flex: 1; overflow-y: auto; }
+.pm-conv-item {
+  padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--border-light, rgba(0,0,0,0.06));
+  font-size: 12px; transition: background 0.15s;
+}
+.pm-conv-item:hover { background: var(--bg-hover, rgba(0,0,0,0.04)); }
+.pm-conv-item.active { background: rgba(26, 35, 126, 0.08); }
+.pm-conv-item .pm-conv-session { font-weight: 600; font-size: 12px; word-break: break-all; }
+.pm-conv-item .pm-conv-meta { color: var(--text-secondary); margin-top: 3px; font-size: 11px; }
+.pm-conv-pagination { padding: 8px 14px; display: flex; gap: 8px; align-items: center; border-top: 1px solid var(--border); font-size: 12px; }
+.pm-conv-detail-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.pm-conv-detail { flex: 1; overflow-y: auto; padding: 16px; }
+.pm-msg { margin-bottom: 10px; padding: 10px 14px; border-radius: 10px; font-size: 13px; line-height: 1.5; max-width: 85%; }
+.pm-msg.user { background: var(--primary); color: #fff; margin-left: auto; border-bottom-right-radius: 2px; }
+.pm-msg.assistant { background: var(--bg-card); border: 1px solid var(--border); border-bottom-left-radius: 2px; }
+.pm-msg .pm-msg-role { font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; opacity: 0.7; }
+</style>
+</head>
+<body>
+
+<!-- Login Screen -->
+<div id="login-screen">
+  <div class="login-card">
+    <h1>TREFA</h1>
+    <p>Mariana AI - Inicia sesion para continuar</p>
+    <input type="text" id="login-user" placeholder="Usuario" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('login-pass').focus()">
+    <input type="password" id="login-pass" placeholder="Contrasena" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Iniciar sesion</button>
+    <div id="login-error"></div>
+  </div>
+</div>
+
+<!-- Header -->
+<div class="header">
+  <span class="logo">TREFA</span>
+  <span class="subtitle">Mariana AI - Asesora de Autos Seminuevos</span>
+  <div class="tabs">
+    <button class="tab active" onclick="switchView('chat')">Chat</button>
+    <button class="tab" onclick="switchView('dashboard')">Dashboard</button>
+    <button class="tab" onclick="switchView('datasets')">Datasets</button>
+    <button class="tab" onclick="switchView('prompts')">Prompts</button>
+  </div>
+  <button class="btn-logout" onclick="doLogout()">Salir</button>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Chat View -->
+  <div id="chat-view" class="view chat-view active">
+    <div class="chat-header">
+      <span style="font-weight:600; font-size:14px;">Mariana</span>
+      <span class="session-badge" id="session-badge">Sin sesion</span>
+      <select class="mode-selector" id="chat-mode-selector" onchange="switchChatMode(this.value)">
+        <option value="widget">Chat widget</option>
+        <option value="whatsapp">WhatsApp</option>
+        <option value="webapp">Web App</option>
+      </select>
+      <div class="spacer"></div>
+      <button class="btn btn-sm" id="actions-toggle-mobile" onclick="toggleActionsMobile()" style="display:none;">Inspector</button>
+      <button class="btn btn-sm btn-primary" onclick="newSession()">+ Nueva</button>
+    </div>
+
+    <div class="chat-body">
+      <div class="messages-area" id="messages">
+        <div class="message assistant">
+          <span class="wa-avatar">M</span>
+          <div class="bubble-wrap">
+            <div class="bubble">Hola, soy Mariana del equipo TREFA. Con mucho gusto te apoyo a encontrar tu auto ideal. Que tipo de vehiculo buscas?</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions Panel -->
+      <div class="actions-panel" id="actions-panel">
+        <div class="actions-header">
+          <span class="actions-title">Inspector</span>
+          <div class="actions-tabs">
+            <button class="actions-tab active" data-tab="tools" onclick="switchActionsTab('tools')">Tools</button>
+            <button class="actions-tab" data-tab="request" onclick="switchActionsTab('request')">Request</button>
+            <button class="actions-tab" data-tab="opik" onclick="switchActionsTab('opik')">Opik</button>
+          </div>
+          <button class="btn btn-sm" onclick="toggleActionsMobile()" style="display:none; margin-left:auto;" id="actions-close-mobile">&times;</button>
+        </div>
+
+        <!-- Tab: Tools -->
+        <div class="actions-tab-content active" id="tab-tools">
+          <div class="actions-status" id="actions-status">
+            <span class="status-dot idle"></span> Esperando mensaje...
+          </div>
+          <div id="tool-calls-list"></div>
+        </div>
+
+        <!-- Tab: Request -->
+        <div class="actions-tab-content" id="tab-request">
+          <div class="request-section">
+            <h4>Solicitud</h4>
+            <pre id="req-details">Sin solicitud activa</pre>
+          </div>
+          <div class="request-section">
+            <h4>Respuesta</h4>
+            <pre id="res-details">Sin respuesta</pre>
+          </div>
+          <div class="request-section">
+            <h4>Metricas</h4>
+            <div id="req-metrics">--</div>
+          </div>
+        </div>
+
+        <!-- Tab: Opik -->
+        <div class="actions-tab-content" id="tab-opik">
+          <div class="opik-header">
+            <a href="https://opik.astrapp.lat" target="_blank" class="opik-link">Abrir Opik Dashboard</a>
+          </div>
+          <div class="opik-traces" id="opik-traces">
+            <p class="muted">Las trazas se actualizan al enviar mensajes.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rating bar -->
+    <div class="rating-bar" id="rating-bar">
+      <span>Califica esta conversacion:</span>
+      <div class="stars" id="stars">
+        <span class="star" data-v="1">&#9733;</span>
+        <span class="star" data-v="2">&#9733;</span>
+        <span class="star" data-v="3">&#9733;</span>
+        <span class="star" data-v="4">&#9733;</span>
+        <span class="star" data-v="5">&#9733;</span>
+      </div>
+      <span id="rating-status" style="font-size:12px; color:var(--success);"></span>
+    </div>
+
+    <!-- Input -->
+    <div class="input-area">
+      <div class="wa-input-icons">😊 📎</div>
+      <textarea id="msg-input" placeholder="Escribe tu mensaje..." rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"
+        oninput="autoResize(this)"></textarea>
+      <div class="wa-input-icons">🎤</div>
+      <button class="send-btn" id="send-btn" onclick="sendMessage()">&#9654;</button>
+    </div>
+  </div>
+
+  <!-- Dashboard View -->
+  <div id="dashboard-view" class="view dashboard-view">
+    <div class="dash-grid">
+
+      <!-- GPU Remoto -->
+      <div class="card gpu-card">
+        <div class="card-header">
+          &#128752; Conexion GPU Remoto
+        </div>
+        <div class="card-body">
+          <div class="gpu-input-row">
+            <input type="text" id="gpu-url-input" placeholder="http://IP:8000 o https://tunnel.ngrok.io">
+            <button class="btn btn-primary" id="gpu-test-btn" onclick="testGPUConnection()">Verificar Conexion</button>
+          </div>
+          <div id="gpu-vllm-current" class="gpu-vllm-current"></div>
+          <div id="gpu-result">
+            <div id="gpu-result-content"></div>
+          </div>
+          <div class="gpu-note">
+            Verifica la conexion y presiona <strong>Aplicar</strong> para usar el backend en esta sesion. Para hacerlo permanente, configura <strong>TREFA_VLLM_BASE_URL</strong> en Railway.
+          </div>
+        </div>
+      </div>
+
+      <!-- Health -->
+      <div class="card">
+        <div class="card-header">
+          Estado del sistema
+          <button class="refresh-btn" onclick="loadHealth()">&#8635;</button>
+        </div>
+        <div class="card-body" id="health-body">
+          <p style="color:var(--text-light); font-size:13px;">Cargando...</p>
+        </div>
+      </div>
+
+      <!-- Analytics stats -->
+      <div class="card">
+        <div class="card-header">
+          Metricas
+          <button class="refresh-btn" onclick="loadAnalytics()">&#8635;</button>
+        </div>
+        <div class="card-body" id="analytics-stats">
+          <p style="color:var(--text-light); font-size:13px;">Cargando...</p>
+        </div>
+      </div>
+
+      <!-- Cost savings card -->
+      <div class="card cost-card">
+        <div class="card-header">
+          &#128176; Ahorro vs OpenAI
+          <button class="refresh-btn" onclick="loadAnalytics()">&#8635;</button>
+        </div>
+        <div class="card-body" id="cost-stats">
+          <p style="color:var(--text-light); font-size:13px;">Cargando...</p>
+        </div>
+      </div>
+
+      <!-- Top tools chart -->
+      <div class="card" style="grid-column: 1 / -1;">
+        <div class="card-header">
+          Herramientas mas usadas
+          <button class="refresh-btn" onclick="loadAnalytics()">&#8635;</button>
+        </div>
+        <div class="card-body" id="tools-chart">
+          <p style="color:var(--text-light); font-size:13px;">Cargando...</p>
+        </div>
+      </div>
+
+      <!-- Available tools -->
+      <div class="card" style="grid-column: 1 / -1;">
+        <div class="card-header">
+          Herramientas disponibles (MCP)
+          <button class="refresh-btn" onclick="loadTools()">&#8635;</button>
+        </div>
+        <div class="card-body" id="tools-list">
+          <p style="color:var(--text-light); font-size:13px;">Cargando...</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Datasets View -->
+  <div id="datasets-view" class="view datasets-view" style="flex-direction:column;">
+
+    <!-- Sub-tabs -->
+    <div class="ds-subtabs">
+      <button class="ds-subtab active" onclick="dsSwitchTab('archivos')">Archivos</button>
+      <button class="ds-subtab" onclick="dsSwitchTab('generar')">Generar</button>
+      <button class="ds-subtab" onclick="dsSwitchTab('curar')">Curar</button>
+      <button class="ds-subtab" onclick="dsSwitchTab('training')">Training</button>
+      <div class="spacer"></div>
+      <button class="ds-subtab" onclick="genShowModal('settings')" style="font-size:12px;">&#9881; Settings</button>
+      <button class="ds-subtab" onclick="genShowModal('jobs')" style="font-size:12px;">Jobs <span class="jobs-badge" id="gen-jobs-badge" style="display:none;">0</span></button>
+    </div>
+
+    <!-- TAB: Archivos -->
+    <div class="ds-tab-panel active" id="ds-panel-archivos" style="flex-direction:column;">
+
+      <!-- Action bar -->
+      <div class="ds-action-bar">
+        <button class="btn-wf" onclick="genShowModal('upload')">Subir</button>
+        <button class="btn-wf" onclick="genShowModal('merge')">Merge</button>
+        <button class="btn-wf" onclick="autoTagTC()">Auto-tag TC</button>
+        <button class="btn-wf" onclick="genShowModal('analyze')">Analizar</button>
+      </div>
+
+      <!-- 3-panel layout -->
+      <div style="flex:1;display:flex;flex-direction:row;overflow:hidden;">
+
+      <!-- Panel izquierdo: Archivos -->
+      <div class="ds-file-panel">
+        <div class="ds-file-panel-header">
+          Archivos JSONL
+          <button class="refresh-btn" onclick="dsLoadFiles(true)" title="Re-escanear">&#8635;</button>
+        </div>
+        <div class="ds-file-list" id="ds-file-list">
+          <div class="ds-empty-state">Cargando archivos...</div>
+        </div>
+        <div class="ds-selected-bar" id="ds-selected-bar"></div>
+        <div class="ds-file-stats" id="ds-file-stats"></div>
+      </div>
+
+      <!-- Panel central: Lista de conversaciones -->
+      <div class="ds-conv-panel">
+        <div class="ds-conv-header" id="ds-conv-header">
+          <span style="font-weight:600;font-size:13px;" id="ds-conv-title">Selecciona un archivo</span>
+          <div class="spacer"></div>
+          <select id="ds-filter-tc" onchange="dsApplyFilters()">
+            <option value="">Tool Calling: Todos</option>
+            <option value="yes">Con TC</option>
+            <option value="no">Sin TC</option>
+          </select>
+          <select id="ds-filter-rating" onchange="dsApplyFilters()">
+            <option value="">Rating: Todos</option>
+            <option value="0">Sin rating</option>
+            <option value="1">1 estrella</option>
+            <option value="2">2 estrellas</option>
+            <option value="3">3 estrellas</option>
+            <option value="4">4 estrellas</option>
+            <option value="5">5 estrellas</option>
+          </select>
+        </div>
+        <div class="ds-conv-list" id="ds-conv-list">
+          <div class="ds-empty-state">Selecciona un archivo JSONL del panel izquierdo para ver sus conversaciones</div>
+        </div>
+        <div class="ds-pagination" id="ds-pagination" style="display:none;">
+          <button onclick="dsPrevPage()" id="ds-prev-btn" disabled>&#9664; Anterior</button>
+          <span id="ds-page-info">-</span>
+          <button onclick="dsNextPage()" id="ds-next-btn">Siguiente &#9654;</button>
+        </div>
+      </div>
+
+      <!-- Panel derecho: Detalle / Editor -->
+      <div class="ds-detail-panel">
+        <div class="ds-detail-header" id="ds-detail-header">Detalle</div>
+        <div class="ds-detail-messages" id="ds-detail-messages">
+          <div class="ds-empty-state">Selecciona una conversacion para ver sus mensajes</div>
+        </div>
+        <div class="ds-detail-controls" id="ds-detail-controls" style="display:none;">
+          <div class="ds-control-row">
+            <span class="ds-control-label">Tags</span>
+            <div class="ds-tags-area" id="ds-tags-area"></div>
+            <div style="position:relative;display:inline-block;">
+              <input class="ds-tag-input" id="ds-tag-input" placeholder="+ tag" onfocus="dsShowTagSuggestions()" oninput="dsFilterTagSuggestions()" onblur="setTimeout(()=>dsHideTagSuggestions(),200)">
+              <div class="ds-tag-suggestions" id="ds-tag-suggestions" style="display:none;"></div>
+            </div>
+          </div>
+          <div class="ds-control-row">
+            <span class="ds-control-label">Rating</span>
+            <div class="ds-rating-stars" id="ds-rating-stars">
+              <span data-v="1" onclick="dsSetRating(1)">&#9733;</span>
+              <span data-v="2" onclick="dsSetRating(2)">&#9733;</span>
+              <span data-v="3" onclick="dsSetRating(3)">&#9733;</span>
+              <span data-v="4" onclick="dsSetRating(4)">&#9733;</span>
+              <span data-v="5" onclick="dsSetRating(5)">&#9733;</span>
+            </div>
+          </div>
+          <div class="ds-control-row">
+            <span class="ds-control-label">Notas</span>
+            <input class="ds-notes-input" id="ds-notes-input" placeholder="Notas de revision...">
+          </div>
+          <div id="ds-validation-box"></div>
+          <div class="ds-detail-actions">
+            <button class="btn btn-sm" onclick="dsValidate()">Validar</button>
+            <button class="btn btn-sm btn-primary" onclick="dsSave()">Guardar</button>
+            <span id="ds-save-status" style="font-size:11px;color:var(--success);"></span>
+          </div>
+        </div>
+      </div>
+
+      </div><!-- end 3-panel layout -->
+    </div><!-- end TAB: Archivos -->
+
+    <!-- TAB: Generar -->
+    <div class="ds-tab-panel" id="ds-panel-generar">
+      <div class="ds-action-grid">
+        <div class="ds-action-card" onclick="genShowModal('template')">
+          <div class="ds-action-card-icon">&#128196;</div>
+          <div class="ds-action-card-title">Plantillas</div>
+          <div class="ds-action-card-desc">Genera conversaciones predefinidas sin LLM (~160 escenarios)</div>
+        </div>
+        <div class="ds-action-card" onclick="genShowModal('synthetic')">
+          <div class="ds-action-card-icon">&#129302;</div>
+          <div class="ds-action-card-title">Sintetico (Claude)</div>
+          <div class="ds-action-card-desc">Genera conversaciones con Claude AI (Haiku o Sonnet)</div>
+        </div>
+        <div class="ds-action-card" onclick="genShowModal('gold-amplifier')" style="border-color:#d97706;">
+          <div class="ds-action-card-icon">&#128171;</div>
+          <div class="ds-action-card-title" style="color:#d97706;">Gold Amplifier</div>
+          <div class="ds-action-card-desc">Amplifica conversaciones gold con Gemini Flash para producir combinaciones unicas</div>
+        </div>
+        <div class="ds-action-card" onclick="genShowModal('training')" style="border-color:#7b1fa2;">
+          <div class="ds-action-card-icon">&#127891;</div>
+          <div class="ds-action-card-title" style="color:#7b1fa2;">Training Dataset</div>
+          <div class="ds-action-card-desc">Genera dataset de 25 escenarios para fine-tuning Qwen3-14B</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Curar -->
+    <div class="ds-tab-panel" id="ds-panel-curar">
+      <div class="ds-action-grid">
+        <div class="ds-action-card" onclick="genShowModal('curate')">
+          <div class="ds-action-card-icon">&#128270;</div>
+          <div class="ds-action-card-title">Curar Dataset</div>
+          <div class="ds-action-card-desc">Evalua calidad con Gemini y filtra por umbral minimo</div>
+        </div>
+        <div class="ds-action-card" onclick="genShowModal('pipeline')">
+          <div class="ds-action-card-icon">&#9881;</div>
+          <div class="ds-action-card-title">Pipeline TC</div>
+          <div class="ds-action-card-desc">Pipeline completo: generar + evaluar + filtrar en 3 etapas</div>
+        </div>
+        <div class="ds-action-card" onclick="genShowModal('merge-evaluate')" style="border-color:#00897b;">
+          <div class="ds-action-card-icon">&#128279;</div>
+          <div class="ds-action-card-title" style="color:#00897b;">Merge &amp; Evaluate</div>
+          <div class="ds-action-card-desc">Fusiona todos los JSONL y evalua con Gemini para train.jsonl + eval.jsonl</div>
+        </div>
+        <div class="ds-action-card" onclick="genShowModal('update-prompt')">
+          <div class="ds-action-card-icon">&#128221;</div>
+          <div class="ds-action-card-title">Actualizar Prompt</div>
+          <div class="ds-action-card-desc">Reemplaza el system prompt en archivos JSONL seleccionados</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Training -->
+    <div class="ds-tab-panel" id="ds-panel-training">
+      <div class="ds-action-grid">
+        <div class="ds-action-card" onclick="genLaunchTrainingDataset()" style="border-color:#7b1fa2;">
+          <div class="ds-action-card-icon">&#128640;</div>
+          <div class="ds-action-card-title" style="color:#7b1fa2;">Generar Dataset</div>
+          <div class="ds-action-card-desc">Genera dataset de 25 escenarios para fine-tuning (sin LLM)</div>
+        </div>
+        <div class="ds-action-card" onclick="genShowTrainingPromptTab()">
+          <div class="ds-action-card-icon">&#128220;</div>
+          <div class="ds-action-card-title">System Prompt</div>
+          <div class="ds-action-card-desc">Ver y copiar el system prompt de Mariana para fine-tuning</div>
+        </div>
+        <div class="ds-action-card" onclick="genShowTrainingScriptTab()">
+          <div class="ds-action-card-icon">&#128187;</div>
+          <div class="ds-action-card-title">Script vast.ai</div>
+          <div class="ds-action-card-desc">Ver script train_qwen3_vast.py para entrenar en vast.ai</div>
+        </div>
+      </div>
+      <div id="training-tab-content" style="padding:0 20px 20px;">
+        <div id="training-tab-area" style="display:none;max-height:400px;overflow:auto;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <strong id="training-tab-title" style="font-size:13px;"></strong>
+            <button class="btn btn-sm" onclick="genCopyTrainingTabContent()">Copiar</button>
+          </div>
+          <pre id="training-tab-pre" style="font-size:11px;background:#f5f5f5;padding:12px;border-radius:8px;white-space:pre-wrap;word-break:break-all;border:1px solid var(--border);"></pre>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- === MODALS === -->
+
+  <!-- Gold Amplifier Modal -->
+  <div class="modal-overlay" id="modal-gold-amplifier">
+    <div class="modal">
+      <h3>Gold Amplifier (Gemini Flash)</h3>
+      <p style="font-size:12px;color:var(--text-light);margin-bottom:12px;">
+        Genera conversaciones TC de alta calidad basadas en tus 25 gold + preguntas reales.
+        Cada ejecucion produce combinaciones unicas de escenarios, personalidades y preguntas.
+      </p>
+      <label>Cantidad de conversaciones</label>
+      <input type="number" id="gen-gold-count" value="400" min="10" max="2000">
+      <label>Archivo gold (vacio = auto-detectar)</label>
+      <input type="text" id="gen-gold-file" placeholder="(auto: golden_qwen_mariana.jsonl)">
+      <label>Archivo salida</label>
+      <input type="text" id="gen-gold-output" placeholder="(auto-generado)">
+      <label>Pausa entre llamadas (s)</label>
+      <input type="number" id="gen-gold-pause" value="1.5" min="0.5" max="10" step="0.5">
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('gold-amplifier')">Cancelar</button>
+        <button class="btn-modal btn-submit" style="background:#d97706;" onclick="genLaunchGoldAmplifier()">Generar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Merge & Evaluate Modal -->
+  <div class="modal-overlay" id="modal-merge-evaluate">
+    <div class="modal">
+      <h3>Merge &amp; Evaluate (Gemini 3 + 2.5 Flash)</h3>
+      <p style="font-size:12px;color:var(--text-light);margin-bottom:12px;">
+        Fusiona TODOS los datasets JSONL, evalua calidad con Gemini 3 Flash y verifica production-readiness con Gemini 2.5 Flash.
+        Produce archivos train.jsonl + eval.jsonl listos para fine-tuning.
+      </p>
+      <p style="font-size:11px;color:#e65100;margin-bottom:12px;">
+        ⚠ Requiere API key de Gemini
+      </p>
+      <label>Umbral Evaluacion - Gemini 3 Flash (1-10)</label>
+      <input type="number" id="gen-merge-threshold-sonnet" value="7.5" min="1" max="10" step="0.5">
+      <label>Umbral Verificacion - Gemini 2.5 Flash (1-10)</label>
+      <input type="number" id="gen-merge-threshold-gemini" value="8.0" min="1" max="10" step="0.5">
+      <label>Eval split %</label>
+      <input type="number" id="gen-merge-eval-split" value="10" min="1" max="50" step="1">
+      <label style="display:flex;align-items:center;gap:8px;margin:8px 0;">
+        <input type="checkbox" id="gen-merge-only-tc" style="width:auto;">
+        Solo conversaciones con Tool Calling
+      </label>
+      <label>Excluir patrones (separados por coma, opcional)</label>
+      <input type="text" id="gen-merge-exclude" placeholder="ej: backup,test,old">
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('merge-evaluate')">Cancelar</button>
+        <button class="btn-modal btn-submit" style="background:#00897b;" onclick="genLaunchMergeEvaluate()">Merge &amp; Evaluate</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Training Modal -->
+  <div class="modal-overlay" id="modal-training">
+    <div class="modal" style="max-width:640px;">
+      <h3 style="color:#7b1fa2;">Training - Fine-tuning Qwen3-14B</h3>
+      <p style="font-size:12px;color:var(--text-light);margin-bottom:12px;">
+        Genera dataset de entrenamiento (25 escenarios, sin LLM) y consulta el system prompt y script de fine-tuning para vast.ai.
+      </p>
+
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <button class="btn-modal btn-submit" style="background:#7b1fa2;flex:1;" onclick="genLaunchTrainingDataset()">Generar Dataset</button>
+        <button class="btn-modal btn-submit" style="background:#5e35b1;flex:1;" onclick="genShowTrainingPrompt()">Ver System Prompt</button>
+        <button class="btn-modal btn-submit" style="background:#4527a0;flex:1;" onclick="genShowTrainingScript()">Ver Script vast.ai</button>
+      </div>
+
+      <div style="border-top:1px solid var(--border);padding-top:12px;">
+        <label>Archivo de salida del dataset</label>
+        <input type="text" id="gen-training-filename" placeholder="(auto-generado)">
+        <label>Semilla</label>
+        <input type="number" id="gen-training-seed" value="42" min="1">
+      </div>
+
+      <div id="training-content-area" style="margin-top:12px;max-height:300px;overflow:auto;display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <strong id="training-content-title" style="font-size:13px;"></strong>
+          <button class="btn btn-sm" onclick="genCopyTrainingContent()">Copiar</button>
+        </div>
+        <pre id="training-content-pre" style="font-size:11px;background:#f5f5f5;padding:12px;border-radius:8px;white-space:pre-wrap;word-break:break-all;border:1px solid var(--border);"></pre>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('training')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="modal-settings">
+    <div class="modal">
+      <h3>Configuracion API Keys</h3>
+      <label>Anthropic API Key <span class="key-indicator" id="key-ind-anthropic"></span></label>
+      <input type="password" id="gen-anthropic-key" placeholder="sk-ant-...">
+      <label>Gemini API Key <span class="key-indicator" id="key-ind-gemini"></span></label>
+      <input type="password" id="gen-gemini-key" placeholder="AI...">
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('settings')">Cerrar</button>
+        <button class="btn-modal btn-submit" onclick="genSaveKeys()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Jobs Modal -->
+  <div class="modal-overlay" id="modal-jobs">
+    <div class="modal" style="max-width:640px;">
+      <h3>Jobs <button class="btn-modal btn-cancel" style="float:right;padding:4px 12px;" onclick="genCloseModal('jobs')">X</button></h3>
+      <div class="jobs-list" id="gen-jobs-list"><div class="ds-empty-state">Sin jobs recientes</div></div>
+    </div>
+  </div>
+
+  <!-- Template Gen Modal -->
+  <div class="modal-overlay" id="modal-template">
+    <div class="modal">
+      <h3>Generar por Plantillas</h3>
+      <label>Nombre archivo salida</label>
+      <input type="text" id="gen-tpl-filename" value="plantillas.jsonl">
+      <label>Cantidad total (vacio = default ~160)</label>
+      <input type="number" id="gen-tpl-count" placeholder="160" min="10" max="2000">
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('template')">Cancelar</button>
+        <button class="btn-modal btn-submit" onclick="genLaunchTemplate()">Generar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Synthetic Gen Modal -->
+  <div class="modal-overlay" id="modal-synthetic">
+    <div class="modal">
+      <h3>Generar Sintetico (Claude)</h3>
+      <label>Cantidad</label>
+      <input type="number" id="gen-syn-count" value="100" min="10" max="1000">
+      <label>Modelo</label>
+      <select id="gen-syn-model">
+        <option value="claude-haiku-4-5-20251001">Haiku 4.5 (rapido/barato)</option>
+        <option value="claude-sonnet-4-5-20250929">Sonnet 4.5 (mejor calidad)</option>
+      </select>
+      <label>Archivo salida</label>
+      <input type="text" id="gen-syn-filename" value="sinteticos.jsonl">
+      <label>Pausa entre llamadas (s)</label>
+      <input type="number" id="gen-syn-pause" value="0.3" min="0.1" max="10" step="0.1">
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('synthetic')">Cancelar</button>
+        <button class="btn-modal btn-submit" onclick="genLaunchSynthetic()">Generar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Curate Modal -->
+  <div class="modal-overlay" id="modal-curate">
+    <div class="modal">
+      <h3>Curar Dataset (Gemini)</h3>
+      <label>Archivo sintetico (JSONL)</label>
+      <input type="text" id="gen-cur-synthetic" placeholder="/ruta/sinteticos.jsonl">
+      <label>Archivo referencia (JSONL/CSV)</label>
+      <input type="text" id="gen-cur-reference" placeholder="/ruta/reales.jsonl">
+      <label>Umbral minimo (1-10)</label>
+      <input type="number" id="gen-cur-threshold" value="6" min="1" max="10">
+      <label>
+        <input type="checkbox" id="gen-cur-only-eval"> Solo evaluar (no mejorar)
+      </label>
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('curate')">Cancelar</button>
+        <button class="btn-modal btn-submit" onclick="genLaunchCurate()">Curar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pipeline Modal -->
+  <div class="modal-overlay" id="modal-pipeline">
+    <div class="modal">
+      <h3>Pipeline Tool Calling (Gemini)</h3>
+      <label>Etapas</label>
+      <select id="gen-pip-stages">
+        <option value="todas">Todas (1+2+3)</option>
+        <option value="1">Solo Etapa 1 (calidad)</option>
+        <option value="2">Solo Etapa 2 (masivo)</option>
+        <option value="3">Solo Etapa 3 (evaluar)</option>
+      </select>
+      <label>Cantidad E1</label>
+      <input type="number" id="gen-pip-e1" value="40" min="5" max="200">
+      <label>Cantidad E2</label>
+      <input type="number" id="gen-pip-e2" value="400" min="10" max="2000">
+      <label>Umbral E3</label>
+      <input type="number" id="gen-pip-threshold" value="7.0" min="1" max="10" step="0.5">
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('pipeline')">Cancelar</button>
+        <button class="btn-modal btn-submit" onclick="genLaunchPipeline()">Ejecutar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analyze Tools Modal -->
+  <div class="modal-overlay" id="modal-analyze">
+    <div class="modal">
+      <h3>Analizar Tool Patterns</h3>
+      <p style="font-size:13px;color:var(--text-light);margin-bottom:12px;">Selecciona archivos del panel izquierdo, o ingresa rutas:</p>
+      <label>Archivos JSONL (uno por linea)</label>
+      <textarea id="gen-analyze-files" placeholder="/ruta/archivo1.jsonl&#10;/ruta/archivo2.jsonl"></textarea>
+      <button class="btn-modal btn-cancel" style="margin-top:8px;font-size:12px;" onclick="genFillAnalyzeFromSelected()">Usar archivo seleccionado</button>
+      <div id="gen-analyze-result" style="margin-top:12px;"></div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('analyze')">Cerrar</button>
+        <button class="btn-modal btn-submit" onclick="genLaunchAnalyze()">Analizar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Update Prompt Modal -->
+  <div class="modal-overlay" id="modal-update-prompt">
+    <div class="modal">
+      <h3>Actualizar System Prompt</h3>
+      <label>Archivos target (uno por linea)</label>
+      <textarea id="gen-up-files" placeholder="/ruta/archivo.jsonl"></textarea>
+      <label>Nuevo system prompt</label>
+      <textarea id="gen-up-prompt" style="min-height:150px;"></textarea>
+      <button class="btn-modal btn-cancel" style="margin-top:4px;font-size:12px;" onclick="genLoadCurrentPrompt()">Cargar prompt actual</button>
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('update-prompt')">Cancelar</button>
+        <button class="btn-modal btn-submit" onclick="genLaunchUpdatePrompt()">Actualizar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload JSONL/CSV Modal -->
+  <div class="modal-overlay" id="modal-upload">
+    <div class="modal">
+      <h3>Subir Archivo JSONL / CSV</h3>
+      <div id="upload-drop-zone" style="border:2px dashed var(--border);border-radius:8px;padding:32px 16px;text-align:center;cursor:pointer;margin-bottom:12px;transition:border-color .2s;"
+           ondragover="event.preventDefault();this.style.borderColor='var(--primary)'"
+           ondragleave="this.style.borderColor='var(--border)'"
+           ondrop="event.preventDefault();this.style.borderColor='var(--border)';handleUploadDrop(event)"
+           onclick="document.getElementById('upload-file-input').click()">
+        <div style="font-size:32px;margin-bottom:8px;color:var(--text-light);">&#128194;</div>
+        <div style="font-size:13px;color:var(--text-light);">Arrastra un archivo .jsonl o .csv aqui o haz clic para seleccionar</div>
+      </div>
+      <input type="file" id="upload-file-input" accept=".jsonl,.csv" style="display:none;" onchange="handleUploadSelect(event)">
+      <div id="upload-file-info" style="font-size:12px;color:var(--text-light);margin-bottom:8px;display:none;">
+        <strong id="upload-file-name"></strong> — <span id="upload-file-size"></span>
+        <span id="upload-csv-hint" style="display:none;color:#d97706;"> (se convertira a JSONL)</span>
+      </div>
+      <div id="upload-result" style="font-size:12px;margin-top:8px;"></div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('upload')">Cerrar</button>
+        <button class="btn-modal btn-submit" id="upload-submit-btn" onclick="uploadDataset()" disabled>Subir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Merge Archivos Modal -->
+  <div class="modal-overlay" id="modal-merge">
+    <div class="modal">
+      <h3>Merge Archivos JSONL</h3>
+      <p style="font-size:12px;color:var(--text-light);margin-bottom:12px;">
+        Selecciona archivos con los checkboxes del panel izquierdo y luego abre este modal.
+      </p>
+      <label>Archivos seleccionados:</label>
+      <div id="merge-file-list" style="max-height:150px;overflow-y:auto;background:#f5f5f5;border-radius:6px;padding:8px;font-size:12px;margin-bottom:8px;">
+        <em>Ninguno</em>
+      </div>
+      <label>Nombre del archivo de salida</label>
+      <input type="text" id="merge-output-name" placeholder="merged_output.jsonl">
+      <div id="merge-result" style="font-size:12px;margin-top:8px;"></div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('merge')">Cancelar</button>
+        <button class="btn-modal btn-submit" id="merge-submit-btn" onclick="mergeDatasets()">Merge</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auto-tag TC Modal -->
+  <div class="modal-overlay" id="modal-auto-tag">
+    <div class="modal" style="max-width:640px;">
+      <h3>Auto-tag Tool Calling</h3>
+      <p style="font-size:12px;color:var(--text-light);margin-bottom:12px;">
+        Analiza todos los archivos JSONL y detecta cuales conversaciones usan Tool Calling.
+      </p>
+      <div id="auto-tag-result">
+        <div class="ds-empty-state">Ejecutando analisis...</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('auto-tag')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- File Metadata Modal -->
+  <div class="modal-overlay" id="modal-file-metadata">
+    <div class="modal">
+      <h3>Metadatos del Archivo</h3>
+      <p id="meta-file-name" style="font-size:12px;color:var(--text-light);margin-bottom:12px;word-break:break-all;"></p>
+      <label>Version</label>
+      <input type="text" id="meta-version" placeholder="ej: v5, v5.1, beta">
+      <label>Tags (separados por coma)</label>
+      <input type="text" id="meta-tags" placeholder="ej: gold, production, tc-only">
+      <label>Notas</label>
+      <textarea id="meta-notes" placeholder="Notas sobre este archivo..."></textarea>
+      <div id="meta-save-status" style="font-size:12px;margin-top:8px;"></div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="genCloseModal('file-metadata')">Cancelar</button>
+        <button class="btn-modal btn-submit" onclick="dsSaveFileMetadata()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- Prompts View                                                  -->
+  <!-- ============================================================ -->
+  <div id="prompts-view" class="view prompts-view" style="flex-direction:column;">
+
+    <!-- Sub-tabs -->
+    <div class="pm-subtabs">
+      <button class="pm-subtab active" onclick="pmSwitchTab('editor')">Editor</button>
+      <button class="pm-subtab" onclick="pmSwitchTab('stats')">Estadísticas</button>
+      <button class="pm-subtab" onclick="pmSwitchTab('conversations')">Conversaciones</button>
+    </div>
+
+    <!-- TAB: Editor -->
+    <div class="pm-tab-panel active" id="pm-panel-editor">
+      <div class="pm-editor-layout">
+        <!-- Lista de prompts -->
+        <div class="pm-list-panel">
+          <div class="pm-list-header">
+            <span style="font-weight:600;">Prompts</span>
+            <button class="btn-wf" onclick="pmNewPrompt()" style="font-size:12px;padding:4px 10px;">+ Nuevo</button>
+          </div>
+          <div id="pm-prompt-list" class="pm-prompt-list"></div>
+        </div>
+        <!-- Editor -->
+        <div class="pm-edit-panel">
+          <div id="pm-editor-empty" class="pm-editor-empty">
+            <p style="color:var(--text-secondary);">Selecciona un prompt o crea uno nuevo</p>
+          </div>
+          <div id="pm-editor-form" class="pm-editor-form" style="display:none;">
+            <div class="pm-form-row">
+              <label>Nombre</label>
+              <input type="text" id="pm-edit-name" placeholder="ej: Mariana Discovery">
+            </div>
+            <div class="pm-form-row">
+              <label>Descripción</label>
+              <input type="text" id="pm-edit-desc" placeholder="Descripción opcional">
+            </div>
+            <div class="pm-form-row" style="flex:1;display:flex;flex-direction:column;">
+              <label>Prompt Text <span id="pm-edit-version" style="font-size:11px;color:var(--text-secondary);"></span></label>
+              <textarea id="pm-edit-text" class="pm-textarea" placeholder="Texto del system prompt (sin el bloque <tools>, se agrega dinámicamente)"></textarea>
+            </div>
+            <div class="pm-form-actions">
+              <button class="btn-wf pm-btn-save" onclick="pmSave()">Guardar</button>
+              <button class="btn-wf pm-btn-activate" onclick="pmActivate()">Activar</button>
+              <button class="btn-wf pm-btn-delete" onclick="pmDelete()">Eliminar</button>
+              <span id="pm-save-status" style="font-size:12px;margin-left:12px;"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Estadísticas -->
+    <div class="pm-tab-panel" id="pm-panel-stats">
+      <div id="pm-stats-body" class="pm-stats-body">
+        <p style="color:var(--text-secondary);padding:24px;">Cargando estadísticas...</p>
+      </div>
+    </div>
+
+    <!-- TAB: Conversaciones -->
+    <div class="pm-tab-panel" id="pm-panel-conversations">
+      <div class="pm-conv-layout">
+        <!-- Selector de prompt -->
+        <div class="pm-conv-sidebar">
+          <div class="pm-list-header"><span style="font-weight:600;">Prompt</span></div>
+          <div id="pm-conv-prompt-list" class="pm-prompt-list"></div>
+        </div>
+        <!-- Lista de conversaciones -->
+        <div class="pm-conv-list-panel">
+          <div class="pm-list-header">
+            <span style="font-weight:600;">Conversaciones</span>
+            <span id="pm-conv-count" style="font-size:12px;color:var(--text-secondary);"></span>
+          </div>
+          <div id="pm-conv-list" class="pm-conv-list"></div>
+          <div id="pm-conv-pagination" class="pm-conv-pagination"></div>
+        </div>
+        <!-- Detalle de conversación -->
+        <div class="pm-conv-detail-panel">
+          <div id="pm-conv-detail" class="pm-conv-detail">
+            <p style="color:var(--text-secondary);padding:16px;">Selecciona una conversación</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+// ===== AUTH =====
+function getAuthToken() { return localStorage.getItem('trefa_auth_token'); }
+
+async function doLogin() {
+  const user = document.getElementById('login-user').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  const errEl = document.getElementById('login-error');
+  errEl.textContent = '';
+  if (!user || !pass) { errEl.textContent = 'Ingresa usuario y contrasena'; return; }
+  try {
+    const res = await _originalFetch(window.location.origin + '/api/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({username: user, password: pass})
+    });
+    if (!res.ok) { errEl.textContent = 'Credenciales invalidas'; return; }
+    const data = await res.json();
+    localStorage.setItem('trefa_auth_token', data.token);
+    document.getElementById('login-screen').classList.add('hidden');
+  } catch (e) {
+    errEl.textContent = 'Error de conexion';
+  }
+}
+
+function doLogout() {
+  localStorage.removeItem('trefa_auth_token');
+  location.reload();
+}
+
+async function checkAuth() {
+  const token = getAuthToken();
+  if (!token) return; // no token — show login
+  try {
+    const res = await fetch(window.location.origin + '/v1/datasets/jobs?limit=1');
+    if (res.ok) {
+      document.getElementById('login-screen').classList.add('hidden');
+    } else {
+      localStorage.removeItem('trefa_auth_token');
+    }
+  } catch (e) {
+    localStorage.removeItem('trefa_auth_token');
+  }
+}
+
+// Global fetch interceptor — inyecta X-Auth-Token en todas las requests
+const _originalFetch = window.fetch.bind(window);
+window.fetch = function(url, opts = {}) {
+  const token = getAuthToken();
+  if (token) {
+    opts.headers = opts.headers || {};
+    if (opts.headers instanceof Headers) {
+      opts.headers.set('X-Auth-Token', token);
+    } else {
+      opts.headers['X-Auth-Token'] = token;
+    }
+  }
+  return _originalFetch(url, opts).then(res => {
+    if (res.status === 401 && token) {
+      localStorage.removeItem('trefa_auth_token');
+      location.reload();
+    }
+    return res;
+  });
+};
+
+// Check auth on load
+checkAuth();
+
+// ===== SAFE FETCH (ngrok-compatible) =====
+const NGROK_HEADERS = { 'ngrok-skip-browser-warning': 'true' };
+
+async function safeFetch(url, opts = {}) {
+  opts.headers = opts.headers || {};
+  if (!(opts.headers instanceof Headers)) {
+    Object.assign(opts.headers, NGROK_HEADERS);
+  }
+  return fetch(url, opts);
+}
+
+async function safeJson(res) {
+  const text = await res.text();
+  if (!text || text.trim() === '') {
+    throw new Error('Respuesta vacia del servidor');
+  }
+  if (text.trim().startsWith('<!') || text.trim().startsWith('<html')) {
+    throw new Error('El servidor devolvio HTML en vez de JSON (posible interstitial de ngrok). Recarga la pagina.');
+  }
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    throw new Error('Respuesta no es JSON valido: ' + text.substring(0, 100));
+  }
+}
+
+const API = window.location.origin;
+let sessionId = null;
+let toolCallsLog = [];
+let messageCount = 0;
+
+// ===== VIEW SWITCHING =====
+function switchView(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(view + '-view').classList.add('active');
+  event.target.classList.add('active');
+  if (view === 'dashboard') {
+    loadHealth();
+    loadAnalytics();
+    loadTools();
+  } else if (view === 'datasets') {
+    dsLoadFiles();
+  } else if (view === 'prompts') {
+    pmLoadPrompts();
+  }
+}
+
+// ===== CHAT MODE =====
+function switchChatMode(mode) {
+  const chatView = document.getElementById('chat-view');
+  chatView.classList.remove('mode-widget', 'mode-whatsapp', 'mode-webapp');
+  chatView.classList.add('mode-' + mode);
+  localStorage.setItem('trefa_chat_mode', mode);
+}
+
+// Restore saved mode on load
+(function() {
+  const saved = localStorage.getItem('trefa_chat_mode') || 'whatsapp';
+  const sel = document.getElementById('chat-mode-selector');
+  if (sel) sel.value = saved;
+  switchChatMode(saved);
+})();
+
+function getCurrentChatMode() {
+  return localStorage.getItem('trefa_chat_mode') || 'whatsapp';
+}
+
+function formatWhatsApp(text) {
+  // First escape HTML for XSS safety
+  let safe = escapeHtml(text);
+  // Code blocks: ```code```
+  safe = safe.replace(/```([\s\S]*?)```/g, '<code class="wa-mono">$1</code>');
+  // Inline code: `code`
+  safe = safe.replace(/`([^`]+)`/g, '<code class="wa-mono-inline">$1</code>');
+  // Bold: *text*
+  safe = safe.replace(/\*([^\*]+)\*/g, '<strong>$1</strong>');
+  // Italic: _text_
+  safe = safe.replace(/\b_([^_]+)_\b/g, '<em>$1</em>');
+  // Strikethrough: ~text~
+  safe = safe.replace(/~([^~]+)~/g, '<del>$1</del>');
+  // Newlines
+  safe = safe.replace(/\n/g, '<br>');
+  return safe;
+}
+
+function detectToolLeak(content) {
+  const patterns = [
+    /<tool_call>[\s\S]*?<\/tool_call>/gi,
+    /<tool_response>[\s\S]*?<\/tool_response>/gi,
+    /<tools>[\s\S]*?<\/tools>/gi,
+    /<function_call>[\s\S]*?<\/function_call>/gi,
+    /<\|tool_call\|>[\s\S]*?(<\|\/tool_call\|>|$)/gi,
+  ];
+  const singlePatterns = [
+    /<tool_call>/i, /<\/tool_call>/i,
+    /<tool_response>/i, /<\/tool_response>/i,
+    /<tools>/i, /<\/tools>/i,
+    /<function_call>/i, /<\/function_call>/i,
+    /<\|tool_call\|>/i,
+  ];
+  let hasLeak = false;
+  let cleanContent = content;
+  // Check for any pattern match
+  for (const p of singlePatterns) {
+    if (p.test(content)) { hasLeak = true; break; }
+  }
+  if (hasLeak) {
+    // Remove matched blocks
+    for (const p of patterns) {
+      cleanContent = cleanContent.replace(p, '');
+    }
+    // Remove orphan tags
+    cleanContent = cleanContent.replace(/<\/?tool_call>/gi, '');
+    cleanContent = cleanContent.replace(/<\/?tool_response>/gi, '');
+    cleanContent = cleanContent.replace(/<\/?tools>/gi, '');
+    cleanContent = cleanContent.replace(/<\/?function_call>/gi, '');
+    cleanContent = cleanContent.replace(/<\|\/? *tool_call\|>/gi, '');
+    cleanContent = cleanContent.trim();
+  }
+  return { hasLeak, cleanContent };
+}
+
+function getTimeString() {
+  const now = new Date();
+  return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+}
+
+// ===== CHAT =====
+function addMessage(role, content, tools) {
+  const area = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = `message ${role}`;
+  const mode = getCurrentChatMode();
+
+  let displayContent = content;
+  let hasLeak = false;
+
+  // Detect tool leaks in assistant responses
+  if (role === 'assistant') {
+    const leak = detectToolLeak(content);
+    hasLeak = leak.hasLeak;
+    displayContent = leak.cleanContent || content;
+  }
+
+  // Format content based on mode
+  const formatted = (mode === 'whatsapp')
+    ? formatWhatsApp(displayContent)
+    : escapeHtml(displayContent);
+
+  const timeStr = getTimeString();
+  let html = '';
+
+  if (role === 'assistant') {
+    html += '<span class="wa-avatar">M</span>';
+    html += '<div class="bubble-wrap">';
+  }
+
+  if (mode === 'whatsapp') {
+    if (role === 'assistant') {
+      html += `<div class="bubble">${formatted}<span class="wa-time">${timeStr}</span></div>`;
+    } else {
+      html += `<div class="bubble">${formatted}<span class="wa-time">${timeStr}<span class="wa-checks"> ✓✓</span></span></div>`;
+    }
+  } else {
+    html += `<div class="bubble">${formatted}</div>`;
+    html += `<div class="meta">${timeStr}</div>`;
+  }
+
+  if (tools && tools.length > 0) {
+    html += '<div class="tool-badges">';
+    tools.forEach((tc, i) => {
+      const cls = tc.result && tc.result.error ? 'tool-badge error' : 'tool-badge';
+      html += `<span class="${cls}" onclick="showToolDetail(${toolCallsLog.length - tools.length + i})">${tc.name}</span>`;
+    });
+    html += '</div>';
+  }
+
+  if (role === 'assistant') {
+    html += '</div>'; // close bubble-wrap
+  }
+
+  div.innerHTML = html;
+  area.appendChild(div);
+
+  // Show tool leak banner
+  if (hasLeak) {
+    const banner = document.createElement('div');
+    banner.className = 'tool-leak-banner';
+    banner.innerHTML = `
+      <span class="leak-icon">⚠️</span>
+      <span class="leak-text">Se detecto contenido interno del modelo (tool_call/tools). Fue removido automaticamente.</span>
+      <button class="leak-dismiss" onclick="this.parentElement.remove()">OK</button>
+    `;
+    area.appendChild(banner);
+  }
+
+  area.scrollTop = area.scrollHeight;
+}
+
+function showTyping(show) {
+  let el = document.getElementById('typing-indicator');
+  if (!el && show) {
+    const mode = getCurrentChatMode();
+    el = document.createElement('div');
+    el.id = 'typing-indicator';
+    if (mode === 'whatsapp') {
+      el.className = 'message assistant';
+      el.innerHTML = '<span class="wa-avatar">M</span><div class="bubble-wrap"><div class="typing show"><span class="typing-dots"><span></span><span></span><span></span></span> Mariana esta escribiendo...</div></div>';
+    } else {
+      el.className = 'typing show';
+      el.innerHTML = '<span class="typing-dots"><span></span><span></span><span></span></span> Mariana esta escribiendo...';
+    }
+    document.getElementById('messages').appendChild(el);
+    el.parentElement.scrollTop = el.parentElement.scrollHeight;
+  } else if (el && !show) {
+    el.remove();
+  }
+}
+
+async function sendMessage() {
+  const input = document.getElementById('msg-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  autoResize(input);
+  document.getElementById('send-btn').disabled = true;
+
+  addMessage('user', text);
+  showTyping(true);
+  messageCount++;
+
+  const body = { message: text };
+  if (sessionId) body.session_id = sessionId;
+
+  // Update actions panel: Request tab (pre-request)
+  updateRequestPanel(body, null);
+  setActionsStatus('processing', 'Procesando...');
+
+  const t0 = performance.now();
+
+  try {
+    const res = await fetch(`${API}/v1/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    const latencyMs = Math.round(performance.now() - t0);
+    showTyping(false);
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      addMessage('assistant', `Error: ${err.detail || res.statusText}`);
+      setActionsStatus('idle', 'Error en solicitud');
+      return;
+    }
+
+    const data = await res.json();
+    sessionId = data.session_id;
+    document.getElementById('session-badge').textContent = sessionId.slice(0, 8) + '...';
+
+    // Update actions panel: Request tab (post-response)
+    updateRequestPanel(body, data, latencyMs);
+
+    // Log tool calls + render cards in actions panel
+    if (data.tool_calls_executed && data.tool_calls_executed.length > 0) {
+      data.tool_calls_executed.forEach(tc => {
+        toolCallsLog.push(tc);
+        addToolCallCard(tc);
+      });
+    }
+
+    setActionsStatus('done', `Completado (${latencyMs}ms)`);
+
+    addMessage('assistant', data.response, data.tool_calls_executed);
+
+    // Show rating bar after 3+ messages
+    if (messageCount >= 3) {
+      document.getElementById('rating-bar').classList.add('show');
+    }
+
+  } catch (e) {
+    showTyping(false);
+    addMessage('assistant', `Error de conexion: ${e.message}`);
+    setActionsStatus('idle', 'Error de conexion');
+  } finally {
+    document.getElementById('send-btn').disabled = false;
+    input.focus();
+  }
+}
+
+function newSession() {
+  sessionId = null;
+  toolCallsLog = [];
+  messageCount = 0;
+  document.getElementById('messages').innerHTML = `
+    <div class="message assistant">
+      <span class="wa-avatar">M</span>
+      <div class="bubble-wrap">
+        <div class="bubble">Hola, soy Mariana del equipo TREFA. Con mucho gusto te apoyo a encontrar tu auto ideal. Que tipo de vehiculo buscas?</div>
+      </div>
+    </div>`;
+  document.getElementById('session-badge').textContent = 'Sin sesion';
+  clearActionsPanel();
+  document.getElementById('rating-bar').classList.remove('show');
+  document.getElementById('rating-status').textContent = '';
+  document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
+}
+
+// ===== ACTIONS PANEL =====
+function switchActionsTab(tab) {
+  document.querySelectorAll('.actions-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.actions-tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelector(`.actions-tab[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+function toggleActionsMobile() {
+  document.getElementById('actions-panel').classList.toggle('mobile-open');
+}
+
+function setActionsStatus(state, text) {
+  const el = document.getElementById('actions-status');
+  if (!el) return;
+  const dotClass = state === 'processing' ? 'processing' : state === 'done' ? 'done' : 'idle';
+  el.innerHTML = `<span class="status-dot ${dotClass}"></span> ${escapeHtml(text)}`;
+}
+
+function addToolCallCard(tc) {
+  const list = document.getElementById('tool-calls-list');
+  if (!list) return;
+  const idx = toolCallsLog.length - 1;
+  const card = document.createElement('div');
+  card.className = 'tool-call-card';
+  card.id = 'tc-card-' + idx;
+  const durationText = tc.duration_ms !== undefined ? `${tc.duration_ms}ms` : '';
+  card.innerHTML = `
+    <div class="tool-call-card-header" onclick="this.parentElement.classList.toggle('expanded')">
+      <span class="tool-call-name">${escapeHtml(tc.name)}</span>
+      <span class="tool-call-duration">${durationText}</span>
+      <span class="tool-call-expand">&#9654;</span>
+    </div>
+    <div class="tool-call-card-body">
+      <div class="tool-call-section">
+        <h5>Argumentos</h5>
+        <pre>${escapeHtml(JSON.stringify(tc.arguments, null, 2))}</pre>
+      </div>
+      ${tc.result ? `<div class="tool-call-section"><h5>Resultado</h5><pre>${escapeHtml(JSON.stringify(tc.result, null, 2).slice(0, 2000))}</pre></div>` : ''}
+    </div>
+  `;
+  list.appendChild(card);
+}
+
+function updateRequestPanel(request, response, latencyMs) {
+  const reqEl = document.getElementById('req-details');
+  const resEl = document.getElementById('res-details');
+  const metricsEl = document.getElementById('req-metrics');
+
+  if (reqEl) reqEl.textContent = JSON.stringify(request, null, 2);
+
+  if (response) {
+    if (resEl) resEl.textContent = JSON.stringify(response, null, 2).slice(0, 3000);
+    if (metricsEl) {
+      const usage = response.usage || {};
+      const costEst = response.cost_estimate || {};
+      const costStr = costEst.estimated_openai_cost_usd != null
+        ? `$${costEst.estimated_openai_cost_usd.toFixed(4)}`
+        : '--';
+      metricsEl.innerHTML = `
+        <span class="metric"><span class="metric-label">Latencia</span><span class="metric-value">${latencyMs || '--'}ms</span></span>
+        <span class="metric"><span class="metric-label">Iteraciones</span><span class="metric-value">${response.iterations || '--'}</span></span>
+        <span class="metric"><span class="metric-label">Tools</span><span class="metric-value">${(response.tool_calls_executed || []).length}</span></span>
+        <span class="metric"><span class="metric-label">Tokens</span><span class="metric-value">${usage.total_tokens || '--'}</span></span>
+        <span class="metric"><span class="metric-label">Costo OpenAI</span><span class="metric-value" style="color:#dc2626;">${costStr}</span></span>
+      `;
+    }
+  } else {
+    if (resEl) resEl.textContent = 'Esperando respuesta...';
+    if (metricsEl) metricsEl.innerHTML = '--';
+  }
+}
+
+function clearActionsPanel() {
+  document.getElementById('tool-calls-list').innerHTML = '';
+  document.getElementById('req-details').textContent = 'Sin solicitud activa';
+  document.getElementById('res-details').textContent = 'Sin respuesta';
+  document.getElementById('req-metrics').innerHTML = '--';
+  setActionsStatus('idle', 'Esperando mensaje...');
+}
+
+function showToolDetail(idx) {
+  const tc = toolCallsLog[idx];
+  if (!tc) return;
+  // Scroll to card in actions panel and expand it
+  switchActionsTab('tools');
+  const card = document.getElementById('tc-card-' + idx);
+  if (card) {
+    card.classList.add('expanded');
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+// ===== RATING =====
+document.getElementById('stars').addEventListener('click', async (e) => {
+  if (!e.target.classList.contains('star')) return;
+  if (!sessionId) return;
+
+  const rating = parseInt(e.target.dataset.v);
+  document.querySelectorAll('.star').forEach(s => {
+    s.classList.toggle('active', parseInt(s.dataset.v) <= rating);
+  });
+
+  try {
+    await fetch(`${API}/v1/feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sessionId, rating }),
+    });
+    document.getElementById('rating-status').textContent = 'Gracias por tu feedback!';
+  } catch (e) {
+    document.getElementById('rating-status').textContent = 'Error al enviar';
+  }
+});
+
+// ===== DASHBOARD =====
+async function loadHealth() {
+  const el = document.getElementById('health-body');
+  try {
+    const res = await fetch(`${API}/health`);
+    const d = await res.json();
+    el.innerHTML = `
+      <div class="status-row">
+        <span><span class="status-dot ${d.vllm_backend === 'healthy' ? 'healthy' : d.vllm_backend === 'unreachable' ? 'unhealthy' : 'unknown'}"></span>vLLM Backend</span>
+        <span>${d.vllm_backend}</span>
+      </div>
+      ${d.vllm_url ? `<div class="status-row"><span>URL vLLM</span><span style="font-family:monospace;font-size:12px;">${d.vllm_url}</span></div>` : ''}
+      <div class="status-row">
+        <span><span class="status-dot ${d.mcp_server === 'healthy' ? 'healthy' : d.mcp_server === 'unreachable' ? 'unhealthy' : 'unknown'}"></span>MCP Server</span>
+        <span>${d.mcp_server}</span>
+      </div>
+      <div class="status-row">
+        <span>Modelo cargado</span>
+        <span>${d.model_loaded ? 'Si' : 'No'}</span>
+      </div>
+      <div class="status-row">
+        <span>Tools cargadas</span>
+        <span>${d.tools_loaded}</span>
+      </div>
+      <div class="status-row">
+        <span>Sesiones activas</span>
+        <span>${d.active_sessions}</span>
+      </div>
+    `;
+    // Mostrar URL actual de vLLM en la tarjeta GPU
+    const gpuCurrentEl = document.getElementById('gpu-vllm-current');
+    if (gpuCurrentEl) {
+      gpuCurrentEl.innerHTML = d.vllm_url
+        ? 'URL configurada actualmente: <code>' + d.vllm_url + '</code>'
+        : d.mode === 'no-inference' ? 'Modo sin vLLM (TREFA_VLLM_DISABLED=true)' : '';
+    }
+  } catch (e) {
+    el.innerHTML = `<p style="color:var(--error);font-size:13px;">Error: ${e.message}</p>`;
+  }
+}
+
+async function loadAnalytics() {
+  const el = document.getElementById('analytics-stats');
+  const chartEl = document.getElementById('tools-chart');
+  try {
+    const res = await fetch(`${API}/admin/analytics`);
+    const d = await res.json();
+    el.innerHTML = `
+      <div class="stat-grid">
+        <div class="stat-item">
+          <div class="stat-value">${d.total_chats || 0}</div>
+          <div class="stat-label">Chats totales</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">${((d.tool_calling_rate || 0) * 100).toFixed(0)}%</div>
+          <div class="stat-label">Tasa tool calling</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">${d.average_rating ? d.average_rating.toFixed(1) : '-'}</div>
+          <div class="stat-label">Rating promedio</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">${d.hallucination_flags || 0}</div>
+          <div class="stat-label">Alertas alucinacion</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">${d.chats_with_tools || 0}</div>
+          <div class="stat-label">Chats con tools</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">${d.avg_tool_latency_ms ? d.avg_tool_latency_ms.toFixed(0) + 'ms' : '-'}</div>
+          <div class="stat-label">Latencia promedio</div>
+        </div>
+      </div>
+    `;
+
+    // Top tools bar chart
+    const topTools = d.top_tools || [];
+    if (topTools.length === 0) {
+      chartEl.innerHTML = '<p style="color:var(--text-light);font-size:13px;">Sin datos aun. Envia mensajes al chat para ver estadisticas.</p>';
+    } else {
+      const maxCalls = Math.max(...topTools.map(t => t.calls), 1);
+      chartEl.innerHTML = '<div class="bar-chart">' + topTools.map(t => `
+        <div class="bar-row">
+          <span class="bar-label">${t.name}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${(t.calls / maxCalls * 100).toFixed(0)}%"></div></div>
+          <span class="bar-value">${t.calls}</span>
+        </div>
+      `).join('') + '</div>';
+    }
+
+    // Cost savings card
+    const costEl = document.getElementById('cost-stats');
+    const c = d.cost || {};
+    if (!c.total_conversations_tracked) {
+      costEl.innerHTML = '<p style="color:var(--text-light);font-size:13px;">Sin datos aun. Envia mensajes al chat para calcular ahorro.</p>';
+    } else {
+      const savings = c.net_savings_usd || 0;
+      const heroClass = savings >= 0 ? '' : ' negative';
+      const sign = savings >= 0 ? '+' : '';
+      costEl.innerHTML = `
+        <div class="cost-hero">
+          <div class="hero-value${heroClass}">${sign}$${Math.abs(savings).toFixed(2)} USD</div>
+          <div class="hero-label">Ahorro neto vs OpenAI</div>
+        </div>
+        <div class="cost-breakdown">
+          <div class="cost-col">
+            <div class="cost-val openai">$${(c.estimated_openai_cost_usd || 0).toFixed(2)}</div>
+            <div class="cost-lbl">Costo OpenAI</div>
+          </div>
+          <div class="cost-col">
+            <div class="cost-val gpu">$${(c.self_hosted_cost_usd || 0).toFixed(2)}</div>
+            <div class="cost-lbl">Costo GPU (${(c.uptime_hours || 0).toFixed(1)}h)</div>
+          </div>
+        </div>
+        <div class="cost-breakdown">
+          <div class="cost-col">
+            <div class="cost-val openai" style="font-size:18px;">$${(c.avg_openai_cost_per_chat || 0).toFixed(4)}</div>
+            <div class="cost-lbl">OpenAI / chat</div>
+          </div>
+          <div class="cost-col">
+            <div class="cost-val gpu" style="font-size:18px;">$${(c.avg_self_hosted_cost_per_chat || 0).toFixed(4)}</div>
+            <div class="cost-lbl">Self-hosted / chat</div>
+          </div>
+        </div>
+        <div class="cost-tokens">
+          <div class="cost-col">
+            <div class="cost-val">${(c.total_tokens || 0).toLocaleString()}</div>
+            <div class="cost-lbl">Tokens</div>
+          </div>
+          <div class="cost-col">
+            <div class="cost-val">${(c.avg_tokens_per_conversation || 0).toLocaleString()}</div>
+            <div class="cost-lbl">Tok / chat</div>
+          </div>
+          <div class="cost-col">
+            <div class="cost-val">${c.total_conversations_tracked}</div>
+            <div class="cost-lbl">Conversaciones</div>
+          </div>
+        </div>
+      `;
+    }
+  } catch (e) {
+    el.innerHTML = `<p style="color:var(--error);font-size:13px;">Error: ${e.message}</p>`;
+  }
+}
+
+async function loadTools() {
+  const el = document.getElementById('tools-list');
+  try {
+    const res = await fetch(`${API}/v1/tools`);
+    const d = await res.json();
+    const tools = d.tools || [];
+    if (tools.length === 0) {
+      el.innerHTML = '<p style="color:var(--text-light);font-size:13px;">No hay herramientas disponibles. Verifica que el MCP Server este corriendo.</p>';
+      return;
+    }
+    el.innerHTML = '<ul class="tool-list">' + tools.map((t, i) => `
+      <li class="tool-item">
+        <div>
+          <span class="tool-name">${t.name}</span>
+          <div style="font-size:12px;color:var(--text-light);margin-top:2px;">${t.description || ''}</div>
+          <span class="schema-toggle" onclick="this.nextElementSibling.classList.toggle('open')">Ver schema</span>
+          <div class="schema-content">
+            <pre style="font-size:11px;margin-top:4px;background:#f5f5f5;padding:8px;border-radius:6px;border:1px solid var(--border);overflow-x:auto;white-space:pre-wrap;">${JSON.stringify(t.inputSchema || {}, null, 2)}</pre>
+          </div>
+        </div>
+      </li>
+    `).join('') + '</ul>';
+  } catch (e) {
+    el.innerHTML = `<p style="color:var(--error);font-size:13px;">Error: ${e.message}</p>`;
+  }
+}
+
+// ===== GPU REMOTE CONNECTION =====
+(function prefillGPUInput() {
+  const saved = localStorage.getItem('trefa_gpu_url');
+  if (saved) {
+    const inp = document.getElementById('gpu-url-input');
+    if (inp) inp.value = saved;
+  }
+})();
+
+async function testGPUConnection() {
+  const input = document.getElementById('gpu-url-input');
+  const btn = document.getElementById('gpu-test-btn');
+  const resultDiv = document.getElementById('gpu-result');
+  const contentDiv = document.getElementById('gpu-result-content');
+  const url = input.value.trim();
+
+  if (!url) {
+    input.focus();
+    return;
+  }
+
+  // Mostrar spinner
+  resultDiv.classList.add('visible');
+  contentDiv.innerHTML = '<span class="gpu-spinner"></span> Verificando...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${API}/admin/vllm/test-connection`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': getAuthToken() },
+      body: JSON.stringify({ url }),
+    });
+    const d = await res.json();
+
+    if (d.connected) {
+      localStorage.setItem('trefa_gpu_url', url);
+      const modelsHtml = d.models.length > 0
+        ? '<div class="gpu-models-list">' + d.models.map(m => `<span class="gpu-model-chip">${m}</span>`).join('') + '</div>'
+        : '';
+      contentDiv.innerHTML = `
+        <div class="gpu-detail-grid">
+          <span class="gpu-status-badge ok">Conectado</span>
+          <div class="stat-item">
+            <div class="stat-value" style="font-size:18px;">${d.latency_ms}ms</div>
+            <div class="stat-label">Latencia</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" style="font-size:18px;">${d.models.length}</div>
+            <div class="stat-label">Modelos</div>
+          </div>
+        </div>
+        ${modelsHtml}
+        <button class="btn btn-primary" style="margin-top:10px;width:100%;" onclick="switchGPUBackend('${url.replace(/'/g, "\\'")}')">
+          Aplicar — Usar este backend
+        </button>
+      `;
+    } else {
+      contentDiv.innerHTML = `
+        <div class="gpu-detail-grid">
+          <span class="gpu-status-badge fail">Error</span>
+        </div>
+        <div class="gpu-error-msg">${d.error || 'Error desconocido'}</div>
+      `;
+    }
+  } catch (e) {
+    contentDiv.innerHTML = `
+      <div class="gpu-detail-grid">
+        <span class="gpu-status-badge fail">Error</span>
+      </div>
+      <div class="gpu-error-msg">${e.message}</div>
+    `;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function switchGPUBackend(url) {
+  const contentDiv = document.getElementById('gpu-result-content');
+  contentDiv.innerHTML = '<span class="gpu-spinner"></span> Aplicando backend...';
+
+  try {
+    const res = await fetch(`${API}/admin/vllm/switch`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': getAuthToken() },
+      body: JSON.stringify({ url }),
+    });
+    const d = await res.json();
+
+    if (res.ok) {
+      contentDiv.innerHTML = `
+        <div class="gpu-detail-grid">
+          <span class="gpu-status-badge ok">Backend activo</span>
+        </div>
+        <div style="margin-top:8px;font-size:13px;color:var(--text-secondary);">
+          URL: <code>${d.api_base}</code>
+        </div>
+      `;
+      // Refrescar health para mostrar nueva URL
+      loadHealth();
+    } else {
+      contentDiv.innerHTML = `
+        <div class="gpu-detail-grid">
+          <span class="gpu-status-badge fail">Error</span>
+        </div>
+        <div class="gpu-error-msg">${d.detail || 'Error al cambiar backend'}</div>
+      `;
+    }
+  } catch (e) {
+    contentDiv.innerHTML = `
+      <div class="gpu-detail-grid">
+        <span class="gpu-status-badge fail">Error</span>
+      </div>
+      <div class="gpu-error-msg">${e.message}</div>
+    `;
+  }
+}
+
+// ===== UTILS =====
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+// Auto-refresh dashboard every 30s when visible
+setInterval(() => {
+  if (document.getElementById('dashboard-view').classList.contains('active')) {
+    loadHealth();
+    loadAnalytics();
+  }
+}, 30000);
+
+// ===== DATASETS TAB =====
+const DS_PREDEFINED_TAGS = [
+  'busqueda_exitosa','sin_disponibilidad','financiamiento','calculo_mensualidades',
+  'garantia','detalles_vehiculo','comparacion','toma_cuenta','foraneo',
+  'primer_contacto','seguimiento','objecion_precio','gold','needs_review','invalid_format'
+];
+let dsFiles = [];
+let dsCurrentFile = null;
+let dsConversations = [];
+let dsSavedMap = {};       // source_file+line_number -> saved data
+let dsOffset = 0;
+let dsTotal = 0;
+const dsLimit = 50;
+let dsSelectedConv = null;
+let dsSelectedIdx = -1;
+let dsCurrentTags = [];
+let dsCurrentRating = 0;
+let dsEditedMessages = null;
+
+async function dsLoadFiles(rescan) {
+  const el = document.getElementById('ds-file-list');
+  try {
+    const url = rescan ? `${API}/v1/datasets/files?rescan=true` : `${API}/v1/datasets/files`;
+    const res = await safeFetch(url);
+    const d = await safeJson(res);
+    dsFiles = d.files || [];
+
+    if (dsFiles.length === 0) {
+      el.innerHTML = '<div class="ds-empty-state">No se encontraron archivos JSONL</div>';
+      document.getElementById('ds-file-stats').textContent = '';
+      return;
+    }
+
+    // Agrupar por directorio
+    const groups = {};
+    dsFiles.forEach(f => {
+      const dir = f.directory || 'root';
+      if (!groups[dir]) groups[dir] = [];
+      groups[dir].push(f);
+    });
+
+    // Ordenar archivos dentro de cada grupo por fecha desc, y calcular fecha más reciente del grupo
+    const groupEntries = Object.entries(groups).map(([dir, files]) => {
+      files.sort((a, b) => (b.modified_at || 0) - (a.modified_at || 0));
+      const newestMtime = files.reduce((max, f) => Math.max(max, f.modified_at || 0), 0);
+      return { dir, files, newestMtime };
+    });
+    // Ordenar grupos por fecha más reciente desc
+    groupEntries.sort((a, b) => b.newestMtime - a.newestMtime);
+
+    let html = '';
+    groupEntries.forEach((group, gi) => {
+      const expanded = gi === 0; // primer grupo expandido por default
+      const dateStr = group.newestMtime ? new Date(group.newestMtime * 1000).toLocaleDateString('es-MX', {day:'numeric',month:'short'}) : '';
+      const dirId = 'ds-dir-' + gi;
+      html += `<div class="ds-dir-header ${expanded ? 'expanded' : ''}" onclick="dsToggleDir('${dirId}', this)">
+        <span class="ds-dir-toggle">&#9654;</span>
+        <span class="ds-dir-label">${escapeHtml(group.dir)}</span>
+        <span class="ds-dir-info">${group.files.length} &middot; ${dateStr}</span>
+      </div>`;
+      html += `<div class="ds-dir-files ${expanded ? '' : 'collapsed'}" id="${dirId}">`;
+      group.files.forEach(f => {
+        const sizeKB = (f.size_bytes / 1024).toFixed(0);
+        const epath = escapeHtml(f.path);
+        // Version & file tags badges
+        let badgesHtml = '';
+        if (f.version) badgesHtml += `<span class="ds-file-version">${escapeHtml(f.version)}</span>`;
+        (f.file_tags || []).forEach(t => { badgesHtml += `<span class="ds-file-tag-badge">${escapeHtml(t)}</span>`; });
+
+        html += `<div class="ds-file-item" data-path="${epath}" onclick="dsSelectFile(this, '${epath.replace(/'/g, "\\'")}')">
+          <div class="ds-file-item-row">
+            <input type="checkbox" class="ds-file-checkbox" data-path="${epath}" onclick="event.stopPropagation();dsUpdateSelectedCount()">
+            <span class="ds-file-name" title="${epath}">${escapeHtml(f.filename)}</span>
+            ${badgesHtml}
+            <div class="ds-file-actions">
+              <button class="ds-file-action-btn" title="Metadatos" onclick="event.stopPropagation();dsOpenMetadata('${epath.replace(/'/g, "\\'")}')">&#127991;</button>
+              <button class="ds-file-action-btn" title="Renombrar" onclick="event.stopPropagation();dsRenameFile('${epath.replace(/'/g, "\\'")}')">&#9998;</button>
+              <button class="ds-file-action-btn" title="Eliminar" onclick="event.stopPropagation();dsDeleteFile('${epath.replace(/'/g, "\\'")}')">&#128465;</button>
+            </div>
+          </div>
+          <span class="ds-file-meta"><span>${sizeKB} KB</span><span>~${f.line_count} conv</span></span>
+        </div>`;
+      });
+      html += `</div>`;
+    });
+    el.innerHTML = html;
+
+    document.getElementById('ds-file-stats').textContent = `${dsFiles.length} archivos`;
+    dsUpdateSelectedCount();
+  } catch (e) {
+    el.innerHTML = `<div class="ds-empty-state" style="color:var(--error)">Error: ${e.message}</div>`;
+  }
+}
+
+function dsToggleDir(dirId, headerEl) {
+  const filesEl = document.getElementById(dirId);
+  if (!filesEl) return;
+  filesEl.classList.toggle('collapsed');
+  headerEl.classList.toggle('expanded');
+}
+
+async function dsSelectFile(el, path) {
+  document.querySelectorAll('.ds-file-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+  dsCurrentFile = path;
+  dsOffset = 0;
+  dsSelectedConv = null;
+  dsSelectedIdx = -1;
+  dsEditedMessages = null;
+  document.getElementById('ds-detail-messages').innerHTML = '<div class="ds-empty-state">Selecciona una conversacion</div>';
+  document.getElementById('ds-detail-controls').style.display = 'none';
+  document.getElementById('ds-detail-header').textContent = 'Detalle';
+
+  // Load saved data for this file
+  dsSavedMap = {};
+  try {
+    const sres = await safeFetch(`${API}/v1/datasets/conversations?source_file=${encodeURIComponent(path)}`);
+    if (sres.ok) {
+      const sd = await safeJson(sres);
+      (sd.conversations || []).forEach(c => {
+        dsSavedMap[c.source_file + ':' + c.line_number] = c;
+      });
+    }
+  } catch(e) { /* db may not be configured */ }
+
+  await dsLoadConversations();
+}
+
+async function dsLoadConversations() {
+  const listEl = document.getElementById('ds-conv-list');
+  const titleEl = document.getElementById('ds-conv-title');
+  listEl.innerHTML = '<div class="ds-empty-state">Cargando...</div>';
+
+  try {
+    const res = await safeFetch(`${API}/v1/datasets/files/${encodeURIComponent(dsCurrentFile)}?offset=${dsOffset}&limit=${dsLimit}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const d = await safeJson(res);
+    dsConversations = d.conversations || [];
+    dsTotal = d.total || 0;
+
+    const fname = dsCurrentFile.split('/').pop();
+    titleEl.textContent = `${fname} (${dsTotal})`;
+
+    dsRenderConvList();
+    dsUpdatePagination();
+  } catch (e) {
+    listEl.innerHTML = `<div class="ds-empty-state" style="color:var(--error)">Error: ${e.message}</div>`;
+  }
+}
+
+function dsRenderConvList() {
+  const listEl = document.getElementById('ds-conv-list');
+  const filterTC = document.getElementById('ds-filter-tc').value;
+  const filterRating = document.getElementById('ds-filter-rating').value;
+
+  let filtered = dsConversations;
+
+  if (filterTC === 'yes') filtered = filtered.filter(c => c.has_tool_calling);
+  else if (filterTC === 'no') filtered = filtered.filter(c => !c.has_tool_calling);
+
+  if (filterRating !== '') {
+    const r = parseInt(filterRating);
+    filtered = filtered.filter(c => {
+      const saved = dsSavedMap[dsCurrentFile + ':' + c.line_number];
+      const rating = saved ? saved.quality_rating : null;
+      return r === 0 ? rating == null : rating === r;
+    });
+  }
+
+  if (filtered.length === 0) {
+    listEl.innerHTML = '<div class="ds-empty-state">No hay conversaciones con estos filtros</div>';
+    return;
+  }
+
+  listEl.innerHTML = filtered.map((c, idx) => {
+    const saved = dsSavedMap[dsCurrentFile + ':' + c.line_number];
+    const rating = saved ? saved.quality_rating : null;
+    const tags = saved ? (saved.tags || []) : [];
+    const validation = !c.parse_error;
+
+    let starsHtml = '';
+    if (rating) {
+      starsHtml = '<span class="ds-conv-stars">';
+      for (let i = 1; i <= 5; i++) starsHtml += `<span class="${i <= rating ? 'filled' : 'empty'}">&#9733;</span>`;
+      starsHtml += '</span>';
+    }
+
+    let badgesHtml = '';
+    if (c.has_tool_calling) badgesHtml += `<span class="ds-badge ds-badge-tc">TC ${c.tools_used.length > 0 ? c.tools_used.join(', ') : ''}</span>`;
+    if (validation) badgesHtml += '<span class="ds-badge ds-badge-valid">OK</span>';
+    else badgesHtml += '<span class="ds-badge ds-badge-invalid">ERR</span>';
+    tags.forEach(t => { badgesHtml += `<span class="ds-badge ds-badge-tag">#${escapeHtml(t)}</span>`; });
+
+    const activeClass = dsSelectedIdx === idx ? 'active' : '';
+    const tcClass = c.has_tool_calling ? 'tc-yes' : 'tc-no';
+
+    return `<div class="ds-conv-card ${activeClass} ${tcClass}" onclick="dsSelectConv(${idx})">
+      <div class="ds-conv-card-top">
+        <span class="ds-conv-line">#${c.line_number}</span>
+        <div class="ds-conv-badges">${badgesHtml}</div>
+      </div>
+      <div class="ds-conv-preview">${escapeHtml(c.first_user_message || '(sin mensaje de usuario)')}</div>
+      <div class="ds-conv-card-bottom">
+        <span>${c.message_count} msgs</span>
+        ${starsHtml}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function dsApplyFilters() { dsRenderConvList(); }
+
+function dsUpdatePagination() {
+  const pag = document.getElementById('ds-pagination');
+  pag.style.display = dsTotal > dsLimit ? 'flex' : 'none';
+  const from = dsOffset + 1;
+  const to = Math.min(dsOffset + dsLimit, dsTotal);
+  document.getElementById('ds-page-info').textContent = `${from}-${to} de ${dsTotal}`;
+  document.getElementById('ds-prev-btn').disabled = dsOffset === 0;
+  document.getElementById('ds-next-btn').disabled = dsOffset + dsLimit >= dsTotal;
+}
+
+function dsNextPage() {
+  if (dsOffset + dsLimit < dsTotal) {
+    dsOffset += dsLimit;
+    dsLoadConversations();
+  }
+}
+
+function dsPrevPage() {
+  if (dsOffset > 0) {
+    dsOffset = Math.max(0, dsOffset - dsLimit);
+    dsLoadConversations();
+  }
+}
+
+function dsSelectConv(idx) {
+  dsSelectedIdx = idx;
+  dsSelectedConv = dsConversations[idx];
+  dsEditedMessages = JSON.parse(JSON.stringify(dsSelectedConv.messages));
+  dsRenderConvList();
+
+  // Load saved data
+  const saved = dsSavedMap[dsCurrentFile + ':' + dsSelectedConv.line_number];
+  dsCurrentTags = saved ? [...(saved.tags || [])] : [];
+  dsCurrentRating = saved ? (saved.quality_rating || 0) : 0;
+
+  document.getElementById('ds-detail-header').textContent = `Linea #${dsSelectedConv.line_number} - ${dsSelectedConv.message_count} mensajes`;
+  document.getElementById('ds-notes-input').value = saved ? (saved.review_notes || '') : '';
+  document.getElementById('ds-save-status').textContent = '';
+  document.getElementById('ds-validation-box').innerHTML = '';
+
+  dsRenderMessages();
+  dsRenderTags();
+  dsRenderRating();
+  document.getElementById('ds-detail-controls').style.display = '';
+}
+
+function dsRenderMessages() {
+  const el = document.getElementById('ds-detail-messages');
+  el.innerHTML = dsEditedMessages.map((m, i) => {
+    const role = m.role || 'unknown';
+    let contentHtml = dsHighlightToolContent(escapeHtml(m.content || ''));
+    return `<div class="ds-msg" data-role="${role}">
+      <div class="ds-msg-role">${role}</div>
+      <div class="ds-msg-content" id="ds-msg-content-${i}" onclick="dsEditMsg(${i})">${contentHtml}</div>
+    </div>`;
+  }).join('');
+  el.scrollTop = 0;
+}
+
+function dsHighlightToolContent(text) {
+  // Highlight <tool_call>...</tool_call>
+  text = text.replace(/(&lt;tool_call&gt;)([\s\S]*?)(&lt;\/tool_call&gt;)/g,
+    '<div class="ds-tool-call-highlight">$1$2$3</div>');
+  // Highlight <tool_response>...</tool_response>
+  text = text.replace(/(&lt;tool_response&gt;)([\s\S]*?)(&lt;\/tool_response&gt;)/g,
+    '<div class="ds-tool-response-highlight">$1$2$3</div>');
+  return text;
+}
+
+function dsEditMsg(idx) {
+  // Si ya hay un textarea abierto en este mensaje, no recrear
+  if (document.getElementById(`ds-msg-textarea-${idx}`)) return;
+  const el = document.getElementById(`ds-msg-content-${idx}`);
+  const currentText = dsEditedMessages[idx].content || '';
+  el.innerHTML = `<textarea class="ds-msg-edit" id="ds-msg-textarea-${idx}" onclick="event.stopPropagation()">${escapeHtml(currentText)}</textarea>
+    <div class="ds-msg-edit-actions" onclick="event.stopPropagation()">
+      <button class="btn btn-sm" onclick="event.stopPropagation(); dsCancelEdit(${idx})">Cancelar</button>
+      <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); dsSaveEdit(${idx})">Aplicar</button>
+    </div>`;
+  const textarea = document.getElementById(`ds-msg-textarea-${idx}`);
+  textarea.focus();
+  textarea.style.height = Math.max(60, textarea.scrollHeight) + 'px';
+}
+
+function dsCancelEdit(idx) {
+  const contentHtml = dsHighlightToolContent(escapeHtml(dsEditedMessages[idx].content || ''));
+  document.getElementById(`ds-msg-content-${idx}`).innerHTML = contentHtml;
+}
+
+function dsSaveEdit(idx) {
+  const textarea = document.getElementById(`ds-msg-textarea-${idx}`);
+  dsEditedMessages[idx].content = textarea.value;
+  const contentHtml = dsHighlightToolContent(escapeHtml(textarea.value));
+  document.getElementById(`ds-msg-content-${idx}`).innerHTML = contentHtml;
+}
+
+function dsRenderTags() {
+  const area = document.getElementById('ds-tags-area');
+  area.innerHTML = dsCurrentTags.map((t, i) =>
+    `<span class="ds-tag-chip">${escapeHtml(t)}<span class="remove" onclick="dsRemoveTag(${i})">&times;</span></span>`
+  ).join('');
+}
+
+function dsRemoveTag(idx) {
+  dsCurrentTags.splice(idx, 1);
+  dsRenderTags();
+}
+
+function dsShowTagSuggestions() {
+  dsFilterTagSuggestions();
+  document.getElementById('ds-tag-suggestions').style.display = 'block';
+}
+
+function dsHideTagSuggestions() {
+  document.getElementById('ds-tag-suggestions').style.display = 'none';
+}
+
+function dsFilterTagSuggestions() {
+  const input = document.getElementById('ds-tag-input').value.toLowerCase();
+  const available = DS_PREDEFINED_TAGS.filter(t => !dsCurrentTags.includes(t) && t.includes(input));
+  const el = document.getElementById('ds-tag-suggestions');
+  if (available.length === 0) { el.style.display = 'none'; return; }
+  el.style.display = 'block';
+  el.innerHTML = available.map(t => `<div onclick="dsAddTag('${t}')">${t}</div>`).join('');
+}
+
+function dsAddTag(tag) {
+  if (!dsCurrentTags.includes(tag)) {
+    dsCurrentTags.push(tag);
+    dsRenderTags();
+  }
+  document.getElementById('ds-tag-input').value = '';
+  dsHideTagSuggestions();
+}
+
+// Also allow Enter to add custom tag
+document.addEventListener('keydown', function(e) {
+  if (e.target.id === 'ds-tag-input' && e.key === 'Enter') {
+    e.preventDefault();
+    const val = e.target.value.trim().toLowerCase().replace(/\s+/g, '_');
+    if (val) dsAddTag(val);
+  }
+});
+
+function dsSetRating(r) {
+  dsCurrentRating = r;
+  dsRenderRating();
+}
+
+function dsRenderRating() {
+  document.querySelectorAll('#ds-rating-stars span').forEach(s => {
+    s.classList.toggle('active', parseInt(s.dataset.v) <= dsCurrentRating);
+  });
+}
+
+async function dsValidate() {
+  const box = document.getElementById('ds-validation-box');
+  box.innerHTML = '<span style="font-size:12px;color:var(--text-light);">Validando...</span>';
+  try {
+    const res = await safeFetch(`${API}/v1/datasets/validate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...NGROK_HEADERS },
+      body: JSON.stringify({ messages: dsEditedMessages }),
+    });
+    const d = await safeJson(res);
+    if (d.valid) {
+      box.innerHTML = '<div class="ds-validation-result valid">Formato Qwen ChatML valido</div>';
+    } else {
+      let html = '<div class="ds-validation-result invalid">';
+      d.errors.forEach(e => { html += `<div>Error: ${escapeHtml(e)}</div>`; });
+      d.warnings.forEach(w => { html += `<div style="color:var(--warning)">Warning: ${escapeHtml(w)}</div>`; });
+      html += '</div>';
+      box.innerHTML = html;
+    }
+  } catch (e) {
+    box.innerHTML = `<div class="ds-validation-result invalid">Error: ${e.message}</div>`;
+  }
+}
+
+async function dsSave() {
+  if (!dsSelectedConv || !dsCurrentFile) return;
+  const statusEl = document.getElementById('ds-save-status');
+  statusEl.textContent = 'Guardando...';
+  statusEl.style.color = 'var(--text-light)';
+
+  try {
+    const body = {
+      source_file: dsCurrentFile,
+      line_number: dsSelectedConv.line_number,
+      messages: dsEditedMessages,
+      tags: dsCurrentTags,
+      quality_rating: dsCurrentRating > 0 ? dsCurrentRating : null,
+      review_notes: document.getElementById('ds-notes-input').value || null,
+      target_format: 'qwen',
+    };
+
+    const res = await safeFetch(`${API}/v1/datasets/conversations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...NGROK_HEADERS },
+      body: JSON.stringify(body),
+    });
+
+    const d = await safeJson(res).catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(d.detail || `HTTP ${res.status}`);
+    }
+
+    // Update saved map
+    if (d.data && d.data.length > 0) {
+      dsSavedMap[dsCurrentFile + ':' + dsSelectedConv.line_number] = d.data[0];
+    }
+
+    statusEl.textContent = 'Guardado!';
+    statusEl.style.color = 'var(--success)';
+    dsRenderConvList();
+  } catch (e) {
+    statusEl.textContent = `Error: ${e.message}`;
+    statusEl.style.color = 'var(--error)';
+  }
+}
+
+// ===== GENERATION & JOBS =====
+
+let genJobsPollTimer = null;
+
+function genShowModal(type) {
+  const modal = document.getElementById('modal-' + type);
+  if (modal) {
+    modal.classList.add('open');
+    if (type === 'settings') genLoadKeys();
+    if (type === 'jobs') genRefreshJobs();
+    if (type === 'merge') populateMergeModal();
+  }
+}
+
+function genCloseModal(type) {
+  const modal = document.getElementById('modal-' + type);
+  if (modal) modal.classList.remove('open');
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(ov => {
+  ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('open'); });
+});
+
+// ===== FILE SELECTION HELPERS =====
+function dsGetSelectedPaths() {
+  return Array.from(document.querySelectorAll('.ds-file-checkbox:checked')).map(cb => cb.dataset.path);
+}
+
+function dsUpdateSelectedCount() {
+  const selected = dsGetSelectedPaths();
+  const bar = document.getElementById('ds-selected-bar');
+  if (selected.length > 0) {
+    bar.textContent = `${selected.length} archivo(s) seleccionado(s)`;
+    bar.classList.add('visible');
+  } else {
+    bar.classList.remove('visible');
+  }
+}
+
+// ===== UPLOAD DATASET =====
+let _uploadFile = null;
+
+function handleUploadDrop(e) {
+  const file = e.dataTransfer.files[0];
+  if (file) prepareUpload(file);
+}
+
+function handleUploadSelect(e) {
+  const file = e.target.files[0];
+  if (file) prepareUpload(file);
+}
+
+function prepareUpload(file) {
+  const isJsonl = file.name.toLowerCase().endsWith('.jsonl');
+  const isCsv = file.name.toLowerCase().endsWith('.csv');
+  if (!isJsonl && !isCsv) {
+    document.getElementById('upload-result').innerHTML = '<span style="color:var(--error)">Solo se aceptan archivos .jsonl o .csv</span>';
+    return;
+  }
+  _uploadFile = file;
+  document.getElementById('upload-file-info').style.display = 'block';
+  document.getElementById('upload-file-name').textContent = file.name;
+  document.getElementById('upload-file-size').textContent = (file.size / 1024).toFixed(1) + ' KB';
+  document.getElementById('upload-csv-hint').style.display = isCsv ? 'inline' : 'none';
+  const btn = document.getElementById('upload-submit-btn');
+  btn.disabled = false;
+  btn.textContent = isCsv ? 'Convertir y Subir' : 'Subir';
+  document.getElementById('upload-result').innerHTML = '';
+}
+
+async function uploadDataset() {
+  if (!_uploadFile) return;
+  const resultEl = document.getElementById('upload-result');
+  resultEl.innerHTML = '<span style="color:var(--text-light)">Subiendo...</span>';
+  document.getElementById('upload-submit-btn').disabled = true;
+
+  try {
+    const formData = new FormData();
+    formData.append('file', _uploadFile);
+    const res = await safeFetch(`${API}/v1/datasets/upload`, {
+      method: 'POST',
+      headers: { 'X-Auth-Token': getAuthToken(), ...NGROK_HEADERS },
+      body: formData
+    });
+    const d = await safeJson(res);
+    if (!res.ok) {
+      throw new Error(d.detail || `HTTP ${res.status}`);
+    }
+    const fromCsv = d.converted_from === 'csv' ? ' (convertido desde CSV)' : '';
+    resultEl.innerHTML = `<span style="color:var(--success)">Subido: ${escapeHtml(d.filename)} — ${d.lines} conversaciones (${(d.size_bytes/1024).toFixed(1)} KB)${fromCsv}</span>`;
+    _uploadFile = null;
+    dsLoadFiles(true);
+  } catch (e) {
+    resultEl.innerHTML = `<span style="color:var(--error)">Error: ${escapeHtml(e.message)}</span>`;
+    document.getElementById('upload-submit-btn').disabled = false;
+  }
+}
+
+// ===== MERGE DATASETS =====
+function populateMergeModal() {
+  const selected = dsGetSelectedPaths();
+  const listEl = document.getElementById('merge-file-list');
+  if (selected.length === 0) {
+    listEl.innerHTML = '<em style="color:var(--text-light);">Ninguno — selecciona archivos con los checkboxes del panel izquierdo</em>';
+    document.getElementById('merge-submit-btn').disabled = true;
+  } else {
+    listEl.innerHTML = selected.map(p => `<div style="padding:2px 0;">${escapeHtml(p.split('/').pop())}</div>`).join('');
+    document.getElementById('merge-submit-btn').disabled = selected.length < 2;
+  }
+  document.getElementById('merge-result').innerHTML = '';
+}
+
+async function mergeDatasets() {
+  const selected = dsGetSelectedPaths();
+  if (selected.length < 2) return;
+  const resultEl = document.getElementById('merge-result');
+  resultEl.innerHTML = '<span style="color:var(--text-light)">Combinando archivos...</span>';
+  document.getElementById('merge-submit-btn').disabled = true;
+
+  try {
+    const outputName = document.getElementById('merge-output-name').value.trim();
+    const res = await safeFetch(`${API}/v1/datasets/merge`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': getAuthToken(), ...NGROK_HEADERS },
+      body: JSON.stringify({ file_paths: selected, output_filename: outputName })
+    });
+    const d = await safeJson(res);
+    if (!res.ok) {
+      throw new Error(d.detail || `HTTP ${res.status}`);
+    }
+    const srcInfo = d.source_files.map(s => `${s.path.split('/').pop()}: ${s.lines}`).join(', ');
+    resultEl.innerHTML = `<span style="color:var(--success)">Merge completado: ${d.total_lines} lineas totales<br><small>${escapeHtml(srcInfo)}</small></span>`;
+    dsLoadFiles(true);
+  } catch (e) {
+    resultEl.innerHTML = `<span style="color:var(--error)">Error: ${escapeHtml(e.message)}</span>`;
+    document.getElementById('merge-submit-btn').disabled = false;
+  }
+}
+
+// ===== AUTO-TAG TC =====
+async function autoTagTC() {
+  genShowModal('auto-tag');
+  const resultEl = document.getElementById('auto-tag-result');
+  resultEl.innerHTML = '<div class="ds-empty-state">Analizando archivos...</div>';
+
+  try {
+    const res = await safeFetch(`${API}/v1/datasets/auto-tag`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': getAuthToken(), ...NGROK_HEADERS }
+    });
+    const d = await safeJson(res);
+    if (!res.ok) {
+      throw new Error(d.detail || `HTTP ${res.status}`);
+    }
+    const files = d.files || [];
+
+    if (files.length === 0) {
+      resultEl.innerHTML = '<div class="ds-empty-state">No se encontraron archivos JSONL</div>';
+      return;
+    }
+
+    let totalConv = 0, totalTC = 0, totalNoTC = 0;
+    let rows = files.map(f => {
+      totalConv += f.total;
+      totalTC += f.with_tc;
+      totalNoTC += f.without_tc;
+      const pct = f.total > 0 ? Math.round(f.with_tc / f.total * 100) : 0;
+      return `<tr>
+        <td style="font-size:12px;padding:4px 8px;">${escapeHtml(f.filename)}</td>
+        <td style="text-align:center;padding:4px 8px;">${f.total}</td>
+        <td style="text-align:center;padding:4px 8px;color:#2e7d32;font-weight:600;">${f.with_tc}</td>
+        <td style="text-align:center;padding:4px 8px;color:#757575;">${f.without_tc}</td>
+        <td style="text-align:center;padding:4px 8px;">${pct}%</td>
+      </tr>`;
+    }).join('');
+
+    const totalPct = totalConv > 0 ? Math.round(totalTC / totalConv * 100) : 0;
+    resultEl.innerHTML = `
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead><tr style="border-bottom:2px solid var(--border);font-weight:600;">
+          <th style="text-align:left;padding:6px 8px;">Archivo</th>
+          <th style="text-align:center;padding:6px 8px;">Total</th>
+          <th style="text-align:center;padding:6px 8px;">Con TC</th>
+          <th style="text-align:center;padding:6px 8px;">Sin TC</th>
+          <th style="text-align:center;padding:6px 8px;">% TC</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr style="border-top:2px solid var(--border);font-weight:600;">
+          <td style="padding:6px 8px;">TOTAL</td>
+          <td style="text-align:center;padding:6px 8px;">${totalConv}</td>
+          <td style="text-align:center;padding:6px 8px;color:#2e7d32;">${totalTC}</td>
+          <td style="text-align:center;padding:6px 8px;">${totalNoTC}</td>
+          <td style="text-align:center;padding:6px 8px;">${totalPct}%</td>
+        </tr></tfoot>
+      </table>`;
+  } catch (e) {
+    resultEl.innerHTML = `<div class="ds-empty-state" style="color:var(--error)">Error: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
+// ===== DS SUB-TAB SWITCHING =====
+function dsSwitchTab(tab) {
+  document.querySelectorAll('.ds-subtab').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.ds-tab-panel').forEach(p => p.classList.remove('active'));
+  // Activate clicked tab button
+  const btns = document.querySelectorAll('.ds-subtab');
+  btns.forEach(b => {
+    if (b.textContent.trim().toLowerCase().startsWith(tab.toLowerCase())) b.classList.add('active');
+  });
+  const panel = document.getElementById('ds-panel-' + tab);
+  if (panel) panel.classList.add('active');
+}
+
+// ===== DELETE FILE =====
+async function dsDeleteFile(path) {
+  if (!confirm('Eliminar este archivo?\n' + path.split('/').pop())) return;
+  try {
+    const res = await safeFetch(`${API}/v1/datasets/files/${encodeURIComponent(path)}`, {
+      method: 'DELETE',
+      headers: { ...NGROK_HEADERS }
+    });
+    const d = await safeJson(res);
+    if (!res.ok) throw new Error(d.detail || `HTTP ${res.status}`);
+    dsLoadFiles(true);
+  } catch (e) {
+    alert('Error al eliminar: ' + e.message);
+  }
+}
+
+// ===== RENAME FILE =====
+async function dsRenameFile(path) {
+  const oldName = path.split('/').pop();
+  const newName = prompt('Nuevo nombre:', oldName);
+  if (!newName || newName === oldName) return;
+  try {
+    const res = await safeFetch(`${API}/v1/datasets/files/rename`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...NGROK_HEADERS },
+      body: JSON.stringify({ old_path: path, new_name: newName })
+    });
+    const d = await safeJson(res);
+    if (!res.ok) throw new Error(d.detail || `HTTP ${res.status}`);
+    dsLoadFiles(true);
+  } catch (e) {
+    alert('Error al renombrar: ' + e.message);
+  }
+}
+
+// ===== FILE METADATA =====
+let _metadataFilePath = null;
+
+async function dsOpenMetadata(path) {
+  _metadataFilePath = path;
+  document.getElementById('meta-file-name').textContent = path.split('/').pop();
+  document.getElementById('meta-save-status').innerHTML = '';
+  try {
+    const res = await safeFetch(`${API}/v1/datasets/files/${encodeURIComponent(path)}/metadata`);
+    const meta = await safeJson(res);
+    document.getElementById('meta-version').value = meta.version || '';
+    document.getElementById('meta-tags').value = (meta.file_tags || []).join(', ');
+    document.getElementById('meta-notes').value = meta.notes || '';
+  } catch (e) {
+    document.getElementById('meta-version').value = '';
+    document.getElementById('meta-tags').value = '';
+    document.getElementById('meta-notes').value = '';
+  }
+  genShowModal('file-metadata');
+}
+
+async function dsSaveFileMetadata() {
+  if (!_metadataFilePath) return;
+  const statusEl = document.getElementById('meta-save-status');
+  statusEl.innerHTML = '<span style="color:var(--text-light)">Guardando...</span>';
+  try {
+    const tagsStr = document.getElementById('meta-tags').value.trim();
+    const file_tags = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(Boolean) : [];
+    const body = {
+      file_path: _metadataFilePath,
+      version: document.getElementById('meta-version').value.trim() || null,
+      file_tags: file_tags,
+      notes: document.getElementById('meta-notes').value.trim() || null,
+    };
+    const res = await safeFetch(`${API}/v1/datasets/files/metadata`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...NGROK_HEADERS },
+      body: JSON.stringify(body)
+    });
+    const result = await safeJson(res);
+    if (!res.ok) throw new Error(result.detail || `HTTP ${res.status}`);
+    statusEl.innerHTML = '<span style="color:var(--success)">Guardado!</span>';
+    dsLoadFiles(true);
+    setTimeout(() => genCloseModal('file-metadata'), 800);
+  } catch (e) {
+    statusEl.innerHTML = `<span style="color:var(--error)">Error: ${escapeHtml(e.message)}</span>`;
+  }
+}
+
+// ===== TRAINING TAB HELPERS =====
+function genShowTrainingPromptTab() {
+  const area = document.getElementById('training-tab-area');
+  const pre = document.getElementById('training-tab-pre');
+  const title = document.getElementById('training-tab-title');
+  area.style.display = 'block';
+  pre.textContent = 'Cargando...';
+  title.textContent = 'System Prompt para Fine-tuning';
+  fetch(`${API}/v1/datasets/training/system-prompt`).then(r => r.json()).then(data => {
+    pre.textContent = data.system_prompt || 'No disponible';
+  }).catch(e => { pre.textContent = 'Error: ' + e.message; });
+}
+
+function genShowTrainingScriptTab() {
+  const area = document.getElementById('training-tab-area');
+  const pre = document.getElementById('training-tab-pre');
+  const title = document.getElementById('training-tab-title');
+  area.style.display = 'block';
+  pre.textContent = 'Cargando...';
+  title.textContent = 'train_qwen3_vast.py';
+  fetch(`${API}/v1/datasets/training/script`).then(r => r.json()).then(data => {
+    pre.textContent = data.script || 'No disponible';
+  }).catch(e => { pre.textContent = 'Error: ' + e.message; });
+}
+
+function genCopyTrainingTabContent() {
+  const pre = document.getElementById('training-tab-pre');
+  navigator.clipboard.writeText(pre.textContent).then(() => {
+    const btn = event.target;
+    btn.textContent = 'Copiado!';
+    setTimeout(() => btn.textContent = 'Copiar', 2000);
+  });
+}
+
+// -- API Key helpers --
+function genGetHeaders() {
+  const h = { 'Content-Type': 'application/json', ...NGROK_HEADERS };
+  const ak = localStorage.getItem('trefa_anthropic_key');
+  const gk = localStorage.getItem('trefa_gemini_key');
+  if (ak) h['X-Anthropic-Key'] = ak;
+  if (gk) h['X-Gemini-Key'] = gk;
+  return h;
+}
+
+function genLoadKeys() {
+  document.getElementById('gen-anthropic-key').value = localStorage.getItem('trefa_anthropic_key') || '';
+  document.getElementById('gen-gemini-key').value = localStorage.getItem('trefa_gemini_key') || '';
+  genUpdateKeyIndicators();
+}
+
+function genSaveKeys() {
+  const ak = document.getElementById('gen-anthropic-key').value.trim();
+  const gk = document.getElementById('gen-gemini-key').value.trim();
+  if (ak) localStorage.setItem('trefa_anthropic_key', ak); else localStorage.removeItem('trefa_anthropic_key');
+  if (gk) localStorage.setItem('trefa_gemini_key', gk); else localStorage.removeItem('trefa_gemini_key');
+  genUpdateKeyIndicators();
+  genCloseModal('settings');
+}
+
+function genUpdateKeyIndicators() {
+  const ak = localStorage.getItem('trefa_anthropic_key');
+  const gk = localStorage.getItem('trefa_gemini_key');
+  const indA = document.getElementById('key-ind-anthropic');
+  const indG = document.getElementById('key-ind-gemini');
+  if (indA) { indA.className = 'key-indicator ' + (ak ? 'set' : 'unset'); }
+  if (indG) { indG.className = 'key-indicator ' + (gk ? 'set' : 'unset'); }
+}
+
+// -- Jobs --
+async function genRefreshJobs() {
+  try {
+    const res = await fetch(`${API}/v1/datasets/jobs?limit=20`);
+    const data = await res.json();
+    const jobs = data.jobs || [];
+    const container = document.getElementById('gen-jobs-list');
+
+    const running = jobs.filter(j => j.status === 'running' || j.status === 'pending').length;
+    const badge = document.getElementById('gen-jobs-badge');
+    if (running > 0) {
+      badge.textContent = running;
+      badge.style.display = 'inline-block';
+    } else {
+      badge.style.display = 'none';
+    }
+
+    if (!jobs.length) {
+      container.innerHTML = '<div class="ds-empty-state">Sin jobs recientes</div>';
+      return;
+    }
+
+    container.innerHTML = jobs.map(j => {
+      const dur = j.completed_at ? ((j.completed_at - (j.started_at || j.created_at)) | 0) + 's' :
+                  j.started_at ? (((Date.now()/1000 - j.started_at) | 0) + 's...') : '-';
+      const canCancel = j.status === 'running' || j.status === 'pending';
+      return `<div class="job-item">
+        <div class="job-header">
+          <span class="job-type">${j.type}</span>
+          <span class="job-status ${j.status}">${j.status}</span>
+          <span style="font-size:11px;color:var(--text-light);">${dur}</span>
+        </div>
+        ${j.status === 'running' ? `<div class="job-progress"><div class="job-progress-bar" style="width:${j.progress}%"></div></div>` : ''}
+        <div class="job-detail">${j.progress_detail || (j.error ? 'Error: ' + j.error : (j.result ? JSON.stringify(j.result).substring(0, 120) + '...' : j.id))}</div>
+        ${canCancel ? `<div class="job-actions"><button class="job-cancel-btn" onclick="genCancelJob('${j.id}')">Cancelar</button></div>` : ''}
+      </div>`;
+    }).join('');
+  } catch (e) {
+    console.error('Jobs refresh error:', e);
+  }
+}
+
+async function genCancelJob(jobId) {
+  try {
+    await fetch(`${API}/v1/datasets/jobs/${jobId}/cancel`, { method: 'POST' });
+    genRefreshJobs();
+  } catch (e) { console.error(e); }
+}
+
+function genStartPolling() {
+  if (genJobsPollTimer) return;
+  genJobsPollTimer = setInterval(async () => {
+    try {
+      const res = await fetch(`${API}/v1/datasets/jobs?limit=5`);
+      const data = await res.json();
+      const running = (data.jobs || []).filter(j => j.status === 'running' || j.status === 'pending').length;
+      const badge = document.getElementById('gen-jobs-badge');
+      if (running > 0) {
+        badge.textContent = running;
+        badge.style.display = 'inline-block';
+      } else {
+        badge.style.display = 'none';
+        clearInterval(genJobsPollTimer);
+        genJobsPollTimer = null;
+        dsLoadFiles(true); // Rescan files when jobs complete
+      }
+      // Refresh if jobs modal is open
+      if (document.getElementById('modal-jobs').classList.contains('open')) {
+        genRefreshJobs();
+      }
+    } catch (e) { /* silent */ }
+  }, 3000);
+}
+
+// -- Launch functions --
+async function genLaunchTemplate() {
+  const filename = document.getElementById('gen-tpl-filename').value.trim() || 'plantillas.jsonl';
+  const countVal = document.getElementById('gen-tpl-count').value;
+  const count = countVal ? parseInt(countVal) : null;
+  try {
+    const res = await fetch(`${API}/v1/datasets/generate/template`, {
+      method: 'POST', headers: genGetHeaders(),
+      body: JSON.stringify({ output_filename: filename, count })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    genCloseModal('template');
+    genShowModal('jobs');
+    genStartPolling();
+    genRefreshJobs();
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function genLaunchSynthetic() {
+  const body = {
+    output_filename: document.getElementById('gen-syn-filename').value.trim() || 'sinteticos.jsonl',
+    count: parseInt(document.getElementById('gen-syn-count').value) || 100,
+    model: document.getElementById('gen-syn-model').value,
+    pause_seconds: parseFloat(document.getElementById('gen-syn-pause').value) || 0.3,
+  };
+  try {
+    const res = await fetch(`${API}/v1/datasets/generate/synthetic`, {
+      method: 'POST', headers: genGetHeaders(), body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    genCloseModal('synthetic');
+    genShowModal('jobs');
+    genStartPolling();
+    genRefreshJobs();
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function genLaunchCurate() {
+  const body = {
+    synthetic_path: document.getElementById('gen-cur-synthetic').value.trim(),
+    reference_path: document.getElementById('gen-cur-reference').value.trim(),
+    threshold: parseInt(document.getElementById('gen-cur-threshold').value) || 6,
+    only_evaluate: document.getElementById('gen-cur-only-eval').checked,
+  };
+  if (!body.synthetic_path || !body.reference_path) { alert('Rutas requeridas'); return; }
+  try {
+    const res = await fetch(`${API}/v1/datasets/generate/curate`, {
+      method: 'POST', headers: genGetHeaders(), body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    genCloseModal('curate');
+    genShowModal('jobs');
+    genStartPolling();
+    genRefreshJobs();
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function genLaunchPipeline() {
+  const body = {
+    stages: document.getElementById('gen-pip-stages').value,
+    count_stage1: parseInt(document.getElementById('gen-pip-e1').value) || 40,
+    count_stage2: parseInt(document.getElementById('gen-pip-e2').value) || 400,
+    threshold: parseFloat(document.getElementById('gen-pip-threshold').value) || 7.0,
+  };
+  try {
+    const res = await fetch(`${API}/v1/datasets/generate/pipeline`, {
+      method: 'POST', headers: genGetHeaders(), body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    genCloseModal('pipeline');
+    genShowModal('jobs');
+    genStartPolling();
+    genRefreshJobs();
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function genLaunchGoldAmplifier() {
+  const body = {
+    count: parseInt(document.getElementById('gen-gold-count').value) || 400,
+    gold_file: document.getElementById('gen-gold-file').value.trim(),
+    output_filename: document.getElementById('gen-gold-output').value.trim(),
+    pause_seconds: parseFloat(document.getElementById('gen-gold-pause').value) || 1.5,
+  };
+  try {
+    const res = await fetch(`${API}/v1/datasets/generate/gold-amplifier`, {
+      method: 'POST', headers: genGetHeaders(), body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    genCloseModal('gold-amplifier');
+    genShowModal('jobs');
+    genStartPolling();
+    genRefreshJobs();
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function genLaunchMergeEvaluate() {
+  const excludeRaw = document.getElementById('gen-merge-exclude').value.trim();
+  const excludePatterns = excludeRaw ? excludeRaw.split(',').map(s => s.trim()).filter(Boolean) : null;
+  const body = {
+    threshold_sonnet: parseFloat(document.getElementById('gen-merge-threshold-sonnet').value) || 7.5,
+    threshold_gemini: parseFloat(document.getElementById('gen-merge-threshold-gemini').value) || 8.0,
+    eval_split: (parseFloat(document.getElementById('gen-merge-eval-split').value) || 10) / 100,
+    only_tc: document.getElementById('gen-merge-only-tc').checked,
+    exclude_patterns: excludePatterns,
+  };
+  try {
+    const res = await fetch(`${API}/v1/datasets/generate/merge-evaluate`, {
+      method: 'POST', headers: genGetHeaders(), body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    genCloseModal('merge-evaluate');
+    genShowModal('jobs');
+    genStartPolling();
+    genRefreshJobs();
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function genLaunchAnalyze() {
+  const text = document.getElementById('gen-analyze-files').value.trim();
+  const filepaths = text.split('\n').map(l => l.trim()).filter(Boolean);
+  if (!filepaths.length) { alert('Ingresa al menos un archivo'); return; }
+  const resultDiv = document.getElementById('gen-analyze-result');
+  resultDiv.innerHTML = '<div style="font-size:13px;color:var(--text-light);">Analizando...</div>';
+  try {
+    const res = await fetch(`${API}/v1/datasets/analyze/tools`, {
+      method: 'POST', headers: genGetHeaders(),
+      body: JSON.stringify({ filepaths })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    if (data.job_id) {
+      resultDiv.innerHTML = `<div style="font-size:13px;">Job lanzado: ${data.job_id}. Revisa en Jobs.</div>`;
+      genStartPolling();
+    } else {
+      genRenderAnalysis(data, resultDiv);
+    }
+  } catch (e) {
+    resultDiv.innerHTML = `<div style="color:var(--error);font-size:13px;">Error: ${e.message}</div>`;
+  }
+}
+
+function genRenderAnalysis(data, container) {
+  const maxCount = Math.max(1, ...Object.values(data.tools_por_herramienta || {}));
+  let html = `<div style="font-size:13px;margin-bottom:8px;">
+    <strong>${data.archivo || 'Resultado'}</strong> | Total: ${data.total} | Con TC: ${data.con_tools} (${data.porcentaje}%) | Sin TC: ${data.sin_tools}
+  </div>`;
+  html += '<div style="margin-bottom:8px;"><strong style="font-size:12px;">Herramientas:</strong></div>';
+  for (const [tool, count] of Object.entries(data.tools_por_herramienta || {})) {
+    const pct = (count / maxCount * 100) | 0;
+    html += `<div class="analysis-bar">
+      <span class="analysis-bar-label">${tool}</span>
+      <div style="flex:1;"><div class="analysis-bar-fill" style="width:${pct}%"></div></div>
+      <span class="analysis-bar-count">${count}</span>
+    </div>`;
+  }
+  if (data.herramientas_no_encontradas && data.herramientas_no_encontradas.length) {
+    html += `<div style="font-size:12px;color:var(--warning);margin-top:8px;">No encontradas: ${data.herramientas_no_encontradas.join(', ')}</div>`;
+  }
+  if (data.escenarios_detectados && Object.keys(data.escenarios_detectados).length) {
+    html += '<div style="margin-top:8px;"><strong style="font-size:12px;">Escenarios:</strong></div>';
+    for (const [esc, cnt] of Object.entries(data.escenarios_detectados)) {
+      html += `<div style="font-size:12px;">${esc}: ${cnt}</div>`;
+    }
+  }
+  container.innerHTML = html;
+}
+
+function genFillAnalyzeFromSelected() {
+  if (typeof dsCurrentFile !== 'undefined' && dsCurrentFile) {
+    document.getElementById('gen-analyze-files').value = dsCurrentFile;
+  }
+}
+
+async function genLaunchUpdatePrompt() {
+  const files = document.getElementById('gen-up-files').value.trim().split('\n').map(l => l.trim()).filter(Boolean);
+  const prompt = document.getElementById('gen-up-prompt').value.trim();
+  if (!files.length || !prompt) { alert('Archivos y prompt requeridos'); return; }
+  try {
+    const res = await fetch(`${API}/v1/datasets/analyze/update-prompt`, {
+      method: 'POST', headers: genGetHeaders(),
+      body: JSON.stringify({ target_files: files, new_system_prompt: prompt })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    genCloseModal('update-prompt');
+    genShowModal('jobs');
+    genStartPolling();
+    genRefreshJobs();
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function genLoadCurrentPrompt() {
+  try {
+    const res = await fetch(`${API}/v1/datasets/generate/current-prompt?variant=tc`);
+    const data = await res.json();
+    document.getElementById('gen-up-prompt').value = data.system_prompt_tc || data.prompt || '';
+  } catch (e) { console.error(e); }
+}
+
+// -- Training --
+async function genLaunchTrainingDataset() {
+  const body = {
+    output_filename: document.getElementById('gen-training-filename').value.trim(),
+    seed: parseInt(document.getElementById('gen-training-seed').value) || 42,
+  };
+  try {
+    const res = await fetch(`${API}/v1/datasets/generate/training-dataset`, {
+      method: 'POST', headers: genGetHeaders(), body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    genCloseModal('training');
+    genShowModal('jobs');
+    genStartPolling();
+    genRefreshJobs();
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function genShowTrainingPrompt() {
+  const area = document.getElementById('training-content-area');
+  const pre = document.getElementById('training-content-pre');
+  const title = document.getElementById('training-content-title');
+  area.style.display = 'block';
+  pre.textContent = 'Cargando...';
+  title.textContent = 'System Prompt para Fine-tuning';
+  try {
+    const res = await fetch(`${API}/v1/datasets/training/system-prompt`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    pre.textContent = data.system_prompt;
+  } catch (e) { pre.textContent = 'Error: ' + e.message; }
+}
+
+async function genShowTrainingScript() {
+  const area = document.getElementById('training-content-area');
+  const pre = document.getElementById('training-content-pre');
+  const title = document.getElementById('training-content-title');
+  area.style.display = 'block';
+  pre.textContent = 'Cargando...';
+  title.textContent = 'train_qwen3_vast.py';
+  try {
+    const res = await fetch(`${API}/v1/datasets/training/script`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    pre.textContent = data.script;
+  } catch (e) { pre.textContent = 'Error: ' + e.message; }
+}
+
+function genCopyTrainingContent() {
+  const pre = document.getElementById('training-content-pre');
+  navigator.clipboard.writeText(pre.textContent).then(() => {
+    const btn = event.target;
+    btn.textContent = 'Copiado!';
+    setTimeout(() => btn.textContent = 'Copiar', 2000);
+  });
+}
+
+// Init key indicators on load
+genUpdateKeyIndicators();
+
+// Focus input on load
+document.getElementById('msg-input').focus();
+
+// ===== PROMPTS TAB =====
+let _pmPrompts = [];
+let _pmSelectedId = null;
+let _pmIsNew = false;
+let _pmConvPromptId = null;
+let _pmConvOffset = 0;
+const _pmConvLimit = 20;
+
+function pmSwitchTab(tab) {
+  document.querySelectorAll('.pm-subtab').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.pm-tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.pm-subtab').forEach(b => {
+    const t = b.textContent.trim().toLowerCase();
+    if ((tab === 'editor' && t === 'editor') ||
+        (tab === 'stats' && t.startsWith('estad')) ||
+        (tab === 'conversations' && t.startsWith('conv'))) {
+      b.classList.add('active');
+    }
+  });
+  document.getElementById('pm-panel-' + tab).classList.add('active');
+  if (tab === 'stats') pmLoadStats();
+  if (tab === 'conversations') pmLoadConvPromptList();
+}
+
+async function pmLoadPrompts() {
+  try {
+    const res = await fetch(`${API}/v1/prompts`);
+    const data = await res.json();
+    _pmPrompts = data.prompts || [];
+    pmRenderList();
+  } catch (e) {
+    document.getElementById('pm-prompt-list').innerHTML =
+      `<p style="color:var(--error);padding:14px;font-size:13px;">Error: ${e.message}</p>`;
+  }
+}
+
+function pmRenderList() {
+  const el = document.getElementById('pm-prompt-list');
+  if (_pmPrompts.length === 0) {
+    el.innerHTML = '<p style="color:var(--text-secondary);padding:14px;font-size:13px;">Sin prompts</p>';
+    return;
+  }
+  el.innerHTML = _pmPrompts.map(p => `
+    <div class="pm-prompt-item ${p.id === _pmSelectedId ? 'active' : ''}" onclick="pmSelectPrompt(${p.id})">
+      <div class="pm-item-name">${_esc(p.name)}${p.is_active ? '<span class="pm-badge-active">activo</span>' : ''}</div>
+      <div class="pm-item-meta">v${p.version} · ${_pmFmtDate(p.updated_at)}</div>
+    </div>
+  `).join('');
+}
+
+function _esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function _pmFmtDate(iso) {
+  if (!iso) return '';
+  try { return new Date(iso).toLocaleString('es-MX', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}); }
+  catch { return iso; }
+}
+
+function pmSelectPrompt(id) {
+  _pmSelectedId = id;
+  _pmIsNew = false;
+  const p = _pmPrompts.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('pm-editor-empty').style.display = 'none';
+  document.getElementById('pm-editor-form').style.display = 'flex';
+  document.getElementById('pm-edit-name').value = p.name;
+  document.getElementById('pm-edit-desc').value = p.description || '';
+  document.getElementById('pm-edit-text').value = p.prompt_text;
+  document.getElementById('pm-edit-version').textContent = `v${p.version}`;
+  document.getElementById('pm-save-status').textContent = '';
+  pmRenderList();
+}
+
+function pmNewPrompt() {
+  _pmSelectedId = null;
+  _pmIsNew = true;
+  document.getElementById('pm-editor-empty').style.display = 'none';
+  document.getElementById('pm-editor-form').style.display = 'flex';
+  document.getElementById('pm-edit-name').value = '';
+  document.getElementById('pm-edit-desc').value = '';
+  document.getElementById('pm-edit-text').value = '';
+  document.getElementById('pm-edit-version').textContent = 'nuevo';
+  document.getElementById('pm-save-status').textContent = '';
+  pmRenderList();
+}
+
+async function pmSave() {
+  const name = document.getElementById('pm-edit-name').value.trim();
+  const desc = document.getElementById('pm-edit-desc').value.trim();
+  const text = document.getElementById('pm-edit-text').value;
+  const status = document.getElementById('pm-save-status');
+  if (!name || !text) { status.textContent = 'Nombre y texto son obligatorios'; status.style.color='var(--error)'; return; }
+
+  try {
+    let res;
+    if (_pmIsNew) {
+      res = await fetch(`${API}/v1/prompts`, {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({name, description: desc, prompt_text: text})
+      });
+    } else {
+      res = await fetch(`${API}/v1/prompts/${_pmSelectedId}`, {
+        method: 'PUT', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({name, description: desc, prompt_text: text})
+      });
+    }
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    status.textContent = 'Guardado'; status.style.color = 'var(--success)';
+    await pmLoadPrompts();
+    if (_pmIsNew && data.prompt) { _pmSelectedId = data.prompt.id; _pmIsNew = false; }
+    pmSelectPrompt(_pmSelectedId);
+  } catch (e) { status.textContent = e.message; status.style.color = 'var(--error)'; }
+}
+
+async function pmActivate() {
+  if (!_pmSelectedId) return;
+  const status = document.getElementById('pm-save-status');
+  try {
+    const res = await fetch(`${API}/v1/prompts/${_pmSelectedId}/activate`, {method:'POST'});
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    status.textContent = 'Activado'; status.style.color = 'var(--success)';
+    await pmLoadPrompts();
+    pmSelectPrompt(_pmSelectedId);
+  } catch (e) { status.textContent = e.message; status.style.color = 'var(--error)'; }
+}
+
+async function pmDelete() {
+  if (!_pmSelectedId) return;
+  if (!confirm('¿Eliminar este prompt?')) return;
+  const status = document.getElementById('pm-save-status');
+  try {
+    const res = await fetch(`${API}/v1/prompts/${_pmSelectedId}`, {method:'DELETE'});
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    _pmSelectedId = null;
+    document.getElementById('pm-editor-empty').style.display = 'flex';
+    document.getElementById('pm-editor-form').style.display = 'none';
+    await pmLoadPrompts();
+  } catch (e) { status.textContent = e.message; status.style.color = 'var(--error)'; }
+}
+
+// Stats
+async function pmLoadStats() {
+  const el = document.getElementById('pm-stats-body');
+  try {
+    const res = await fetch(`${API}/v1/prompts/stats`);
+    const data = await res.json();
+    const stats = data.stats || [];
+    if (stats.length === 0) { el.innerHTML = '<p style="color:var(--text-secondary);padding:24px;">Sin datos de prompts</p>'; return; }
+
+    const maxConv = Math.max(...stats.map(s => s.total_conversations), 1);
+    el.innerHTML = '<div class="pm-stats-grid">' + stats.map(s => `
+      <div class="pm-stat-card ${s.is_active ? 'is-active' : ''}">
+        <h3>${_esc(s.prompt_name)} ${s.is_active ? '<span class="pm-badge-active">activo</span>' : ''}</h3>
+        <div class="pm-stat-row"><span class="pm-stat-label">Conversaciones</span><span class="pm-stat-value">${s.total_conversations}</span></div>
+        <div class="pm-stat-bar-bg"><div class="pm-stat-bar" style="width:${(s.total_conversations/maxConv*100).toFixed(0)}%;"></div></div>
+        <div class="pm-stat-row"><span class="pm-stat-label">Rating promedio</span><span class="pm-stat-value">${s.avg_rating > 0 ? s.avg_rating.toFixed(1) + '/5' : '—'} <small>(${s.rated_count} votos)</small></span></div>
+        <div class="pm-stat-row"><span class="pm-stat-label">Mensajes promedio</span><span class="pm-stat-value">${s.avg_messages.toFixed(1)}</span></div>
+        <div class="pm-stat-row"><span class="pm-stat-label">Tool calls promedio</span><span class="pm-stat-value">${s.avg_tool_calls.toFixed(1)}</span></div>
+        <div class="pm-stat-row"><span class="pm-stat-label">Tasa tool calling</span><span class="pm-stat-value">${s.tool_calling_rate}%</span></div>
+        <div class="pm-stat-row"><span class="pm-stat-label">Duración promedio</span><span class="pm-stat-value">${s.avg_duration > 0 ? Math.round(s.avg_duration) + 's' : '—'}</span></div>
+        <div class="pm-stat-row"><span class="pm-stat-label">Alucinaciones</span><span class="pm-stat-value">${s.hallucination_rate}%</span></div>
+      </div>
+    `).join('') + '</div>';
+  } catch (e) { el.innerHTML = `<p style="color:var(--error);padding:24px;">Error: ${e.message}</p>`; }
+}
+
+// Conversations
+async function pmLoadConvPromptList() {
+  try {
+    const res = await fetch(`${API}/v1/prompts`);
+    const data = await res.json();
+    const prompts = data.prompts || [];
+    const el = document.getElementById('pm-conv-prompt-list');
+    el.innerHTML = prompts.map(p => `
+      <div class="pm-prompt-item ${p.id === _pmConvPromptId ? 'active' : ''}" onclick="pmSelectConvPrompt(${p.id})">
+        <div class="pm-item-name">${_esc(p.name)}${p.is_active ? '<span class="pm-badge-active">activo</span>' : ''}</div>
+      </div>
+    `).join('');
+    if (!_pmConvPromptId && prompts.length > 0) {
+      pmSelectConvPrompt(prompts[0].id);
+    }
+  } catch (e) {
+    document.getElementById('pm-conv-prompt-list').innerHTML =
+      `<p style="color:var(--error);padding:14px;font-size:13px;">Error: ${e.message}</p>`;
+  }
+}
+
+function pmSelectConvPrompt(id) {
+  _pmConvPromptId = id;
+  _pmConvOffset = 0;
+  pmLoadConversations();
+  // Re-render sidebar highlight
+  document.querySelectorAll('#pm-conv-prompt-list .pm-prompt-item').forEach(el => {
+    el.classList.toggle('active', el.onclick.toString().includes(id));
+  });
+  pmLoadConvPromptList();
+}
+
+async function pmLoadConversations() {
+  if (!_pmConvPromptId) return;
+  const listEl = document.getElementById('pm-conv-list');
+  const countEl = document.getElementById('pm-conv-count');
+  const pagEl = document.getElementById('pm-conv-pagination');
+  try {
+    const res = await fetch(`${API}/v1/prompts/${_pmConvPromptId}/conversations?offset=${_pmConvOffset}&limit=${_pmConvLimit}`);
+    const data = await res.json();
+    const convs = data.conversations || [];
+    const total = data.total || 0;
+    countEl.textContent = `${total} total`;
+
+    if (convs.length === 0) {
+      listEl.innerHTML = '<p style="color:var(--text-secondary);padding:14px;font-size:12px;">Sin conversaciones</p>';
+      pagEl.innerHTML = '';
+      return;
+    }
+
+    listEl.innerHTML = convs.map(c => `
+      <div class="pm-conv-item" onclick="pmShowConversation(${JSON.stringify(c).replace(/"/g,'&quot;')})">
+        <div class="pm-conv-session">${_esc((c.session_id||'').slice(0,12))}...</div>
+        <div class="pm-conv-meta">
+          ${c.message_count || 0} msgs · ${c.tool_call_count || 0} tools
+          ${c.rating ? ' · ⭐' + c.rating : ''}
+          ${c.has_hallucination ? ' · ⚠️' : ''}
+        </div>
+        <div class="pm-conv-meta">${_pmFmtDate(c.started_at)}</div>
+      </div>
+    `).join('');
+
+    // Pagination
+    const pages = Math.ceil(total / _pmConvLimit);
+    const currentPage = Math.floor(_pmConvOffset / _pmConvLimit);
+    let pagHtml = '';
+    if (currentPage > 0) pagHtml += `<button class="btn-wf" style="font-size:11px;padding:3px 8px;" onclick="_pmConvOffset=${(currentPage-1)*_pmConvLimit};pmLoadConversations()">← Ant</button>`;
+    pagHtml += `<span>${currentPage+1}/${pages}</span>`;
+    if (currentPage < pages - 1) pagHtml += `<button class="btn-wf" style="font-size:11px;padding:3px 8px;" onclick="_pmConvOffset=${(currentPage+1)*_pmConvLimit};pmLoadConversations()">Sig →</button>`;
+    pagEl.innerHTML = pagHtml;
+  } catch (e) { listEl.innerHTML = `<p style="color:var(--error);padding:14px;font-size:12px;">Error: ${e.message}</p>`; }
+}
+
+function pmShowConversation(conv) {
+  const el = document.getElementById('pm-conv-detail');
+  const messages = conv.messages || [];
+
+  // Highlight selected item
+  document.querySelectorAll('#pm-conv-list .pm-conv-item').forEach(item => item.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+
+  let html = `<div style="margin-bottom:12px;font-size:12px;color:var(--text-secondary);">
+    Session: ${_esc(conv.session_id || '')} · ${conv.message_count || 0} msgs · ${conv.tool_call_count || 0} tool calls
+    ${conv.rating ? ' · Rating: ' + conv.rating + '/5' : ''}
+    ${conv.rating_comment ? ' · "' + _esc(conv.rating_comment) + '"' : ''}
+    ${conv.duration_seconds ? ' · ' + conv.duration_seconds + 's' : ''}
+  </div>`;
+
+  messages.forEach(m => {
+    const role = m.role || 'unknown';
+    if (role === 'system') return;
+    const cls = role === 'user' ? 'user' : 'assistant';
+    html += `<div class="pm-msg ${cls}">
+      <div class="pm-msg-role">${role}</div>
+      ${_esc(m.content || '').replace(/\n/g, '<br>')}
+    </div>`;
+  });
+
+  // Tool calls
+  const tcs = conv.tool_calls || [];
+  if (tcs.length > 0) {
+    html += '<div style="margin-top:16px;font-size:12px;"><strong>Tool Calls:</strong></div>';
+    tcs.forEach(tc => {
+      html += `<div style="font-size:11px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px;margin-top:6px;">
+        <strong>${_esc(tc.name||'')}</strong> (${tc.duration_ms||0}ms)<br>
+        <span style="color:var(--text-secondary);">${_esc(JSON.stringify(tc.arguments||{}))}</span>
+      </div>`;
+    });
+  }
+
+  el.innerHTML = html;
+}
+</script>
+</body>
+</html>

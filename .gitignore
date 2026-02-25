@@ -1,5 +1,57 @@
-.vercel
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Entorno
+.env
+.env.local
+.env.railway
+!.env.example
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Modelos y binarios grandes
+*.tar.gz
+*.zip
+*.gguf
+*.bin
+*.safetensors
+
+# mcp-server: incluido para deploy (Railway/Docker)
+# mcp-server/
+
+# Node
 node_modules/
 dist/
-.env
-.DS_Store
+
+# Vercel
+.vercel
+
+# Claude
+.claude/
+
+# Logs
+*.log
+
+# Datasets con conversaciones reales de clientes (PII)
+datasets/*.jsonl
+datasets/**/*.jsonl
+training/*.jsonl
+datasets/*.csv
+datasets/*.pre_merge
+datasets/*.pre_fix
+datasets/*.pre_clean
+datasets/*.pre_content_fix
+datasets/*.pre_quality_fix
+datasets/*.pre_normalize
+datasets/*.bak
