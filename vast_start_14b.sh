@@ -17,10 +17,10 @@ log "=== TREFA 14B Setup ==="
 
 # --- Config ---
 BASE_REPO="Qwen/Qwen3-14B"
-LORA_REPO="mmoralesf/qwen3-14B-mariana"
+LORA_REPO="mmoralesf/qwen3-14B-v11"
 BASE_DIR="/app/modelos/qwen3-14b-base"
-LORA_DIR="/app/modelos/qwen3-14b-mariana"
-MERGED_DIR="/app/modelos/qwen3-14b-merged"
+LORA_DIR="/app/modelos/qwen3-14b-v11"
+MERGED_DIR="/app/modelos/qwen3-14b-v11-merged"
 VLLM_PORT=8001
 FASTAPI_PORT=8081
 MCP_PORT=3001
@@ -79,8 +79,8 @@ import torch, os
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 BASE = "/app/modelos/qwen3-14b-base"
-LORA = "/app/modelos/qwen3-14b-mariana"
-OUT  = "/app/modelos/qwen3-14b-merged"
+LORA = "/app/modelos/qwen3-14b-v11"
+OUT  = "/app/modelos/qwen3-14b-v11-merged"
 print("[merge] Tokenizer...")
 tok = AutoTokenizer.from_pretrained(LORA, trust_remote_code=True, use_fast=True)
 print("[merge] Base model (bf16, CPU)...")

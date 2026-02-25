@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Descarga Qwen3-14B base + LoRA mariana, mergea y sube a HuggingFace.
+Descarga Qwen3-14B base + LoRA mariana v11, mergea y sube a HuggingFace.
 
 Uso:
     # Todo por defecto (descarga, mergea, sube)
@@ -121,18 +121,18 @@ def main():
         description="Descarga Qwen3-14B + LoRA mariana, mergea y sube a HuggingFace"
     )
     parser.add_argument("--base-repo", default="Qwen/Qwen3-14B")
-    parser.add_argument("--lora-repo", default="mmoralesf/qwen3-14B-v10-mariana")
+    parser.add_argument("--lora-repo", default="mmoralesf/qwen3-14B-v11")
     parser.add_argument("--base-dir", default="/app/modelos/qwen3-14b-base")
-    parser.add_argument("--lora-dir", default="/app/modelos/qwen3-14b-v10-mariana")
-    parser.add_argument("--out-dir", default="/app/modelos/qwen3-14b-v10-merged")
+    parser.add_argument("--lora-dir", default="/app/modelos/qwen3-14b-v11")
+    parser.add_argument("--out-dir", default="/app/modelos/qwen3-14b-v11-merged")
     parser.add_argument(
         "--upload-repo",
-        default="mmoralesf/qwen3-14B-v10-mariana-merged",
+        default="mmoralesf/qwen3-14B-v11-merged",
         help="Repo HF destino para el modelo mergeado",
     )
     parser.add_argument(
         "--commit-message",
-        default="Qwen3-14B + LoRA mariana v10 — modelo mergeado listo para vLLM",
+        default="Qwen3-14B + LoRA mariana v11 — modelo mergeado listo para vLLM",
     )
     parser.add_argument("--private", action="store_true", help="Crear repo privado")
     parser.add_argument("--skip-download", action="store_true", help="Saltar descarga (usa dirs locales)")

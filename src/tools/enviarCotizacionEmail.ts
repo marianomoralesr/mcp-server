@@ -4,7 +4,7 @@ import { getSupabaseClient, formatPrice } from '../lib/supabase.js';
 export const EnviarCotizacionEmailSchema = z.object({
   email_destino: z.string().describe('Email del cliente'),
   nombre_cliente: z.string().describe('Nombre del cliente'),
-  vehiculo_id: z.number().describe('ID del vehículo a cotizar'),
+  id: z.number().describe('ID del vehículo a cotizar'),
   enganche_porcentaje: z.number().optional().default(20).describe('Porcentaje de enganche (default: 20)'),
   plazo_meses: z.number().optional().default(48).describe('Plazo en meses (default: 48)'),
 });
@@ -17,7 +17,7 @@ export async function enviarCotizacionEmail(params: z.infer<typeof EnviarCotizac
     const { data: vehiculo, error: vError } = await supabase
       .from('vehiculos_completos')
       .select('*')
-      .eq('id', params.vehiculo_id)
+      .eq('id', params.id)
       .single();
 
     if (vError) {

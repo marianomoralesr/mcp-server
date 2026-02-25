@@ -501,9 +501,13 @@ if command -v nvidia-smi &>/dev/null; then
             MAX_MODEL_LEN=32768; GPU_MEMORY_UTILIZATION=0.90
             log "GPU config: H100 — max_model_len=$MAX_MODEL_LEN"
             ;;
+        *RTX*PRO*6000*|*RTX*6000*Blackwell*)
+            MAX_MODEL_LEN=16384; GPU_MEMORY_UTILIZATION=0.90
+            log "GPU config: RTX PRO 6000 Blackwell — max_model_len=$MAX_MODEL_LEN"
+            ;;
         *)
-            MAX_MODEL_LEN=4096; GPU_MEMORY_UTILIZATION=0.85
-            log "GPU ($GPU_NAME_DETECT), defaults conservadores"
+            MAX_MODEL_LEN=8192; GPU_MEMORY_UTILIZATION=0.85
+            log "GPU ($GPU_NAME_DETECT), defaults moderados"
             ;;
     esac
 fi

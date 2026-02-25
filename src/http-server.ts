@@ -21,6 +21,7 @@ import { obtenerInfoNegocio, ObtenerInfoNegocioSchema } from './tools/obtenerInf
 import { obtenerFaqs, ObtenerFaqsSchema } from './tools/obtenerFaqs.js';
 import { solicitarDatosContacto, SolicitarDatosContactoSchema } from './tools/solicitarDatosContacto.js';
 import { enviarCotizacionEmail, EnviarCotizacionEmailSchema } from './tools/enviarCotizacionEmail.js';
+import { agendarCita, AgendarCitaSchema } from './tools/agendarCita.js';
 
 // ============================================================================
 // CONFIGURACIÓN
@@ -216,11 +217,33 @@ const TOOL_REGISTRY: Record<string, ToolRegistryEntry> = {
         properties: {
           email_destino: { type: 'string', description: 'Email del cliente' },
           nombre_cliente: { type: 'string', description: 'Nombre del cliente' },
-          vehiculo_id: { type: 'number', description: 'ID del vehículo a cotizar' },
+          id: { type: 'number', description: 'ID del vehículo a cotizar' },
           enganche_porcentaje: { type: 'number', description: 'Porcentaje de enganche (default: 20)' },
           plazo_meses: { type: 'number', description: 'Plazo en meses (default: 48)' },
         },
-        required: ['email_destino', 'nombre_cliente', 'vehiculo_id'],
+        required: ['email_destino', 'nombre_cliente', 'id'],
+      },
+    },
+  },
+  agendar_cita: {
+    handler: (args) => agendarCita(AgendarCitaSchema.parse(args)),
+    schema: AgendarCitaSchema,
+    definition: {
+      name: 'agendar_cita',
+      description: 'Agenda una visita del cliente a una sucursal de Autos TREFA. Valida horarios y disponibilidad. Notifica automáticamente al equipo por Telegram.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          nombre: { type: 'string', description: 'Nombre del cliente' },
+          telefono: { type: 'string', description: 'Teléfono del cliente' },
+          email: { type: 'string', description: 'Email del cliente' },
+          sucursal: { type: 'string', enum: ['Monterrey', 'Guadalupe', 'Saltillo', 'Reynosa'], description: 'Sucursal para la visita' },
+          fecha: { type: 'string', description: 'Fecha propuesta (YYYY-MM-DD)' },
+          hora: { type: 'string', description: 'Hora propuesta (HH:MM)' },
+          vehiculo_interes: { type: 'string', description: 'Vehículo de interés del cliente' },
+          comentarios: { type: 'string', description: 'Comentarios adicionales' },
+        },
+        required: ['nombre', 'telefono', 'sucursal', 'fecha', 'hora'],
       },
     },
   },
@@ -395,12 +418,32 @@ function createMcpServer(): McpServer {
     {
       email_destino: z.string().describe('Email del cliente'),
       nombre_cliente: z.string().describe('Nombre del cliente'),
-      vehiculo_id: z.number().describe('ID del vehículo a cotizar'),
+      id: z.number().describe('ID del vehículo a cotizar'),
       enganche_porcentaje: z.number().optional().describe('Porcentaje de enganche (default: 20)'),
       plazo_meses: z.number().optional().describe('Plazo en meses (default: 48)'),
     },
     async (args) => {
       const result = await enviarCotizacionEmail(EnviarCotizacionEmailSchema.parse(args));
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  // 12. agendar_cita
+  server.tool(
+    'agendar_cita',
+    'Agenda una visita del cliente a una sucursal de Autos TREFA. Valida horarios y disponibilidad. Notifica automáticamente al equipo por Telegram.',
+    {
+      nombre: z.string().describe('Nombre del cliente'),
+      telefono: z.string().describe('Teléfono del cliente'),
+      email: z.string().optional().describe('Email del cliente'),
+      sucursal: z.enum(['Monterrey', 'Guadalupe', 'Saltillo', 'Reynosa']).describe('Sucursal para la visita'),
+      fecha: z.string().describe('Fecha propuesta (YYYY-MM-DD)'),
+      hora: z.string().describe('Hora propuesta (HH:MM)'),
+      vehiculo_interes: z.string().optional().describe('Vehículo de interés del cliente'),
+      comentarios: z.string().optional().describe('Comentarios adicionales'),
+    },
+    async (args) => {
+      const result = await agendarCita(AgendarCitaSchema.parse(args));
       return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
     }
   );

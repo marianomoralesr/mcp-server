@@ -2,8 +2,8 @@ import torch, os
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 BASE = "/app/modelos/qwen3-14b-base"
-LORA = "/app/modelos/qwen3-14b-v10-mariana"
-OUT = "/app/modelos/qwen3-14b-v10-merged"
+LORA = "/app/modelos/qwen3-14b-v11"
+OUT = "/app/modelos/qwen3-14b-v11-merged"
 print("[merge] Cargando tokenizer (del LoRA adapter)...")
 tok = AutoTokenizer.from_pretrained(LORA, trust_remote_code=True, use_fast=True)
 print("[merge] Cargando modelo base Qwen3-14B (~28GB RAM)...")

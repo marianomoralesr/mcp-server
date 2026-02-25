@@ -55,7 +55,7 @@ TRAIN_SOURCES = [
     # Prioridad 4: trefa (puede solapar con v8)
     ("trefa_train.jsonl", 4),
     # Prioridad 5: synthetic
-    ("gold_upgraded/synthetic_cleaned.jsonl", 5),
+    ("synthetic_cleaned.jsonl", 5),
 ]
 
 # Fuentes de EVAL

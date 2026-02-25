@@ -42,3 +42,15 @@ dist/
 
 # Logs
 *.log
+
+# Datasets con conversaciones reales de clientes (PII)
+datasets/*.jsonl
+datasets/**/*.jsonl
+datasets/*.csv
+datasets/*.pre_merge
+datasets/*.pre_fix
+datasets/*.pre_clean
+datasets/*.pre_content_fix
+datasets/*.pre_quality_fix
+datasets/*.pre_normalize
+datasets/*.bak

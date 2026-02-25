@@ -225,11 +225,11 @@ CUÁNDO USAR: Cuando el cliente solicita que le envíen la cotización por corre
       properties: {
         email_destino: { type: 'string', description: 'Email del cliente' },
         nombre_cliente: { type: 'string', description: 'Nombre del cliente' },
-        vehiculo_id: { type: 'number', description: 'ID del vehículo a cotizar' },
+        id: { type: 'number', description: 'ID del vehículo a cotizar' },
         enganche_porcentaje: { type: 'number', description: 'Porcentaje de enganche (default: 20)' },
         plazo_meses: { type: 'number', description: 'Plazo en meses (default: 48)' },
       },
-      required: ['email_destino', 'nombre_cliente', 'vehiculo_id'],
+      required: ['email_destino', 'nombre_cliente', 'id'],
     },
   },
 ];

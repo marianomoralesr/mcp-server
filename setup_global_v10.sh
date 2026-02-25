@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================
-# TREFA — Setup Global v10 (GPU vast.ai)
+# TREFA — Setup Global v11 (GPU vast.ai)
 #
 # Script completo que configura una máquina GPU desde cero:
 #   Fase 0: Bootstrap y configuración
@@ -38,13 +38,13 @@
 #
 # Uso:
 #   export HF_TOKEN=hf_xxx
-#   bash setup_global_v10.sh
+#   bash setup_global_v11.sh
 #
 #   # Sin training (deploy con modelo pre-existente):
-#   bash setup_global_v10.sh --skip-training --skip-merge
+#   bash setup_global_v11.sh --skip-training --skip-merge
 #
 #   # Con modelo local ya mergeado:
-#   bash setup_global_v10.sh --skip-training --skip-merge --model-path /app/modelos/mi-modelo
+#   bash setup_global_v11.sh --skip-training --skip-merge --model-path /app/modelos/mi-modelo
 # ============================================================
 
 # ============================================================
@@ -165,17 +165,17 @@ VLLM_PORT=8001
 MCP_PORT=3001
 FASTAPI_PORT=8081
 BASE_MODEL="Qwen/Qwen3-14B"
-HF_LORA_REPO="mmoralesf/qwen3-14B-v10-mariana-unsloth"
-HF_MERGED_REPO="mmoralesf/qwen3-14B-v10-mariana-unsloth-merged"
-SERVED_MODEL="trefa-unsloth"
+HF_LORA_REPO="mmoralesf/qwen3-14B-v11"
+HF_MERGED_REPO="mmoralesf/qwen3-14B-v11-merged"
+SERVED_MODEL="trefa-v11"
 
 BASE_DIR="/app/modelos/qwen3-14b-base"
-LORA_DIR="/app/modelos/qwen3-14b-v10-mariana-unsloth"
-MERGED_DIR="/app/modelos/qwen3-14b-v10-merged-unsloth"
+LORA_DIR="/app/modelos/qwen3-14b-v11"
+MERGED_DIR="/app/modelos/qwen3-14b-v11-merged"
 
 DATASET_DIR="/app/datasets"
-TRAIN_FILE="${DATASET_DIR}/merged_v10_together_train.jsonl"
-HF_DATASET_REPO="mmoralesf/v10-qwen3-mariana"
+TRAIN_FILE="${DATASET_DIR}/merged_v10_together_train_filtered.jsonl"
+HF_DATASET_REPO="mmoralesf/v11-qwen3-mariana"
 
 GIT_REPO="https://github.com/marianomoralesr/mcp-server.git"
 INFERENCE_BRANCH="inference-server"
@@ -199,7 +199,7 @@ export SUPABASE_URL="${SUPABASE_URL:-https://mhlztgilrmgebkyqowxz.supabase.co}"
 export SUPABASE_SERVICE_ROLE_KEY="${SUPABASE_SERVICE_ROLE_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1obHp0Z2lscm1nZWJreXFvd3h6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjEyMjkyMCwiZXhwIjoyMDgxNjk4OTIwfQ.E4GbZ4KR9NfyPnbNS1Ic6bi3xzW1-9sBNC15BTRpDzg}"
 
 log "╔══════════════════════════════════════════════════════════════╗"
-log "║           TREFA Mariana v10 — Setup Global GPU              ║"
+log "║           TREFA Mariana v11 — Setup Global GPU              ║"
 log "╚══════════════════════════════════════════════════════════════╝"
 log ""
 log "Config:"
@@ -893,7 +893,7 @@ api.upload_folder(
     folder_path=out_dir,
     repo_id=repo,
     repo_type="model",
-    commit_message="v10: Qwen3-14B + LoRA mariana v10 (bf16) — modelo mergeado para vLLM",
+    commit_message="v11: Qwen3-14B + LoRA mariana v11 (bf16) — modelo mergeado para vLLM",
 )
 
 print(f"[upload] Listo! https://huggingface.co/{repo}")
@@ -1310,7 +1310,7 @@ UPTIME_NOW=$(date '+%Y-%m-%d %H:%M:%S')
 
 log ""
 log "╔══════════════════════════════════════════════════════════════╗"
-log "║           TREFA Mariana v10 — SETUP COMPLETO                ║"
+log "║           TREFA Mariana v11 — SETUP COMPLETO                ║"
 log "╠══════════════════════════════════════════════════════════════╣"
 log "║                                                              ║"
 log "║  MODELO                                                      ║"
