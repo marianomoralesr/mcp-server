@@ -46,6 +46,7 @@ dist/
 # Datasets con conversaciones reales de clientes (PII)
 datasets/*.jsonl
 datasets/**/*.jsonl
+training/*.jsonl
 datasets/*.csv
 datasets/*.pre_merge
 datasets/*.pre_fix
